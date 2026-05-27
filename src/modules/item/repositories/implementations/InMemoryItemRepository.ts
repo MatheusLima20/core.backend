@@ -38,7 +38,11 @@ export class InMemoryItemRepository implements IItemRepository {
         return newItem;
     }
 
-    delete(item: ItemEntity): Promise<boolean | null> {
-        throw new Error("Method not implemented.");
+    async delete(uid: string): Promise<boolean | null> {
+        const index = this.items.findIndex((oldItem) => oldItem.uid === uid);
+
+        const removedItem = this.items.splice(index, 1);
+
+        return !!removedItem;
     }
 }

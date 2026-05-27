@@ -6,9 +6,9 @@ import { ItemEntity } from "../../entities/ItemEntity";
 
 export interface IItemRepository {
     findByOrderUID(orderID: string): Promise<ItemResponseDTO[]>;
-    findByUID(id: string): Promise<ItemResponseDTO | null>;
+    findByUID(uid: string): Promise<ItemResponseDTO | null>;
     findByName(name: string): Promise<ItemResponseDTO | null>;
     register(item: ItemEntity): Promise<ItemCreateResponseDTO | null>;
     update(item: ItemEntity): Promise<UpdateItemResponseDTO | null>;
-    delete(item: ItemEntity): Promise<boolean | null>;
+    delete(uid: string): Promise<boolean | null>;
 }

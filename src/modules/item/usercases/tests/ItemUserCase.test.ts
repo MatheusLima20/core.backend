@@ -26,23 +26,17 @@ const makeItem = (data?: Partial<CreateItemDTO>): CreateItemDTO => ({
 });
 
 describe("ItemUserCase", () => {
-
     let repository: InMemoryItemRepository;
 
     let useCase: ItemUseCase;
 
     beforeEach(() => {
+        repository = new InMemoryItemRepository();
 
-        repository =
-            new InMemoryItemRepository();
-
-        useCase =
-            new ItemUseCase(repository);
+        useCase = new ItemUseCase(repository);
     });
 
-
     test("Should register an item", async () => {
-
         const result = await useCase.create(item);
         const result1 = await useCase.create(item2);
 
@@ -51,7 +45,6 @@ describe("ItemUserCase", () => {
     });
 
     test("Should find an item by id", async () => {
-
         const resultCreated = await useCase.create(item);
 
         const result = await useCase.findByUID(resultCreated?.uid);
@@ -60,7 +53,6 @@ describe("ItemUserCase", () => {
     });
 
     test("Should find an item by name item", async () => {
-
         await useCase.create(item);
 
         const result = await useCase.findByName("Seat");
@@ -69,7 +61,6 @@ describe("ItemUserCase", () => {
     });
 
     test("Should update an existing item", async () => {
-
         await useCase.create(
             makeItem({
                 name: "Fridge",
@@ -94,7 +85,6 @@ describe("ItemUserCase", () => {
     });
 
     test("Should return same order existing items", async () => {
-
         await useCase.create(item2);
         await useCase.create(item);
 
@@ -113,5 +103,24 @@ describe("ItemUserCase", () => {
         expect(items.every((item) => item.orderId === item2.orderId)).toBe(
             true,
         );
+    });
+
+    test("Should to delete an item", async () => {
+        const seat = await useCase.create(item);
+        await useCase.create(item2);
+
+        const fridge = await useCase.create(
+            makeItem({
+                name: "Fridge",
+                description: "Fridge to the main room.",
+                orderId: "2",
+            }),
+        );
+
+        const isDeletedFridge = await useCase.delete(fridge.uid);
+        const isDeletedSeat = await useCase.delete(seat.uid);
+
+        expect(isDeletedSeat).toBe(true);
+        expect(isDeletedFridge).toBe(true);
     });
 });

@@ -76,6 +76,19 @@ export class ItemUseCase {
         return item;
     }
 
+    async delete(uid: string) {
+
+        await this.findByUID(uid);
+
+        const isDeleted = await this.itemRepository.delete(uid);
+
+        if (!isDeleted) {
+            throw new Error("Items not found!");
+        }
+
+        return isDeleted;
+    }
+
     private async validateItemAlreadyExists(name: string, uid?: string) {
         const item = await this.itemRepository.findByName(name);
 
