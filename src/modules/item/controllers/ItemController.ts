@@ -1,6 +1,6 @@
 import { IItem } from "../entities/interfaces/IItem";
 import { ItemEntity } from "../entities/ItemEntity";
-import { IItemRepository } from "../repositories/IItemRepository";
+import { IItemRepository } from "../repositories/interfaces/IItemRepository";
 
 
 export class ItemController implements IItemRepository {

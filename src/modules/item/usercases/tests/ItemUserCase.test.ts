@@ -1,6 +1,6 @@
-import { InMemoryItemUseCase } from "./LocalItemUseCase";
-import { InMemoryItemRepository } from "../../repositories/InMemoryItemRepository";
+import { ItemUseCase } from "../ItemUseCase";
 import { CreateItemDTO } from "../../dtos/create-item.dto";
+import { InMemoryItemRepository } from "../../repositories/implementations/InMemoryItemRepository";
 
 const item: CreateItemDTO = {
     orderId: "1",
@@ -19,7 +19,7 @@ describe("InMemoryItem", () => {
     test("Should register item just once item.register", async () => {
         const repository = new InMemoryItemRepository();
 
-        const useCase = new InMemoryItemUseCase(repository);
+        const useCase = new ItemUseCase(repository);
 
         const result = await useCase.execute(item);
         const result1 = await useCase.execute(item2);
@@ -31,7 +31,7 @@ describe("InMemoryItem", () => {
     test("Should find item by id item.find.uid", async () => {
         const repository = new InMemoryItemRepository();
 
-        const useCase = new InMemoryItemUseCase(repository);
+        const useCase = new ItemUseCase(repository);
 
         const resultCreated = await useCase.execute(item);
 
@@ -43,7 +43,7 @@ describe("InMemoryItem", () => {
     test("Should find item by name item.find.name", async () => {
         const repository = new InMemoryItemRepository();
 
-        const useCase = new InMemoryItemUseCase(repository);
+        const useCase = new ItemUseCase(repository);
 
         await useCase.execute(item);
 

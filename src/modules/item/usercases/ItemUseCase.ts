@@ -1,9 +1,9 @@
 import { randomUUID } from "crypto";
-import { CreateItemDTO } from "../../dtos/create-item.dto";
-import { ItemEntity } from "../../entities/ItemEntity";
-import { IItemRepository } from "../../repositories/IItemRepository";
+import { CreateItemDTO } from "../dtos/create-item.dto";
+import { ItemEntity } from "../entities/ItemEntity";
+import { IItemRepository } from "../repositories/interfaces/IItemRepository";
 
-export class InMemoryItemUseCase {
+export class ItemUseCase {
     constructor(private itemRepository: IItemRepository) {}
 
     async execute(data: CreateItemDTO) {

@@ -1,7 +1,7 @@
-import { ItemResponseDTO } from "../dtos/create-item.dto";
-import { IItem } from "../entities/interfaces/IItem";
-import { ItemEntity } from "../entities/ItemEntity";
-import { IItemRepository } from "./IItemRepository";
+import { ItemResponseDTO } from "../../dtos/create-item.dto";
+import { ItemEntity } from "../../entities/ItemEntity";
+import { IItemRepository } from "../interfaces/IItemRepository";
+
 
 export class InMemoryItemRepository implements IItemRepository {
     items: ItemEntity[] = [];
@@ -14,7 +14,7 @@ export class InMemoryItemRepository implements IItemRepository {
         return this.items.find((item) => item.name === name) || null;
     }
 
-    async register(item: IItem): Promise<ItemResponseDTO | null> {
+    async register(item: ItemEntity): Promise<ItemResponseDTO | null> {
         try {
             this.items.push(item);
 
@@ -24,11 +24,11 @@ export class InMemoryItemRepository implements IItemRepository {
         }
     }
 
-    async update(item: IItem): Promise<IItem | null> {
+    async update(item: ItemEntity): Promise<ItemEntity | null> {
         throw new Error("Method not implemented.");
     }
 
-    delete(item: IItem): Promise<boolean | null> {
+    delete(item: ItemEntity): Promise<boolean | null> {
         throw new Error("Method not implemented.");
     }
 }

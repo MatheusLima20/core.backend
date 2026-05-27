@@ -1,7 +1,6 @@
-import { IItem } from "./interfaces/IItem";
 
 
-export class ItemEntity implements IItem {
+export class ItemEntity {
     uid!: string;
     orderId!: string;
     platform!: number;
