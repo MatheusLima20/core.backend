@@ -1,7 +1,7 @@
-<h1 align="center">Restaurant Backend API</h1>
+<h1 align="center">GYM Backend API</h1>
 
 <p align="center">
-Backend API for restaurant management with authentication, orders, products, and cashier control.
+Backend API for Gym with authentication, orders and user control.
 </p>
 
 ![Node.js](https://img.shields.io/badge/Node.js-20-green?logo=node.js)
