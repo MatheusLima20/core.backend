@@ -59,7 +59,7 @@ export class UserUseCase {
     async update(data: UpdateUserDTO) {
         await this.validateEmailAlreadyExists(data.email, data.uid);
 
-        const oldUser = await this.findByEmail(data.email);
+        const oldUser = await this.findByUID(data.uid);
 
         const user = new UserEntity({
             ...oldUser,

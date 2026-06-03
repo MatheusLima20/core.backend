@@ -50,7 +50,7 @@ describe("UserUsecase", () => {
 
     test("should to update an user", async () => {
         const registeredUser = await useCase.create(user);
-        await useCase.create(user2);
+        const registeredUser2 = await useCase.create(user2);
         await useCase.create(
             makeUser({
                 name: "Ramon Dias",
@@ -69,7 +69,19 @@ describe("UserUsecase", () => {
             email: "matheus2096lima@gmail.com",
         };
 
+        const userToUpdate2: UpdateUserDTO = {
+            ...registeredUser2,
+            name: "Matheus Santos",
+            password: "",
+            docNumberBusiness: null,
+            docNumberPerson: null,
+            gender: Gender.MALE,
+            email: "matheus2096santos@gmail.com",
+        };
+
         const result = await useCase.update(userToUpdate);
+
+        const result2 = await useCase.update(userToUpdate2);
 
         expect(result.name).toBe(userToUpdate.name);
     });
