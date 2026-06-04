@@ -6,7 +6,7 @@ import { ContentUseCase } from "../content.usecase";
 
 describe("ContentUsecase", () => {
     const content: CreateContentDTO = {
-        platform: 1,
+        platformUID: "1",
         amount: 20,
         description: "Why Protein Sale.",
         photo: null,
@@ -90,18 +90,18 @@ describe("ContentUsecase", () => {
                 type: ContentType.EXPENSE,
                 value: 200,
                 amount: 2,
-                platform: 2,
+                platformUID: "2",
             }),
         );
 
-        const result = await useCase.find(1);
-        const result2 = await useCase.find(2);
+        const result = await useCase.find("1");
+        const result2 = await useCase.find("2");
 
         expect(result).toHaveLength(3);
         expect(result2).toHaveLength(1);
 
-        expect(result.every((content) => content.platform === 1)).toBe(true);
-        expect(result2.every((content) => content.platform === 2)).toBe(true);
+        expect(result.every((content) => content.platformUID === "1")).toBe(true);
+        expect(result2.every((content) => content.platformUID === "2")).toBe(true);
     });
 
     test("Should find all contents by type", async () => {
@@ -113,7 +113,7 @@ describe("ContentUsecase", () => {
                 type: ContentType.EXPENSE,
                 value: 200,
                 amount: 2,
-                platform: 2,
+                platformUID: "2",
             }),
         );
 
@@ -135,11 +135,11 @@ describe("ContentUsecase", () => {
         const result = await useCase.create(content);
         await useCase.create(content2);
 
-        const contentsBefore = await useCase.find(content.platform);
+        const contentsBefore = await useCase.find(content.platformUID);
 
         const isDeletedContent = await useCase.delete(result.uid);
 
-        const contentsAfter = await useCase.find(content.platform);
+        const contentsAfter = await useCase.find(content.platformUID);
 
         expect(isDeletedContent).toBe(true);
         expect(contentsBefore.length).not.toEqual(contentsAfter.length);

@@ -4,7 +4,7 @@ import { UpdateOrderResponseDTO } from "../dtos/update-order.dto";
 import { OrderProps } from "../entities/order.props";
 
 export interface IOrderRepository {
-    find(platform: number): Promise<OrderResponseDTO[]>;
+    find(platformUID: string): Promise<OrderResponseDTO[]>;
     findByUID(uid: string): Promise<OrderResponseDTO | null>;
     findByDescription(description: string): Promise<OrderResponseDTO | null>;
     register(order: OrderProps): Promise<CreateOrderResponseDTO | null>;

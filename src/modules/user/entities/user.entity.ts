@@ -11,7 +11,7 @@ export class UserEntity implements UserProps {
     gender!: Gender;
     email!: string;
     password!: string;
-    platform!: number;
+    platformUID!: string;
     createdAt!: Date;
     updatedAt!: Date;
 

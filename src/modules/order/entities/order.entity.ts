@@ -3,7 +3,7 @@ import { OrderProps } from "./order.props";
 export class OrderEntity implements OrderProps {
 
     uid!: string;
-    platform!: number;
+    platformUID!: string;
     description!: string;
     createdAt!: Date;
     updatedAt!: Date;    

@@ -4,13 +4,13 @@ import { UpdateContentResponseDTO } from "../../dtos/update-content.dto";
 import { ContentEntity } from "../../entities/content.entity";
 import { ContentType } from "../../enum/content.enum";
 import { ContentMapper } from "../../mappers/content.mapper";
-import { IContentRepository } from "../content.repository";
+import { IContentRepository } from "../content-repository.interface";
 
 export class InMemoryContentRepository implements IContentRepository {
     contents: ContentEntity[] = [
         {
             uid: "1",
-            platform: 1,
+            platformUID: "1",
             amount: null,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -27,14 +27,14 @@ export class InMemoryContentRepository implements IContentRepository {
             (content) => content.type === type,
         );
 
-        return ContentMapper.toOrderUIDResponseList(contents);
+        return ContentMapper.toPlatformUIDResponseList(contents);
     }
-    async find(platform: number): Promise<ContentResponseDTO[]> {
+    async find(platformUID: string): Promise<ContentResponseDTO[]> {
         const contents = this.contents.filter(
-            (content) => content.platform === platform,
+            (content) => content.platformUID === platformUID,
         );
 
-        return ContentMapper.toOrderUIDResponseList(contents);
+        return ContentMapper.toPlatformUIDResponseList(contents);
     }
 
     async findByUID(uid: string): Promise<ContentResponseDTO | null> {

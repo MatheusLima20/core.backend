@@ -2,7 +2,7 @@
 export interface OrderProps {
     uid: string;
     description: string;
-    platform: number;
+    platformUID: string;
     createdAt: Date;
     updatedAt: Date;
 }

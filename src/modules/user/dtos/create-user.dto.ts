@@ -9,7 +9,7 @@ export type CreateUserDTO = Pick<
     | "docNumberPerson"
     | "gender"
     | "userType"
-    | "platform"
+    | "platformUID"
 >;
 
 export type CreateUserResponseDTO = Pick<

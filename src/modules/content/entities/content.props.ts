@@ -7,7 +7,7 @@ export interface ContentProps {
     description: string | null;
     amount: number | null;
     value: number | null;
-    platform: number;
+    platformUID: string;
     type: ContentType;
     createdAt: Date;
     updatedAt: Date;

@@ -11,7 +11,7 @@ export const OrderMapper = {
         return {
             uid: order.uid,
             description: order.description,
-            platform: order.platform,
+            platformUID: order.platformUID,
             createdAt: order.createdAt,
             updatedAt: order.updatedAt,
         };

@@ -46,8 +46,8 @@ export class OrderUseCase {
         return order;
     }
 
-    async find(platform: number) {
-        const order = await this.orderRepository.find(platform);
+    async find(platformUID: string) {
+        const order = await this.orderRepository.find(platformUID);
 
         if (!order) {
             throw new Error("Orders not found!");

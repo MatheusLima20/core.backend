@@ -4,7 +4,7 @@ import { InMemoryOrderRepository } from "../../repositories/implementations/in-m
 import { OrderUseCase } from "../order.usecase";
 
 const order: CreateOrderDTO = {
-    platform: 1,
+    platformUID: "1",
     description: "Need seats",
 };
 
@@ -14,7 +14,7 @@ const order2: CreateOrderDTO = {
 };
 
 const makeOrder = (data?: Partial<CreateOrderDTO>): CreateOrderDTO => ({
-    platform: 1,
+    platformUID: "1",
     description: "Secretary Seat",
     ...data,
 });
@@ -52,7 +52,7 @@ describe("OrderUsecase", () => {
         await useCase.create(
             makeOrder({
                 description: "Seat For New Secretary",
-                platform: 1,
+                platformUID: "1",
             }),
         );
 
@@ -92,7 +92,7 @@ describe("OrderUsecase", () => {
             }),
         );
 
-        const orders = await useCase.find(order.platform);
+        const orders = await useCase.find(order.platformUID);
 
         expect(orders).toHaveLength(5);
     });

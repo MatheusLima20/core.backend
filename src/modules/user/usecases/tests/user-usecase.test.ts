@@ -7,7 +7,7 @@ import { UserUseCase } from "../user.usecase";
 import { UpdateUserDTO } from "../../dtos/update-user.dto";
 
 const user: CreateUserDTO = {
-    platform: 1,
+    platformUID: "1",
     name: "Matheus Santos",
     docNumberBusiness: null,
     docNumberPerson: 54879854,
@@ -98,7 +98,7 @@ describe("UserUsecase", () => {
             }),
         );
 
-        const result = await useCase.find(1);
+        const result = await useCase.find("1");
 
         expect(result).toHaveLength(3);
     });

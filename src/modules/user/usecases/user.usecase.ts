@@ -9,7 +9,7 @@ import { UpdateUserDTO } from "../dtos/update-user.dto";
 export class UserUseCase {
     constructor(private userRepository: IUserRepository) {}
 
-    async find(platform: number): Promise<UserResponseDTO[]> {
+    async find(platform: string): Promise<UserResponseDTO[]> {
         return await this.userRepository.find(platform);
     }
 

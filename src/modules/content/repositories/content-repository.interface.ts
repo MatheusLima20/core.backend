@@ -7,7 +7,7 @@ import { ContentType } from "../enum/content.enum";
 export interface IContentRepository {
     findByUID(uid: string): Promise<ContentResponseDTO | null>;
     findByType(type: ContentType): Promise<ContentResponseDTO[]>;
-    find(platform: number): Promise<ContentResponseDTO[]>;
+    find(platformUID: string): Promise<ContentResponseDTO[]>;
     register(user: ContentProps): Promise<CreateContentResponseDTO | null>;
     update(user: ContentProps): Promise<UpdateContentResponseDTO | null>;
     delete(uid: string): Promise<boolean>;

@@ -4,7 +4,7 @@ export type ContentResponseDTO = Pick<
     ContentEntity,
     | "uid"
     | "description"
-    | "platform"
+    | "platformUID"
     | "type"
     | "userUID"
     | "value"

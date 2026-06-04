@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { IContentRepository } from "../repositories/content.repository";
+import { IContentRepository } from "../repositories/content-repository.interface";
 import { CreateContentDTO } from "../dtos/create-content.dto";
 import { UpdateContentDTO } from "../dtos/update-content.dto";
 import { ContentEntity } from "../entities/content.entity";
@@ -44,8 +44,8 @@ export class ContentUseCase {
         return content;
     }
 
-    async find(platform: number) {
-        const content = await this.contentRepository.find(platform);
+    async find(platformUID: string) {
+        const content = await this.contentRepository.find(platformUID);
 
         if (!content) {
             throw new Error("Contents not found!");

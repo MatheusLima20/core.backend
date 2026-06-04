@@ -10,22 +10,22 @@ export class InMemoryOrderRepository implements IOrderRepository {
         {
             uid: "1",
             description: "buy to main room.",
-            platform: 1,
+            platformUID: "1",
             createdAt: new Date("2026-05-07"),
             updatedAt: new Date("2026-05-07"),
         },
         {
             uid: "2",
             description: "buy to meeting room.",
-            platform: 1,
+            platformUID: "1",
             createdAt: new Date("2026-05-07"),
             updatedAt: new Date("2026-05-07"),
         },
     ];
 
-    async find(platform: number): Promise<OrderResponseDTO[]> {
+    async find(platformUID: string): Promise<OrderResponseDTO[]> {
 
-        const orders = this.orders.filter(order => order.platform === platform);
+        const orders = this.orders.filter(order => order.platformUID === platformUID);
 
         return OrderMapper.toOrderUIDResponseList(orders);
     }

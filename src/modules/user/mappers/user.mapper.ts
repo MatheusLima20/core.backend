@@ -12,7 +12,7 @@ export const UserMapper = {
         return {
             uid: user.uid,
             name: user.name,
-            platform: user.platform,
+            platformUID: user.platformUID,
             email: user.email,
             gender: user.gender,
             docNumberBusiness: user.docNumberBusiness,

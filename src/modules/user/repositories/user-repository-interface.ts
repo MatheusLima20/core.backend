@@ -8,7 +8,7 @@ export interface IUserRepository {
     findByUID(uid: string): Promise<UserResponseDTO | null>;
     findByEmail(email: string): Promise<UserResponseDTO | null>;
     findByType(type: UserType): Promise<UserResponseDTO[]>;
-    find(platform: number): Promise<UserResponseDTO[]>;
+    find(platform: string): Promise<UserResponseDTO[]>;
     register(user: UserProps): Promise<CreateUserResponseDTO | null>;
     update(user: UserProps): Promise<UpdateUserResponseDTO | null>;
     delete(uid: string): Promise<boolean>;

@@ -2,11 +2,11 @@ import { ContentResponseDTO } from "../dtos/content-response.dto";
 import { ContentEntity } from "../entities/content.entity";
 
 export const ContentMapper = {
-    toOrderUIDResponse: (content: ContentEntity): ContentResponseDTO => {
+    toPlatformUIDResponse: (content: ContentEntity): ContentResponseDTO => {
         return {
             uid: content.uid,
             description: content.description,
-            platform: content.platform,
+            platformUID: content.platformUID,
             type: content.type,
             userUID: content.userUID,
             amount: content.amount,
@@ -17,9 +17,9 @@ export const ContentMapper = {
         };
     },
 
-    toOrderUIDResponseList: (
+    toPlatformUIDResponseList: (
         contents: ContentEntity[],
     ): ContentResponseDTO[] => {
-        return contents.map(ContentMapper.toOrderUIDResponse);
+        return contents.map(ContentMapper.toPlatformUIDResponse);
     },
 };

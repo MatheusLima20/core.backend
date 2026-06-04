@@ -10,7 +10,7 @@ export interface UserProps {
     gender: Gender;
     email: string;
     password: string;
-    platform: number;
+    platformUID: string;
     createdAt: Date;
     updatedAt: Date;
 }

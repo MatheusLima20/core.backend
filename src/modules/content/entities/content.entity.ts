@@ -4,7 +4,7 @@ import { ContentProps } from "./content.props";
 export class ContentEntity implements ContentProps {
     uid!: string;
     userUID!: string | null;
-    platform!: number;
+    platformUID!: string;
     photo!: string | null;
     description!: string | null;
     amount!: number | null;

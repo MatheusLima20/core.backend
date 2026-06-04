@@ -3,7 +3,7 @@ import { ContentEntity } from "../entities/content.entity";
 export type CreateContentDTO = Pick<
     ContentEntity,
     | "description"
-    | "platform"
+    | "platformUID"
     | "value"
     | "amount"
     | "photo"

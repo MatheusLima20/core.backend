@@ -34,8 +34,8 @@ export class InMemoryUserRepository implements IUserRepository {
 
         return UserMapper.toUserFindResponseList(users);
     }
-    async find(platform: number): Promise<UserResponseDTO[]> {
-        const users = this.users.filter((users) => users.platform === platform);
+    async find(platform: string): Promise<UserResponseDTO[]> {
+        const users = this.users.filter((users) => users.platformUID === platform);
 
         return UserMapper.toUserFindResponseList(users);
     }

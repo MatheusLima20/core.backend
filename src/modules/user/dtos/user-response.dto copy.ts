@@ -7,7 +7,7 @@ export type UserResponseDTO = Pick<
     | "email"
     | "userType"
     | "gender"
-    | "platform"
+    | "platformUID"
     | "docNumberBusiness"
     | "docNumberPerson"
     | "createdAt"
