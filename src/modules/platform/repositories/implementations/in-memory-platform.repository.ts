@@ -9,7 +9,13 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
     platforms: PlatformEntity[] = [
         {
             uid: "1",
-            name: "Fitness up",
+            name: "Fitness up.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        },
+        {
+            uid: "2",
+            name: "Ultimate Body Builder.",
             createdAt: new Date(),
             updatedAt: new Date(),
         },
@@ -21,6 +27,10 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
 
     async findByUID(uid: string): Promise<PlatformResponseDTO | null> {
         return this.platforms.find((platform) => platform.uid === uid) || null;
+    }
+
+    async findByName(name: string): Promise<PlatformResponseDTO | null> {
+        return this.platforms.find((platform) => platform.name === name) || null;
     }
 
     async register(

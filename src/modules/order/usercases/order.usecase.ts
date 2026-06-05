@@ -82,7 +82,7 @@ export class OrderUseCase {
         const isDeleted = await this.orderRepository.delete(uid);
 
         if (!isDeleted) {
-            throw new Error("Orders not deleted!");
+            throw new Error("Order not deleted!");
         }
 
         return isDeleted;

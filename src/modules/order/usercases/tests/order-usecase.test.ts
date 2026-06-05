@@ -41,7 +41,7 @@ describe("OrderUsecase", () => {
     test("Should find an order by id", async () => {
         const resultCreated = await useCase.create(order);
 
-        const result = await useCase.findByUID(resultCreated?.uid);
+        const result = await useCase.findByUID(resultCreated.uid);
 
         expect(result.uid).toBe(resultCreated.uid);
     });

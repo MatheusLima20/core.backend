@@ -5,6 +5,7 @@ import { PlatformProps } from "../entities/platform.props";
 
 export interface IPlatformRepository {
     findByUID(uid: string): Promise<PlatformResponseDTO | null>;
+    findByName(name: string): Promise<PlatformResponseDTO | null>;
     find(): Promise<PlatformResponseDTO[]>;
     register(user: PlatformProps): Promise<CreatePlatformResponseDTO | null>;
     update(user: PlatformProps): Promise<UpdatePlatformResponseDTO | null>;
