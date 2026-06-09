@@ -9,6 +9,8 @@ export class ProductUsecase {
     constructor(private productRepository: IProductRepository) {}
 
     async create(data: CreateProductDTO) {
+        await this.validateProductAlreadyExists(data.name, data.platformUID);
+
         const product = new ProductEntity({
             uid: randomUUID(),
             createdAt: new Date(),
@@ -64,6 +66,12 @@ export class ProductUsecase {
     async update(data: UpdateProductDTO) {
         const oldProduct = await this.findByUID(data.uid);
 
+        await this.validateProductAlreadyExists(
+            data.name,
+            oldProduct.platformUID,
+            data.uid,
+        );
+
         const mergedProduct = new ProductEntity({
             ...oldProduct,
             ...data,
@@ -89,5 +97,20 @@ export class ProductUsecase {
         }
 
         return isDeleted;
+    }
+
+    private async validateProductAlreadyExists(
+        name: string,
+        platformUID: string,
+        uid?: string,
+    ) {
+        const product = await this.productRepository.findByName(
+            name,
+            platformUID,
+        );
+
+        if (product && product.uid !== uid) {
+            throw new Error("Product already exists!");
+        }
     }
 }

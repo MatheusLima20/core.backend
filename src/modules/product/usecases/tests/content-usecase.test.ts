@@ -31,44 +31,66 @@ describe("ProductUsecase", () => {
 
     let repository: InMemoryProductRepository;
 
-    let useCase: ProductUsecase;
+    let usecase: ProductUsecase;
 
     beforeEach(() => {
         repository = new InMemoryProductRepository();
 
-        useCase = new ProductUsecase(repository);
+        usecase = new ProductUsecase(repository);
     });
 
     test("Should register a product", async () => {
-        const result = await useCase.create(product);
-        const result2 = await useCase.create(product2);
+        const result = await usecase.create(product);
+        const result2 = await usecase.create(product2);
 
         expect(product.description).toBe(result.description);
         expect(product2.description).toBe(result2.description);
     });
 
+    test("Should not register duplicated product", async () => {
+        await usecase.create(product);
+
+        await expect(usecase.create(product)).rejects.toThrow();
+    });
+
     test("Should update a product", async () => {
-        const result = await useCase.create(product);
-        await useCase.create(product2);
+        const result = await usecase.create(product);
+        await usecase.create(product2);
 
         const mergedProduct: UpdateProductDTO = {
-            ...product2,
+            ...product,
             uid: result.uid,
-            description: "Creatine Sale. Fifty percent off.",
+            description: "Why Sale. Fifty percent off.",
             price: 7.5,
             updatedBy: "1",
         };
 
-        const resultUpdated = await useCase.update(mergedProduct);
+        const resultUpdated = await usecase.update(mergedProduct);
 
         expect(mergedProduct.price).toBe(resultUpdated.price);
         expect(mergedProduct.uid).toBe(resultUpdated.uid);
     });
 
+    test("Should not update duplicated name product", async () => {
+        const result = await usecase.create(product);
+        await usecase.create(product2);
+
+        const mergedProduct: UpdateProductDTO = {
+            ...product,
+            uid: result.uid,
+            name: product2.name,
+            description: "Why Sale. Fifty percent off.",
+            price: 7.5,
+            updatedBy: "1",
+        };
+
+        await expect(usecase.update(mergedProduct)).rejects.toThrow();
+    });
+
     test("Should find a product by uid", async () => {
-        await useCase.create(product);
-        await useCase.create(product2);
-        const createResult = await useCase.create(
+        await usecase.create(product);
+        await usecase.create(product2);
+        const createResult = await usecase.create(
             makeProduct({
                 name: "Halters 10KG",
                 description: "Buy a gym equipment to training arms.",
@@ -77,15 +99,15 @@ describe("ProductUsecase", () => {
             }),
         );
 
-        const resultFind = await useCase.findByUID(createResult.uid);
+        const resultFind = await usecase.findByUID(createResult.uid);
 
         expect(createResult.uid).toBe(resultFind.uid);
     });
 
     test("Should find all platform products", async () => {
-        await useCase.create(product);
-        await useCase.create(product2);
-        await useCase.create(
+        await usecase.create(product);
+        await usecase.create(product2);
+        await usecase.create(
             makeProduct({
                 name: "Halters",
                 description: "Buy a gym equipment to training arms.",
@@ -94,8 +116,8 @@ describe("ProductUsecase", () => {
             }),
         );
 
-        const result = await useCase.find("1");
-        const result2 = await useCase.find("2");
+        const result = await usecase.find("1");
+        const result2 = await usecase.find("2");
 
         expect(result.every((product) => product.platformUID === "1")).toBe(
             true,
@@ -109,9 +131,9 @@ describe("ProductUsecase", () => {
     });
 
     test("Should find product by name", async () => {
-        await useCase.create(product);
-        await useCase.create(product2);
-        const createResult = await useCase.create(
+        await usecase.create(product);
+        await usecase.create(product2);
+        const createResult = await usecase.create(
             makeProduct({
                 name: "Halter",
                 description: "Buy a gym equipment to training arms.",
@@ -120,7 +142,7 @@ describe("ProductUsecase", () => {
             }),
         );
 
-        const result = await useCase.findByName(
+        const result = await usecase.findByName(
             createResult.name,
             createResult.platformUID,
         );
@@ -129,9 +151,9 @@ describe("ProductUsecase", () => {
     });
 
     test("Should search all products by name and description", async () => {
-        await useCase.create(product);
-        await useCase.create(product2);
-        const createResult = await useCase.create(
+        await usecase.create(product);
+        await usecase.create(product2);
+        const createResult = await usecase.create(
             makeProduct({
                 name: "Halter 2KG",
                 description: "Buy a gym equipment to training arms.",
@@ -140,7 +162,7 @@ describe("ProductUsecase", () => {
             }),
         );
 
-        await useCase.create(
+        await usecase.create(
             makeProduct({
                 name: "Halter 5KG",
                 description: "Buy a gym equipment to training arms.",
@@ -149,7 +171,7 @@ describe("ProductUsecase", () => {
             }),
         );
 
-        const result = await useCase.search({
+        const result = await usecase.search({
             name: "Halter",
             platformUID: createResult.platformUID,
         });
@@ -163,17 +185,17 @@ describe("ProductUsecase", () => {
         expect(result).toHaveLength(2);
     });
 
-    test("Should to delete a content", async () => {
-        const result = await useCase.create(product);
-        await useCase.create(product2);
+    test("Should to delete a product", async () => {
+        const result = await usecase.create(product);
+        await usecase.create(product2);
 
-        const contentsBefore = await useCase.find(product.platformUID);
+        const productBefore = await usecase.find(product.platformUID);
 
-        const isDeletedContent = await useCase.delete(result.uid);
+        const isDeletedProduct = await usecase.delete(result.uid);
 
-        const contentsAfter = await useCase.find(product.platformUID);
+        const productAfter = await usecase.find(product.platformUID);
 
-        expect(isDeletedContent).toBe(true);
-        expect(contentsBefore.length).not.toEqual(contentsAfter.length);
+        expect(isDeletedProduct).toBe(true);
+        expect(productBefore.length).not.toEqual(productAfter.length);
     });
 });
