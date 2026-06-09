@@ -3,7 +3,7 @@
 export interface ItemProps {
     uid: string;
     orderUID: string;
-    platform: number;
+    platformUID: string;
     name: string;
     description: string;
     isForSale: boolean;

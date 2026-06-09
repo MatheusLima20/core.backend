@@ -11,7 +11,7 @@ export const ItemMapper = {
             uid: item.uid,
             name: item.name,
             orderUID: item.orderUID,
-            platform: item.platform,
+            platformUID: item.platformUID,
             description: item.description,
             value: item.value,
             createdAt: item.createdAt,

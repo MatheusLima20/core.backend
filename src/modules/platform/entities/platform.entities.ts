@@ -3,6 +3,7 @@ import { PlatformProps } from "./platform.props";
 export class PlatformEntity implements PlatformProps {
     uid!: string;
     name!: string;
+    isActivated!: boolean;
     createdAt!: Date;
     updatedAt!: Date;
 

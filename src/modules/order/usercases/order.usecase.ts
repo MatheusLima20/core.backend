@@ -4,7 +4,7 @@ import { CreateOrderDTO } from "../dtos/create-order.dto";
 import { OrderEntity } from "../entities/order.entity";
 import { UpdateOrderDTO } from "../dtos/update-order.dto";
 
-export class OrderUseCase {
+export class OrderUsecase {
     constructor(private orderRepository: IOrderRepository) {}
 
     async create(data: CreateOrderDTO) {

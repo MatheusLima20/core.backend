@@ -10,7 +10,7 @@ describe("ContentUsecase", () => {
         amount: 20,
         description: "Why Protein Sale.",
         photo: null,
-        type: ContentType.SALE,
+        type: ContentType.FILE,
         userUID: null,
         value: 10,
     };
@@ -70,7 +70,7 @@ describe("ContentUsecase", () => {
         const expense = await useCase.create(
             makeContent({
                 description: "Buy a gym equipment to training arms.",
-                type: ContentType.EXPENSE,
+                type: ContentType.FILE,
                 value: 200,
                 amount: 2,
             }),
@@ -87,7 +87,7 @@ describe("ContentUsecase", () => {
         await useCase.create(
             makeContent({
                 description: "Buy a gym equipment to training arms.",
-                type: ContentType.EXPENSE,
+                type: ContentType.FILE,
                 value: 200,
                 amount: 2,
                 platformUID: "2",
@@ -110,24 +110,24 @@ describe("ContentUsecase", () => {
         await useCase.create(
             makeContent({
                 description: "Buy a gym equipment to training arms.",
-                type: ContentType.EXPENSE,
+                type: ContentType.PROFILE,
                 value: 200,
                 amount: 2,
                 platformUID: "2",
             }),
         );
 
-        const result = await useCase.findByType(ContentType.EXPENSE);
-        const result2 = await useCase.findByType(ContentType.SALE);
+        const result = await useCase.findByType(ContentType.PROFILE);
+        const result2 = await useCase.findByType(ContentType.FILE);
 
         expect(result).toHaveLength(1);
         expect(result2).toHaveLength(3);
 
         expect(
-            result.every((content) => content.type === ContentType.EXPENSE),
+            result.every((content) => content.type === ContentType.PROFILE),
         ).toBe(true);
         expect(
-            result2.every((content) => content.type === ContentType.SALE),
+            result2.every((content) => content.type === ContentType.FILE),
         ).toBe(true);
     });
 

@@ -1,4 +1,4 @@
-import { ItemUseCase } from "../item.usecase";
+import { ItemUsecase } from "../item.usecase";
 import { CreateItemDTO } from "../../dtos/create-item.dto";
 import { InMemoryItemRepository } from "../../repositories/implementations/in-memory-item.repository";
 import { UpdateItemDTO } from "../../dtos/update-item.dto";
@@ -6,7 +6,7 @@ import { InMemoryOrderRepository } from "@/modules/order/repositories/implementa
 
 const item: CreateItemDTO = {
     orderUID: "1",
-    platform: 1,
+    platformUID: "1",
     name: "Seat",
     isForSale: false,
     description: "Secretary Seat",
@@ -21,7 +21,7 @@ const item2: CreateItemDTO = {
 
 const makeItem = (data?: Partial<CreateItemDTO>): CreateItemDTO => ({
     orderUID: "1",
-    platform: 1,
+    platformUID: "1",
     name: "Seat",
     isForSale: false,
     description: "Secretary Seat",
@@ -35,49 +35,49 @@ describe("ItemUsecase", () => {
 
     let orderRepository: InMemoryOrderRepository;
 
-    let useCase: ItemUseCase;
+    let usecase: ItemUsecase;
 
     beforeEach(() => {
         itemRepository = new InMemoryItemRepository();
         orderRepository = new InMemoryOrderRepository();
 
-        useCase = new ItemUseCase(itemRepository, orderRepository);
+        usecase = new ItemUsecase(itemRepository, orderRepository);
     });
 
     test("Should register an item", async () => {
-        const result = await useCase.create(item);
-        const result1 = await useCase.create(item2);
+        const result = await usecase.create(item);
+        const result1 = await usecase.create(item2);
 
         expect(result.name).toBe(item.name);
         expect(result1.name).toBe(item2.name);
     });
 
-    test("Should find an item by id", async () => {
-        const resultCreated = await useCase.create(item);
+    test("Should not create duplicated item", async () => {
+        await usecase.create({
+            ...item,
+            description: "Set.",
+            platformUID: "1",
+        });
 
-        const result = await useCase.findByUID(resultCreated?.uid);
-
-        expect(result.uid).toBe(resultCreated.uid);
-    });
-
-    test("Should find an item by name item", async () => {
-        await useCase.create(item);
-
-        const result = await useCase.findByName("Seat");
-
-        expect(result.name).toBe("Seat");
+        await expect(
+            usecase.create({
+                ...item,
+                description: "Seat.",
+                platformUID: "1",
+            }),
+        ).rejects.toThrow();
     });
 
     test("Should update an existing item", async () => {
-        await useCase.create(
+        await usecase.create(
             makeItem({
                 name: "Fridge",
                 description: "Fridge to the main room.",
                 orderUID: "1",
             }),
         );
-        await useCase.create(item2);
-        const resultItem = await useCase.create(item);
+        await usecase.create(item2);
+        const resultItem = await usecase.create(item);
 
         const newItem: UpdateItemDTO = {
             name: "Table",
@@ -89,16 +89,48 @@ describe("ItemUsecase", () => {
             uid: resultItem.uid,
         };
 
-        const itemUpdated = await useCase.update(newItem);
+        const itemUpdated = await usecase.update(newItem);
 
         expect(itemUpdated.name).toBe("Table");
     });
 
-    test("Should return same order existing items", async () => {
-        await useCase.create(item2);
-        await useCase.create(item);
+    test("Should not update duplicated item", async () => {
+        await usecase.create({
+            ...item,
+            description: "Need Tables.",
+            platformUID: "1",
+        });
 
-        await useCase.create(
+        await expect(
+            usecase.create({
+                ...item,
+                description: "Need Tables.",
+                platformUID: "1",
+            }),
+        ).rejects.toThrow();
+    });
+
+    test("Should find an item by id", async () => {
+        const resultCreated = await usecase.create(item);
+
+        const result = await usecase.findByUID(resultCreated?.uid);
+
+        expect(result.uid).toBe(resultCreated.uid);
+    });
+
+    test("Should find an item by name item", async () => {
+        await usecase.create(item);
+
+        const result = await usecase.findByName("Seat");
+
+        expect(result.name).toBe("Seat");
+    });
+
+    test("Should return same order existing items", async () => {
+        await usecase.create(item2);
+        await usecase.create(item);
+
+        await usecase.create(
             makeItem({
                 name: "Fridge",
                 description: "Fridge to the main room.",
@@ -106,7 +138,7 @@ describe("ItemUsecase", () => {
             }),
         );
 
-        const items = await useCase.findItemByOrderUID(item.orderUID);
+        const items = await usecase.findItemByOrderUID(item.orderUID);
 
         expect(items).toHaveLength(2);
 
@@ -116,10 +148,10 @@ describe("ItemUsecase", () => {
     });
 
     test("Should to delete an item", async () => {
-        const seat = await useCase.create(item);
-        await useCase.create(item2);
+        const seat = await usecase.create(item);
+        await usecase.create(item2);
 
-        const fridge = await useCase.create(
+        const fridge = await usecase.create(
             makeItem({
                 name: "Fridge",
                 description: "Fridge to the main room.",
@@ -127,8 +159,8 @@ describe("ItemUsecase", () => {
             }),
         );
 
-        const isDeletedFridge = await useCase.delete(fridge.uid);
-        const isDeletedSeat = await useCase.delete(seat.uid);
+        const isDeletedFridge = await usecase.delete(fridge.uid);
+        const isDeletedSeat = await usecase.delete(seat.uid);
 
         expect(isDeletedSeat).toBe(true);
         expect(isDeletedFridge).toBe(true);

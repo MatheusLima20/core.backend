@@ -16,7 +16,7 @@ export class InMemoryContentRepository implements IContentRepository {
             updatedAt: new Date(),
             description: "Why Sale.",
             photo: null,
-            type: ContentType.SALE,
+            type: ContentType.FILE,
             userUID: null,
             value: 20,
         }

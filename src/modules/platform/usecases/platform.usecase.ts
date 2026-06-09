@@ -12,6 +12,7 @@ export class PlatformUsecase {
 
         const platform = new PlatformEntity({
             uid: randomUUID(),
+            isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
             ...data,

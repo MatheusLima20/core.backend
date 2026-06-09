@@ -47,12 +47,28 @@ describe("PlatformUsecase", () => {
 
         const updatePlatform: UpdatePlatformDTO = {
             uid: result.uid,
+            isActivated: true,
             name: "Beautiful Calf.",
         };
 
         const updatedPlatform = await usecase.update(updatePlatform);
 
         expect(updatePlatform.name).toBe(updatedPlatform.name);
+    });
+
+    test("Should not updated platform duplicate name", async () => {
+        await usecase.create({
+            name: "Beautiful Lag",
+        });
+        const result = await usecase.create(platform2);
+
+        await expect(
+            usecase.update({
+                uid: result.uid,
+                isActivated: true,
+                name: "Beautiful Lag",
+            }),
+        ).rejects.toThrow();
     });
 
     test("Should find a platform by uid ", async () => {

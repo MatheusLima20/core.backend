@@ -5,7 +5,7 @@ import { IItemRepository } from "../repositories/item-repository.interface";
 import { UpdateItemDTO } from "../dtos/update-item.dto";
 import { IOrderRepository } from "@/modules/order/repositories/order-repository.interface";
 
-export class ItemUseCase {
+export class ItemUsecase {
     constructor(
         private itemRepository: IItemRepository,
         private orderRepository: IOrderRepository,

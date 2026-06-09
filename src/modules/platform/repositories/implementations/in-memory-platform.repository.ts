@@ -10,12 +10,14 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
         {
             uid: "1",
             name: "Fitness up.",
+            isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
         },
         {
             uid: "2",
             name: "Ultimate Body Builder.",
+            isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
         },
@@ -30,7 +32,9 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
     }
 
     async findByName(name: string): Promise<PlatformResponseDTO | null> {
-        return this.platforms.find((platform) => platform.name === name) || null;
+        return (
+            this.platforms.find((platform) => platform.name === name) || null
+        );
     }
 
     async register(
