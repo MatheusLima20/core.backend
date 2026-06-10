@@ -10,7 +10,7 @@ describe("ProductUsecase", () => {
         description: "Supplementation Food.",
         isForSale: true,
         isOnSale: false,
-        price: 10,
+        currentPrice: 10,
         amount: 20,
         createdBy: "1",
     };
@@ -18,7 +18,7 @@ describe("ProductUsecase", () => {
     const product2: CreateProductDTO = {
         ...product,
         name: "Creatine",
-        price: 15,
+        currentPrice: 15,
         amount: 5,
     };
 
@@ -61,13 +61,13 @@ describe("ProductUsecase", () => {
             ...product,
             uid: result.uid,
             description: "Why Sale. Fifty percent off.",
-            price: 7.5,
+            currentPrice: 7.5,
             updatedBy: "1",
         };
 
         const resultUpdated = await usecase.update(mergedProduct);
 
-        expect(mergedProduct.price).toBe(resultUpdated.price);
+        expect(mergedProduct.currentPrice).toBe(resultUpdated.currentPrice);
         expect(mergedProduct.uid).toBe(resultUpdated.uid);
     });
 
@@ -80,7 +80,7 @@ describe("ProductUsecase", () => {
             uid: result.uid,
             name: product2.name,
             description: "Why Sale. Fifty percent off.",
-            price: 7.5,
+            currentPrice: 7.5,
             updatedBy: "1",
         };
 
@@ -94,7 +94,7 @@ describe("ProductUsecase", () => {
             makeProduct({
                 name: "Halters 10KG",
                 description: "Buy a gym equipment to training arms.",
-                price: 20,
+                currentPrice: 20,
                 amount: 2,
             }),
         );
@@ -102,6 +102,21 @@ describe("ProductUsecase", () => {
         const resultFind = await usecase.findByUID(createResult.uid);
 
         expect(createResult.uid).toBe(resultFind.uid);
+    });
+
+    test("Should return throw when product uid does not exist", async () => {
+        await usecase.create(product);
+        await usecase.create(product2);
+        const createResult = await usecase.create(
+            makeProduct({
+                name: "Halters 10KG",
+                description: "Buy a gym equipment to training arms.",
+                currentPrice: 20,
+                amount: 2,
+            }),
+        );
+
+        await expect(usecase.findByUID("777")).rejects.toThrow();
     });
 
     test("Should find all platform products", async () => {

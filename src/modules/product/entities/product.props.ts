@@ -8,7 +8,7 @@ export interface ProductProps {
     isOnSale: boolean;
     platformUID: string,
     amount: number;
-    price: number;
+    currentPrice: number;
     createdBy: string;
     updatedBy: string | null;
     createdAt: Date;

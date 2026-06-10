@@ -1,44 +1,39 @@
 import { ItemUsecase } from "../item.usecase";
-import { CreateItemDTO } from "../../dtos/create-item.dto";
-import { InMemoryItemRepository } from "../../repositories/implementations/in-memory-item.repository";
-import { UpdateItemDTO } from "../../dtos/update-item.dto";
+import { CreateOrderItemDTO } from "../../dtos/create-order-item.dto";
+import { InMemoryOrderItemRepository } from "../../repositories/implementations/in-memory-item.repository";
+import { UpdateOrderItemDTO } from "../../dtos/update-order-item.dto";
 import { InMemoryOrderRepository } from "@/modules/order/repositories/implementations/in-memory-order.repository";
 
-const item: CreateItemDTO = {
+const item: CreateOrderItemDTO = {
     orderUID: "1",
     platformUID: "1",
-    name: "Seat",
-    isForSale: false,
-    description: "Secretary Seat",
-    value: 50,
+    unitPrice: 50,
+    productUID: "1",
     amount: 15,
 };
 
-const item2: CreateItemDTO = {
+const item2: CreateOrderItemDTO = {
     ...item,
-    name: "Seat1",
 };
 
-const makeItem = (data?: Partial<CreateItemDTO>): CreateItemDTO => ({
+const makeItem = (data?: Partial<CreateOrderItemDTO>): CreateOrderItemDTO => ({
+    productUID: "1",
     orderUID: "1",
     platformUID: "1",
-    name: "Seat",
-    isForSale: false,
-    description: "Secretary Seat",
     amount: 10,
-    value: 50,
+    unitPrice: 50,
     ...data,
 });
 
 describe("ItemUsecase", () => {
-    let itemRepository: InMemoryItemRepository;
+    let itemRepository: InMemoryOrderItemRepository;
 
     let orderRepository: InMemoryOrderRepository;
 
     let usecase: ItemUsecase;
 
     beforeEach(() => {
-        itemRepository = new InMemoryItemRepository();
+        itemRepository = new InMemoryOrderItemRepository();
         orderRepository = new InMemoryOrderRepository();
 
         usecase = new ItemUsecase(itemRepository, orderRepository);
@@ -48,21 +43,19 @@ describe("ItemUsecase", () => {
         const result = await usecase.create(item);
         const result1 = await usecase.create(item2);
 
-        expect(result.name).toBe(item.name);
-        expect(result1.name).toBe(item2.name);
+        expect(result.productUID).toBe(item.productUID);
+        expect(result1.productUID).toBe(item2.productUID);
     });
 
     test("Should not create duplicated item", async () => {
         await usecase.create({
             ...item,
-            description: "Set.",
             platformUID: "1",
         });
 
         await expect(
             usecase.create({
                 ...item,
-                description: "Seat.",
                 platformUID: "1",
             }),
         ).rejects.toThrow();
@@ -71,19 +64,15 @@ describe("ItemUsecase", () => {
     test("Should update an existing item", async () => {
         await usecase.create(
             makeItem({
-                name: "Fridge",
-                description: "Fridge to the main room.",
                 orderUID: "1",
             }),
         );
         await usecase.create(item2);
         const resultItem = await usecase.create(item);
 
-        const newItem: UpdateItemDTO = {
-            name: "Table",
-            description: "Secretary Table",
-            isForSale: false,
-            value: 100,
+        const newItem: UpdateOrderItemDTO = {
+            productUID: "1",
+            unitPrice: 100,
             amount: 20,
             orderUID: resultItem.orderUID,
             uid: resultItem.uid,
@@ -91,20 +80,20 @@ describe("ItemUsecase", () => {
 
         const itemUpdated = await usecase.update(newItem);
 
-        expect(itemUpdated.name).toBe("Table");
+        expect(itemUpdated.productUID).toBe(newItem.productUID);
     });
 
     test("Should not update duplicated item", async () => {
         await usecase.create({
             ...item,
-            description: "Need Tables.",
+            productUID: "1",
             platformUID: "1",
         });
 
         await expect(
             usecase.create({
                 ...item,
-                description: "Need Tables.",
+                productUID: "1",
                 platformUID: "1",
             }),
         ).rejects.toThrow();
@@ -132,8 +121,6 @@ describe("ItemUsecase", () => {
 
         await usecase.create(
             makeItem({
-                name: "Fridge",
-                description: "Fridge to the main room.",
                 orderUID: "2",
             }),
         );
@@ -153,8 +140,6 @@ describe("ItemUsecase", () => {
 
         const fridge = await usecase.create(
             makeItem({
-                name: "Fridge",
-                description: "Fridge to the main room.",
                 orderUID: "2",
             }),
         );

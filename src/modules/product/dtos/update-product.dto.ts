@@ -1,25 +1,26 @@
-import { ProductEntity } from "../entities/product.entity";
+import { ProductProps } from "../entities/product.props";
+
 
 export type UpdateProductDTO = Pick<
-    ProductEntity,
+    ProductProps,
     | "uid"
     | "name"
     | "description"
     | "isForSale"
     | "isOnSale"
     | "amount"
-    | "price"
+    | "currentPrice"
     | "updatedBy"
 >;
 
 export type UpdateProductResponseDTO = Pick<
-    ProductEntity,
+    ProductProps,
     | "uid"
     | "name"
     | "description"
     | "isForSale"
     | "isOnSale"
-    | "price"
+    | "currentPrice"
     | "amount"
     | "updatedAt"
 >;

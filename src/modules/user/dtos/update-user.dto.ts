@@ -1,7 +1,8 @@
-import { UserEntity } from "../entities/user.entity";
+import { UserProps } from "../entities/user.props";
+
 
 export type UpdateUserDTO = Pick<
-    UserEntity,
+    UserProps,
     | "uid"
     | "name"
     | "email"
@@ -13,6 +14,6 @@ export type UpdateUserDTO = Pick<
 >;
 
 export type UpdateUserResponseDTO = Pick<
-    UserEntity,
+    UserProps,
     "uid" | "name" | "email" | "userType" | "updatedAt"
 >;

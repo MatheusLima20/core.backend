@@ -1,7 +1,8 @@
-import { UserEntity } from "../entities/user.entity";
+import { UserProps } from "../entities/user.props";
+
 
 export type UserResponseDTO = Pick<
-    UserEntity,
+    UserProps,
     | "uid"
     | "name"
     | "email"

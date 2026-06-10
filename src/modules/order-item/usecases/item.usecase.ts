@@ -1,22 +1,22 @@
 import { randomUUID } from "crypto";
-import { CreateItemDTO } from "../dtos/create-item.dto";
-import { ItemEntity } from "../entities/item.entity";
-import { IItemRepository } from "../repositories/item-repository.interface";
-import { UpdateItemDTO } from "../dtos/update-item.dto";
+import { CreateOrderItemDTO } from "../dtos/create-order-item.dto";
+import { OrderItemEntity } from "../entities/order-item.entity";
+import { IOrderItemRepository } from "../repositories/item-repository.interface";
+import { UpdateOrderItemDTO } from "../dtos/update-order-item.dto";
 import { IOrderRepository } from "@/modules/order/repositories/order-repository.interface";
 
 export class ItemUsecase {
     constructor(
-        private itemRepository: IItemRepository,
+        private itemRepository: IOrderItemRepository,
         private orderRepository: IOrderRepository,
     ) {}
 
-    async create(data: CreateItemDTO) {
+    async create(data: CreateOrderItemDTO) {
         await this.validateOrderExists(data.orderUID);
 
         await this.validateItemAlreadyExists(data.name);
 
-        const item = new ItemEntity({
+        const item = new OrderItemEntity({
             uid: randomUUID(),
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -62,7 +62,7 @@ export class ItemUsecase {
         return item;
     }
 
-    async update(data: UpdateItemDTO) {
+    async update(data: UpdateOrderItemDTO) {
 
         await this.validateOrderExists(data.orderUID);
 
@@ -70,7 +70,7 @@ export class ItemUsecase {
 
         const oldItem = await this.findByUID(data.uid);
 
-        const mergedItem = new ItemEntity({
+        const mergedItem = new OrderItemEntity({
             ...oldItem,
             ...data,
             updatedAt: new Date(),

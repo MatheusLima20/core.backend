@@ -1,11 +1,11 @@
-import { OrderEntity } from "../entities/order.entity";
+import { OrderProps } from "../entities/order.props";
 
 export type UpdateOrderDTO = Pick<
-    OrderEntity,
+    OrderProps,
     "uid" | "description"
 >;
 
 export type UpdateOrderResponseDTO = Pick<
-    OrderEntity,
+    OrderProps,
     "uid" | "description" | "updatedAt"
 >;

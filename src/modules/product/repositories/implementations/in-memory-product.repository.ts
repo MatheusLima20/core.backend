@@ -12,7 +12,7 @@ export class InMemoryProductRepository implements IProductRepository {
             name: "Table",
             platformUID: "1",
             description: "Why Sale.",
-            price: 20,
+            currentPrice: 20,
             amount: 10,
             isForSale: false,
             isOnSale: false,

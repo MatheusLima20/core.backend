@@ -1,6 +1,7 @@
-import { OrderEntity } from "../entities/order.entity";
+import { OrderProps } from "../entities/order.props";
+
 
 export type OrderResponseDTO = Pick<
-    OrderEntity,
+    OrderProps,
     "uid" | "description" | "platformUID" | "createdAt" | "updatedAt"
 >;

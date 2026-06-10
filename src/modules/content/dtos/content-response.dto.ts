@@ -1,7 +1,7 @@
-import { ContentEntity } from "../entities/content.entity";
+import { ContentProps } from "../entities/content.props";
 
 export type ContentResponseDTO = Pick<
-    ContentEntity,
+    ContentProps,
     | "uid"
     | "description"
     | "platformUID"

@@ -1,14 +1,12 @@
 
 
-export interface ItemProps {
+export interface OrderItemProps {
     uid: string;
+    productUID: string;
     orderUID: string;
     platformUID: string;
-    name: string;
-    description: string;
-    isForSale: boolean;
-    value: number;
     amount: number;
+    unitPrice: number;
     createdAt: Date;
     updatedAt:Date;
 }

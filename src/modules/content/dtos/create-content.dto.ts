@@ -1,7 +1,8 @@
-import { ContentEntity } from "../entities/content.entity";
+import { ContentProps } from "../entities/content.props";
+
 
 export type CreateContentDTO = Pick<
-    ContentEntity,
+    ContentProps,
     | "description"
     | "platformUID"
     | "value"
@@ -12,6 +13,6 @@ export type CreateContentDTO = Pick<
 >;
 
 export type CreateContentResponseDTO = Pick<
-    ContentEntity,
+    ContentProps,
     "uid" | "description" | "type" | "value" | "updatedAt"
 >;

@@ -1,8 +1,8 @@
-import { PlatformEntity } from "../entities/platform.entities";
+import { PlatformProps } from "../entities/platform.props";
 
-export type UpdatePlatformDTO = Pick<PlatformEntity, "uid" | "isActivated" | "name">;
+export type UpdatePlatformDTO = Pick<PlatformProps, "uid" | "isActivated" | "name">;
 
 export type UpdatePlatformResponseDTO = Pick<
-    PlatformEntity,
+    PlatformProps,
     "uid" | "name" | "updatedAt"
 >;

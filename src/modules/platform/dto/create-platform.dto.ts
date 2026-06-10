@@ -1,11 +1,11 @@
-import { PlatformEntity } from "../entities/platform.entities";
+import { PlatformProps } from "../entities/platform.props";
 
 export type CreatePlatformDTO = Pick<
-    PlatformEntity,
+    PlatformProps,
     | "name"
 >;
 
 export type CreatePlatformResponseDTO = Pick<
-    PlatformEntity,
+    PlatformProps,
     "uid" | "name"
 >;

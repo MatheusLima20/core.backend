@@ -1,12 +1,12 @@
 import { UserResponseDTO } from "../dtos/user-response.dto copy";
-import { UserEntity } from "../entities/user.entity";
+import { UserProps } from "../entities/user.props";
 
 
 
 export const UserMapper = {
 
     toUserFindResponse: (
-        user: UserEntity,
+        user: UserProps,
     ): UserResponseDTO => {
 
         return {
@@ -24,7 +24,7 @@ export const UserMapper = {
     },
 
     toUserFindResponseList: (
-        users: UserEntity[],
+        users: UserProps[],
     ): UserResponseDTO[] => {
 
         return users.map(

@@ -1,14 +1,15 @@
-import { ProductEntity } from "../entities/product.entity";
+import { ProductProps } from "../entities/product.props";
+
 
 export type ProductResponseDTO = Pick<
-    ProductEntity,
+    ProductProps,
     | "uid"
     | "name"
     | "platformUID"
     | "description"
     | "isForSale"
     | "isOnSale"
-    | "price"
+    | "currentPrice"
     | "amount"
     | "createdBy"
     | "updatedBy"

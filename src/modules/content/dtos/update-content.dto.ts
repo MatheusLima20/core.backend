@@ -1,15 +1,11 @@
-import { ContentEntity } from "../entities/content.entity";
-
+import { ContentProps } from "../entities/content.props";
 
 export type UpdateContentDTO = Pick<
-    ContentEntity,
-    | "uid"
-    | "description"
-    | "value"
-    | "amount"
+    ContentProps,
+    "uid" | "description" | "value" | "amount"
 >;
 
 export type UpdateContentResponseDTO = Pick<
-    ContentEntity,
+    ContentProps,
     "uid" | "description" | "photo" | "amount" | "value" | "updatedAt"
 >;

@@ -1,5 +1,5 @@
-import { OrderEntity } from "../entities/order.entity";
+import { OrderProps } from "../entities/order.props";
 
-export type CreateOrderDTO = Pick<OrderEntity, "description" | "platformUID">;
+export type CreateOrderDTO = Pick<OrderProps, "description" | "platformUID">;
 
-export type CreateOrderResponseDTO = Pick<OrderEntity, "uid" | "description">;
+export type CreateOrderResponseDTO = Pick<OrderProps, "uid" | "description">;

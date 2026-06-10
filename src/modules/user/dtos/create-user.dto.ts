@@ -1,7 +1,7 @@
-import { UserEntity } from "../entities/user.entity";
+import { UserProps } from "../entities/user.props";
 
 export type CreateUserDTO = Pick<
-    UserEntity,
+    UserProps,
     | "name"
     | "email"
     | "password"
@@ -13,6 +13,6 @@ export type CreateUserDTO = Pick<
 >;
 
 export type CreateUserResponseDTO = Pick<
-    UserEntity,
+    UserProps,
     "uid" | "name" | "email" | "userType"
 >;

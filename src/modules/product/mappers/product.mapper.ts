@@ -1,9 +1,9 @@
-import { ProductResponseDTO } from "../dtos/product-response.dto";
-import { ProductEntity } from "../entities/product.entity";
+import { ProductResponseDTO } from "../dtos/product-response.dto";;
+import { ProductProps } from "../entities/product.props";
 
 
 export const ProductMapper = {
-    toPlatformUIDResponse: (product: ProductEntity): ProductResponseDTO => {
+    toPlatformUIDResponse: (product: ProductProps): ProductResponseDTO => {
         return {
             uid: product.uid,
             name: product.name,
@@ -11,7 +11,7 @@ export const ProductMapper = {
             isForSale: product.isForSale,
             isOnSale: product.isOnSale,
             platformUID: product.platformUID,
-            price: product.price,
+            currentPrice: product.currentPrice,
             amount: product.amount,
             createdBy: product.createdBy,
             updatedBy: product.updatedBy,
@@ -21,7 +21,7 @@ export const ProductMapper = {
     },
 
     toPlatformUIDResponseList: (
-        products: ProductEntity[],
+        products: ProductProps[],
     ): ProductResponseDTO[] => {
         return products.map(ProductMapper.toPlatformUIDResponse);
     },
