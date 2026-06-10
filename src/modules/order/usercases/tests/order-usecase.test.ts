@@ -6,6 +6,7 @@ import { OrderUsecase } from "../order.usecase";
 const order: CreateOrderDTO = {
     platformUID: "1",
     description: "Need seats",
+    createdBy: "1",
 };
 
 const order2: CreateOrderDTO = {
@@ -16,6 +17,7 @@ const order2: CreateOrderDTO = {
 const makeOrder = (data?: Partial<CreateOrderDTO>): CreateOrderDTO => ({
     platformUID: "1",
     description: "Secretary Seat",
+    createdBy: "1",
     ...data,
 });
 
@@ -42,16 +44,18 @@ describe("OrderUsecase", () => {
         await usecase.create({
             description: "Need Tables.",
             platformUID: "1",
+            createdBy: "2",
         });
 
         await expect(
             usecase.create({
                 description: "Need Tables.",
                 platformUID: "1",
+                createdBy: "2",
             }),
         ).rejects.toThrow();
     });
-    
+
     test("Should update an existing order", async () => {
         await usecase.create(
             makeOrder({
@@ -63,6 +67,7 @@ describe("OrderUsecase", () => {
 
         const newOrder: UpdateOrderDTO = {
             description: "Need Secretary Table",
+            updatedBy: "3",
             uid: resultOrder.uid,
         };
 
@@ -75,17 +80,20 @@ describe("OrderUsecase", () => {
         const result = await usecase.create({
             description: "Need Tables.",
             platformUID: "1",
+            createdBy: "1",
         });
 
         await usecase.create({
             description: "Need Seats.",
             platformUID: "1",
+            createdBy: "2",
         });
 
         await expect(
             usecase.update({
                 uid: result.uid,
                 description: "Need Seats.",
+                updatedBy: "1",
             }),
         ).rejects.toThrow();
     });
@@ -114,7 +122,6 @@ describe("OrderUsecase", () => {
 
         expect(result.description).toBe("Seat For New Secretary");
     });
-
 
     test("Should return all existing orders", async () => {
         await usecase.create(order2);

@@ -2,15 +2,18 @@ import { CreateOrderResponseDTO } from "../../dtos/create-order.dto";
 import { OrderResponseDTO } from "../../dtos/order-response.dto";
 import { UpdateOrderResponseDTO } from "../../dtos/update-order.dto";
 import { OrderEntity } from "../../entities/order.entity";
+import { OrderProps } from "../../entities/order.props";
 import { OrderMapper } from "../../mappers/order.mapper";
 import { IOrderRepository } from "../order-repository.interface";
 
 export class InMemoryOrderRepository implements IOrderRepository {
-    private orders: OrderEntity[] = [
+    private orders: OrderProps[] = [
         {
             uid: "1",
             description: "buy to main room.",
             platformUID: "1",
+            createdBy: "2",
+            updatedBy: null,
             createdAt: new Date("2026-05-07"),
             updatedAt: new Date("2026-05-07"),
         },
@@ -18,6 +21,8 @@ export class InMemoryOrderRepository implements IOrderRepository {
             uid: "2",
             description: "buy to meeting room.",
             platformUID: "1",
+            createdBy: "2",
+            updatedBy: null,
             createdAt: new Date("2026-05-07"),
             updatedAt: new Date("2026-05-07"),
         },

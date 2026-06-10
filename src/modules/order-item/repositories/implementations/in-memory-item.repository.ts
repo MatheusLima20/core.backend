@@ -8,23 +8,36 @@ import { IOrderItemRepository } from "../item-repository.interface";
 export class InMemoryOrderItemRepository implements IOrderItemRepository {
     items: OrderItemEntity[] = [];
 
-    async findItemByOrderUID(orderUID: string): Promise<OrderItemResponseDTO[]> {
+    async findByOrderUID(orderUID: string): Promise<OrderItemResponseDTO[]> {
         const item = this.items.filter((item) => item.orderUID === orderUID);
 
         return OrderItemMapper.toItemUIDResponseList(item);
+    }
+
+    async findByProductAndOrderUID(
+        productUID: string,
+        orderUID: string,
+    ): Promise<OrderItemResponseDTO | null> {
+        const items = this.items.filter((item) => item.orderUID === orderUID);
+
+        return items.find((item) => item.productUID === productUID) || null;
     }
 
     async findByUID(uid: string): Promise<OrderItemResponseDTO | null> {
         return this.items.find((item) => item.uid === uid) || null;
     }
 
-    async register(item: OrderItemEntity): Promise<CreateOrderItemResponseDTO | null> {
+    async register(
+        item: OrderItemEntity,
+    ): Promise<CreateOrderItemResponseDTO | null> {
         this.items.push(item);
 
         return item;
     }
 
-    async update(item: OrderItemEntity): Promise<UpdateOrderItemResponseDTO | null> {
+    async update(
+        item: OrderItemEntity,
+    ): Promise<UpdateOrderItemResponseDTO | null> {
         const index = this.items.findIndex(
             (oldItem) => oldItem.uid === item.uid,
         );

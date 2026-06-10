@@ -12,6 +12,7 @@ export class OrderUsecase {
 
         const order = new OrderEntity({
             uid: randomUUID(),
+            updatedBy: null,
             createdAt: new Date(),
             updatedAt: new Date(),
             ...data,

@@ -14,6 +14,7 @@ const item: CreateOrderItemDTO = {
 
 const item2: CreateOrderItemDTO = {
     ...item,
+    productUID: "2",
 };
 
 const makeItem = (data?: Partial<CreateOrderItemDTO>): CreateOrderItemDTO => ({
@@ -65,6 +66,7 @@ describe("ItemUsecase", () => {
         await usecase.create(
             makeItem({
                 orderUID: "1",
+                productUID: "3",
             }),
         );
         await usecase.create(item2);
@@ -107,12 +109,15 @@ describe("ItemUsecase", () => {
         expect(result.uid).toBe(resultCreated.uid);
     });
 
-    test("Should find an item by name item", async () => {
-        await usecase.create(item);
+    test("Should find an item by name productUID and OrderUID", async () => {
+        const createdItem = await usecase.create(item);
 
-        const result = await usecase.findByName("Seat");
+        const result = await usecase.findByProductAndOrderUID(
+            createdItem.productUID,
+            createdItem.orderUID,
+        );
 
-        expect(result.name).toBe("Seat");
+        expect(result.productUID).toBe(createdItem.productUID);
     });
 
     test("Should return same order existing items", async () => {
@@ -122,10 +127,11 @@ describe("ItemUsecase", () => {
         await usecase.create(
             makeItem({
                 orderUID: "2",
+                productUID: "4",
             }),
         );
 
-        const items = await usecase.findItemByOrderUID(item.orderUID);
+        const items = await usecase.findByOrderUID(item.orderUID);
 
         expect(items).toHaveLength(2);
 
@@ -141,6 +147,7 @@ describe("ItemUsecase", () => {
         const fridge = await usecase.create(
             makeItem({
                 orderUID: "2",
+                productUID: "4",
             }),
         );
 

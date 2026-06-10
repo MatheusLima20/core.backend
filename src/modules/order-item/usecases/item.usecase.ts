@@ -14,7 +14,10 @@ export class ItemUsecase {
     async create(data: CreateOrderItemDTO) {
         await this.validateOrderExists(data.orderUID);
 
-        await this.validateItemAlreadyExists(data.name);
+        await this.validateItemAlreadyExistsInOrder(
+            data.productUID,
+            data.orderUID,
+        );
 
         const item = new OrderItemEntity({
             uid: randomUUID(),
@@ -42,18 +45,21 @@ export class ItemUsecase {
         return item;
     }
 
-    async findByName(name: string) {
-        const item = await this.itemRepository.findByName(name);
+    async findByOrderUID(uid: string) {
+        const item = await this.itemRepository.findByOrderUID(uid);
 
         if (!item) {
-            throw new Error("Item not found!");
+            throw new Error("Items not found!");
         }
 
         return item;
     }
 
-    async findItemByOrderUID(uid: string) {
-        const item = await this.itemRepository.findItemByOrderUID(uid);
+    async findByProductAndOrderUID(productUID: string, orderUID: string) {
+        const item = await this.itemRepository.findByProductAndOrderUID(
+            productUID,
+            orderUID,
+        );
 
         if (!item) {
             throw new Error("Items not found!");
@@ -63,10 +69,9 @@ export class ItemUsecase {
     }
 
     async update(data: UpdateOrderItemDTO) {
-
         await this.validateOrderExists(data.orderUID);
 
-        await this.validateItemAlreadyExists(data.name, data.uid);
+        await this.validateItemAlreadyExistsInOrder(data.orderUID, data.uid);
 
         const oldItem = await this.findByUID(data.uid);
 
@@ -97,17 +102,23 @@ export class ItemUsecase {
         return isDeleted;
     }
 
-    private async validateItemAlreadyExists(name: string, uid?: string) {
-        const item = await this.itemRepository.findByName(name);
+    private async validateItemAlreadyExistsInOrder(
+        orderUID: string,
+        uid: string,
+    ) {
+        const item = await this.itemRepository.findByProductAndOrderUID(
+            uid,
+            orderUID,
+        );
 
-        if (item && item.uid !== uid) {
+        if (item) {
             throw new Error("Item already exists!");
         }
     }
 
     private async validateOrderExists(uid: string) {
         const order = await this.orderRepository.findByUID(uid);
-        
+
         if (!order) {
             throw new Error("Order not found!");
         }

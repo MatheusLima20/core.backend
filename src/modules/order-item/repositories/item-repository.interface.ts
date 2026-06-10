@@ -5,7 +5,8 @@ import { UpdateOrderItemResponseDTO } from "../dtos/update-order-item.dto";
 import { OrderItemProps } from "../entities/order-item.props";
 
 export interface IOrderItemRepository {
-    findItemByOrderUID(orderUID: string): Promise<OrderItemResponseDTO[]>;
+    findByOrderUID(orderUID: string): Promise<OrderItemResponseDTO[]>;
+    findByProductAndOrderUID(productUID: string, orderUID: string): Promise<OrderItemResponseDTO | null>;
     findByUID(uid: string): Promise<OrderItemResponseDTO | null>;
     register(item: OrderItemProps): Promise<CreateOrderItemResponseDTO | null>;
     update(item: OrderItemProps): Promise<UpdateOrderItemResponseDTO | null>;
