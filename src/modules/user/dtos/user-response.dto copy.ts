@@ -5,6 +5,7 @@ export type UserResponseDTO = Pick<
     UserProps,
     | "uid"
     | "name"
+    | "password"
     | "email"
     | "userType"
     | "gender"

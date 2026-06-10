@@ -14,6 +14,7 @@ export const UserMapper = {
             name: user.name,
             platformUID: user.platformUID,
             email: user.email,
+            password: user.password,
             gender: user.gender,
             docNumberBusiness: user.docNumberBusiness,
             docNumberPerson: user.docNumberPerson,
