@@ -74,8 +74,17 @@ export class InMemoryProductRepository implements IProductRepository {
         return ProductMapper.toPlatformUIDResponseList(products);
     }
 
-    async findByUID(uid: string): Promise<ProductResponseDTO | null> {
-        return this.products.find((product) => product.uid === uid) || null;
+    async findByUID(uid: string, platformUID: string): Promise<ProductResponseDTO | null> {
+        const products = this.products.filter(
+            (product) => product.platformUID === platformUID,
+        );
+        const product = products.find((product) => product.uid === uid);
+
+        if (!product) {
+            return null;
+        }
+
+        return product;
     }
 
     async register(

@@ -12,7 +12,7 @@ export interface IProductRepository {
         description?: string;
         platformUID: string;
     }): Promise<ProductResponseDTO[]>;
-    findByUID(uid: string): Promise<ProductResponseDTO | null>;
+    findByUID(uid: string, platformUID: string): Promise<ProductResponseDTO | null>;
     findByName(
         name: string,
         platformUID: string,

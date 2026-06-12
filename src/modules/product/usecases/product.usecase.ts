@@ -4,15 +4,24 @@ import { CreateProductDTO } from "../dtos/create-product.dto";
 import { ProductEntity } from "../entities/product.entity";
 import { UpdateProductDTO } from "../dtos/update-product.dto";
 import { SearchProductDTO } from "../dtos/search-product.dto";
+import { RequestContext } from "@/shared/context/request-context";
 
 export class ProductUsecase {
-    constructor(private productRepository: IProductRepository) {}
+    constructor(
+        private readonly context: RequestContext,
+        private readonly productRepository: IProductRepository,
+    ) {}
 
     async create(data: CreateProductDTO) {
-        await this.validateProductAlreadyExists(data.name, data.platformUID);
+        await this.validateProductAlreadyExists(
+            data.name,
+            this.context.user.platformUID,
+        );
 
         const product = new ProductEntity({
             uid: randomUUID(),
+            platformUID: this.context.user.platformUID,
+            createdBy: this.context.user.uid,
             createdAt: new Date(),
             updatedAt: new Date(),
             updatedBy: null,
@@ -29,7 +38,10 @@ export class ProductUsecase {
     }
 
     async findByUID(uid: string) {
-        const product = await this.productRepository.findByUID(uid);
+        const product = await this.productRepository.findByUID(
+            uid,
+            this.context.user.platformUID,
+        );
 
         if (!product) {
             throw new Error("Product not found!");
@@ -38,10 +50,10 @@ export class ProductUsecase {
         return product;
     }
 
-    async findByName(name: string, platformUID: string) {
+    async findByName(name: string) {
         const product = await this.productRepository.findByName(
             name,
-            platformUID,
+            this.context.user.platformUID,
         );
 
         if (!product) {
@@ -52,13 +64,18 @@ export class ProductUsecase {
     }
 
     async search(filters: SearchProductDTO) {
-        const products = await this.productRepository.search(filters);
+        const products = await this.productRepository.search({
+            ...filters,
+            platformUID: this.context.user.platformUID,
+        });
 
         return products;
     }
 
-    async find(platformUID: string) {
-        const product = await this.productRepository.find(platformUID);
+    async find() {
+        const product = await this.productRepository.find(
+            this.context.user.platformUID,
+        );
 
         return product;
     }
