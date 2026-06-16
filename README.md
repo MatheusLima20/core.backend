@@ -195,6 +195,7 @@ npm run dev
 - Unit Testing
 - Modular Architecture
 - JWT Authentication
+- Result Patten
 
 ---
 

@@ -1,4 +1,6 @@
-export class PersistenceError extends Error {
+import { AppError } from "./app.error";
+
+export class PersistenceError extends AppError {
     constructor(message = "Persistence operation failed.") {
         super(message);
 
