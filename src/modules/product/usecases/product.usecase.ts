@@ -131,11 +131,15 @@ export class ProductUsecase {
             );
         }
 
-        await this.validateProductAlreadyExists(
+        const validation = await this.validateProductAlreadyExists(
             data.name,
             this.context.user.platformUID,
             data.uid,
         );
+
+        if (!validation.success) {
+            return validation;
+        }
 
         const mergedProduct = new ProductEntity({
             ...oldProduct.data,

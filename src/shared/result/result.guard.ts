@@ -1,6 +1,7 @@
-// src/shared/result/result.guard.ts
 import { Result, FailureResult } from "./result";
 
-export function isFailure<T>(result: Result<T>): result is FailureResult {
-  return result.success === false;
+export function isFailure<T, E>(
+    result: Result<T, E>,
+): result is FailureResult<E> {
+    return result.success === false;
 }

@@ -5,14 +5,14 @@ export function expectSuccess<T>(result: Result<T>): T {
     expect(result.success).toBe(true);
 
     if (!result.success) {
-        throw result.error;
+        throw result;
     }
 
     return result.data;
 }
 
 export function expectFailure<E extends AppError>(
-    result: Result<unknown>,
+    result: Result<unknown, E>,
     type: new (...args: any[]) => E,
 ): E {
     expect(result.success).toBe(false);
@@ -21,7 +21,9 @@ export function expectFailure<E extends AppError>(
         throw new Error("Expected failure, but got success.");
     }
 
-    expect(result.error).toBeInstanceOf(type);
+    const failure = result as { success: false; error: E };
 
-    return result.error as E;
+    expect(failure.error).toBeInstanceOf(type);
+
+    return failure.error;
 }

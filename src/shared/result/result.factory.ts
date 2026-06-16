@@ -1,14 +1,18 @@
-import { FailureResult } from "./failure.result";
 import { Result } from "./result";
-import { SuccessResult } from "./success.result";
 
 export class ResultFactory {
-    static success<T>(data: T) {
-        return SuccessResult.create(data);
+    static success<T>(data: T): Result<T> {
+        return {
+            success: true,
+            data,
+        };
     }
 
-    static failure<TError>(error: TError) {
-        return FailureResult.create(error);
+    static failure<E>(error: E): Result<never, E> {
+        return {
+            success: false,
+            error,
+        };
     }
 
     static ok(): Result<void> {

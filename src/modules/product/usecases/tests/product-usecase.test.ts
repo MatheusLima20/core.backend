@@ -141,8 +141,7 @@ describe("ProductUsecase", () => {
         await usecaseUser1.create(dataProduct2);
 
         const mergedProduct: UpdateProductDTO = {
-            ...dataProduct1,
-            uid: productCreatedA.uid,
+            ...productCreatedA,
             name: dataProduct2.name,
             description: "Why Sale. Fifty percent off.",
             currentPrice: 7.5,
@@ -169,9 +168,22 @@ describe("ProductUsecase", () => {
             ),
         );
 
-        const foundProduct = await usecaseUser1.findByUID(productCreatedC.uid);
+        const foundProduct = expectSuccess(
+            await usecaseUser1.findByUID(productCreatedC.uid),
+        );
 
-        expect(productCreatedC).toEqual(foundProduct);
+        expect(foundProduct).toMatchObject({
+            uid: productCreatedC.uid,
+            name: productCreatedC.name,
+            description: productCreatedC.description,
+            currentPrice: productCreatedC.currentPrice,
+            amount: productCreatedC.amount,
+            isForSale: productCreatedC.isForSale,
+            isOnSale: productCreatedC.isOnSale,
+            platformUID: productCreatedC.platformUID,
+            createdBy: productCreatedC.createdBy,
+            createdAt: productCreatedC.createdAt,
+        });
     });
 
     test("Should throw when product uid does not exist", async () => {
