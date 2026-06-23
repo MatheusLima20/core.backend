@@ -2,7 +2,7 @@ import { PlatformProps } from "../entities/platform.props";
 
 export type CreatePlatformDTO = Pick<
     PlatformProps,
-    | "name"
+    | "name" | "createdBy"
 >;
 
 export type CreatePlatformResponseDTO = Pick<

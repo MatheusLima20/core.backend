@@ -7,9 +7,12 @@ export const PlatformMapper = {
         return {
             uid: platform.uid,
             name: platform.name,
+            slug: platform.slug,
             isActivated: platform.isActivated,
             createdAt: platform.createdAt,
             updatedAt: platform.updatedAt,
+            createdBy: platform.createdBy,
+            updatedBy: platform.updatedBy
         };
     },
 

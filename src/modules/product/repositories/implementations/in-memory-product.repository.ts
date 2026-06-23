@@ -80,23 +80,17 @@ export class InMemoryProductRepository implements IProductRepository {
             (oldProduct) => oldProduct.uid === product.uid,
         );
 
-        const updatedProduct = (this.products[index] = product);
+        this.products[index] = product;
 
-        return ResultFactory.success(updatedProduct);
+        return ResultFactory.success(product);
     }
 
     async delete(uid: string): Promise<Result<void>> {
-        const index = this.products.findIndex(
-            (oldProduct) => oldProduct.uid === uid,
+        const newProducts = this.products.filter(
+            (oldProduct) => oldProduct.uid !== uid
         );
 
-        const removedProduct = this.products.splice(index, 1);
-
-        if (!removedProduct.length) {
-            return ResultFactory.failure(
-                new PersistenceError("Delete operation filed."),
-            );
-        }
+        this.products = newProducts;
 
         return ResultFactory.ok();
     }

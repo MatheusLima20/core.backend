@@ -3,18 +3,23 @@ import { CreatePlatformDTO } from "../dto/create-platform.dto";
 import { IPlatformRepository } from "../repositories/platform-repository.interface";
 import { PlatformEntity } from "../entities/platform.entities";
 import { UpdatePlatformDTO } from "../dto/update-platform.dto";
+import { Slug } from "@/shared/utils/slug/slug";
 
 export class PlatformUsecase {
-    constructor(private platformRepository: IPlatformRepository) {}
+    constructor(
+        private readonly platformRepository: IPlatformRepository,
+    ) {}
 
     async create(data: CreatePlatformDTO) {
         await this.validatePlatformAlreadyExists(data.name);
 
         const platform = new PlatformEntity({
             uid: randomUUID(),
+            slug: Slug.from(data.name),
             isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
+            updatedBy: null,
             ...data,
         });
 
@@ -65,6 +70,7 @@ export class PlatformUsecase {
         const mergedPlatform = new PlatformEntity({
             ...oldPlatform,
             ...data,
+            updatedBy: data.updatedBy,
             updatedAt: new Date(),
         });
 
