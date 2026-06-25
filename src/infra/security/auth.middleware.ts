@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+
 import { JWTProvider } from "./jwt.provider";
 
 export async function authMiddleware(

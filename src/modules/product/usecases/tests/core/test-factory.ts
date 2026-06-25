@@ -1,6 +1,7 @@
-import { TestContext } from "./test-context";
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
 import { makeProductUsecase } from "@/modules/product/usecases/tests/factories/product-usecase.factory";
+
+import { TestContext } from "./test-context";
 
 export class TestBuilder {
     private testContext = new TestContext();

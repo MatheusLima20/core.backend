@@ -1,10 +1,11 @@
 import { randomUUID } from "crypto";
+
 import { CreateUserDTO, CreateUserResponseDTO } from "../dtos/create-user.dto";
-import { UserEntity } from "../entities/user.entity";
-import { IUserRepository } from "../repositories/user-repository-interface";
-import { UserResponseDTO } from "../dtos/user-response.dto copy";
-import { UserType } from "../enum/user-type.enum";
 import { UpdateUserDTO } from "../dtos/update-user.dto";
+import { UserResponseDTO } from "../dtos/user-response.dto copy";
+import { UserEntity } from "../entities/user.entity";
+import { UserType } from "../enum/user-type.enum";
+import { IUserRepository } from "../repositories/user-repository-interface";
 
 export class UserUseCase {
     constructor(private userRepository: IUserRepository) {}

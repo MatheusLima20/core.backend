@@ -1,4 +1,5 @@
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
+
 import { FakeHashProvider } from "../../providers/implementations/fake-hash.provider";
 import { FakeTokenProvider } from "../../providers/implementations/fake-token.provider";
 import { LoginUsecase } from "../login.usecase";

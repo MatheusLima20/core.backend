@@ -1,10 +1,9 @@
-import { Equal } from "typeorm";
 import { CreateUserDTO } from "../../dtos/create-user.dto";
+import { UpdateUserDTO } from "../../dtos/update-user.dto";
 import { Gender } from "../../enum/gender.enum";
 import { UserType } from "../../enum/user-type.enum";
 import { InMemoryUserRepository } from "../../repositories/implementations/in-memory-user.repository";
 import { UserUseCase } from "../user.usecase";
-import { UpdateUserDTO } from "../../dtos/update-user.dto";
 
 const user: CreateUserDTO = {
     platformUID: "1",
@@ -56,7 +55,7 @@ describe("UserUsecase", () => {
                 name: "Ramon Dias",
                 email: "ramon.dias@gmail.com",
                 docNumberPerson: 458798755,
-            }),
+            })
         );
 
         const userToUpdate: UpdateUserDTO = {
@@ -95,7 +94,7 @@ describe("UserUsecase", () => {
                 name: "Ramon Dias",
                 email: "ramon.dias@gmail.com",
                 docNumberPerson: 458798755,
-            }),
+            })
         );
 
         const result = await useCase.find("1");
@@ -112,16 +111,12 @@ describe("UserUsecase", () => {
                 email: "ramon.dias@gmail.com",
                 docNumberPerson: 458798755,
                 userType: UserType.CUSTOMER,
-            }),
+            })
         );
 
         const results = await useCase.findByType(UserType.ADMINISTRATOR);
 
-        expect(
-            results.every(
-                (result) => result.userType === UserType.ADMINISTRATOR,
-            ),
-        ).toBe(true);
+        expect(results.every((result) => result.userType === UserType.ADMINISTRATOR)).toBe(true);
     });
 
     test("should to get user registered by email", async () => {
@@ -133,7 +128,7 @@ describe("UserUsecase", () => {
                 email: "ramon.dias@gmail.com",
                 docNumberPerson: 458798755,
                 userType: UserType.CUSTOMER,
-            }),
+            })
         );
 
         const result = await useCase.findByEmail(user.email);
@@ -150,7 +145,7 @@ describe("UserUsecase", () => {
                 email: "ramon.dias@gmail.com",
                 docNumberPerson: 458798755,
                 userType: UserType.CUSTOMER,
-            }),
+            })
         );
 
         const isDeletedUser = await useCase.delete(deleteUser.uid);

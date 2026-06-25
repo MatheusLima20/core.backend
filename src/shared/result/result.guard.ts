@@ -1,7 +1,5 @@
-import { Result, FailureResult } from "./result";
+import { FailureResult, Result } from "./result";
 
-export function isFailure<T, E>(
-    result: Result<T, E>,
-): result is FailureResult<E> {
+export function isFailure<T, E>(result: Result<T, E>): result is FailureResult<E> {
     return result.success === false;
 }

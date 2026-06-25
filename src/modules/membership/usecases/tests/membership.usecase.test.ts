@@ -1,10 +1,11 @@
 import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
-import { MembershipRole } from "../../enums/membership-role.enum";
-import { InMemoryMembershipRepository } from "../../repositories/implementations/in-memory-membership.repository";
-import { MembershipUseCase } from "../membership.usecase";
+
 import { CreateMembershipDTO } from "../../dto/create-membership.dto";
+import { MembershipRole } from "../../enums/membership-role.enum";
 import { MembershipAlreadyExistsError } from "../../errors/membership-already-exists.error";
 import { MembershipNotFoundError } from "../../errors/membership-not-found.error";
+import { InMemoryMembershipRepository } from "../../repositories/implementations/in-memory-membership.repository";
+import { MembershipUseCase } from "../membership.usecase";
 
 describe("MembershipUseCase", () => {
     const membership1: CreateMembershipDTO = {

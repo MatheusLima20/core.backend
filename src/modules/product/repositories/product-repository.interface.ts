@@ -1,6 +1,7 @@
 import { Result } from "@/shared/result";
-import { ProductProps } from "../entities/product.props";
+
 import { FindProductsDTO } from "../dtos/find-products.dto";
+import { ProductProps } from "../entities/product.props";
 
 export interface IProductRepository {
     findByUID(

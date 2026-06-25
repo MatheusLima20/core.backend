@@ -1,5 +1,5 @@
-import { IMembershipRepository } from "../membership-repository.interface";
 import { MembershipProps } from "../../entities/membership.props";
+import { IMembershipRepository } from "../membership-repository.interface";
 
 export class InMemoryMembershipRepository implements IMembershipRepository {
     private memberships: MembershipProps[] = [];

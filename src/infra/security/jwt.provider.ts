@@ -1,5 +1,6 @@
-import { AuthUser } from "@/shared/context/auth.user";
 import jwt from "jsonwebtoken";
+
+import { AuthUser } from "@/shared/context/auth.user";
 
 export class JWTProvider {
     async generate(userUID: string, platformUID: string): Promise<string> {

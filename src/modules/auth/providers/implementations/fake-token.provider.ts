@@ -1,4 +1,5 @@
 import { AuthUser } from "@/shared/context/auth.user";
+
 import { ITokenProvider } from "../token-provider.interface";
 
 export class FakeTokenProvider implements ITokenProvider {
@@ -7,6 +8,6 @@ export class FakeTokenProvider implements ITokenProvider {
     }
 
     async verify(token: string): Promise<AuthUser> {
-        throw new Error("Method not implemented.");
+        throw new Error("Method not implemented." + token);
     }
 }

@@ -1,9 +1,11 @@
 import { randomUUID } from "crypto";
-import { CreatePlatformDTO } from "../dto/create-platform.dto";
-import { IPlatformRepository } from "../repositories/platform-repository.interface";
-import { PlatformEntity } from "../entities/platform.entities";
-import { UpdatePlatformDTO } from "../dto/update-platform.dto";
+
 import { Slug } from "@/shared/utils/slug/slug";
+
+import { CreatePlatformDTO } from "../dto/create-platform.dto";
+import { UpdatePlatformDTO } from "../dto/update-platform.dto";
+import { PlatformEntity } from "../entities/platform.entities";
+import { IPlatformRepository } from "../repositories/platform-repository.interface";
 
 export class PlatformUsecase {
     constructor(

@@ -1,8 +1,9 @@
-import { InMemoryOrderRepository } from "@/modules/order/repositories/implementations/in-memory-order.repository";
-import { InMemoryOrderItemRepository } from "../../repositories/implementations/in-memory-item.repository";
-import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
+import { InMemoryOrderRepository } from "@/modules/order/repositories/implementations/in-memory-order.repository";
+import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { RequestContext } from "@/shared/context/request-context";
+
+import { InMemoryOrderItemRepository } from "../../repositories/implementations/in-memory-item.repository";
 import { ItemUsecase } from "../item.usecase";
 
 export async function makeItemUsecase() {

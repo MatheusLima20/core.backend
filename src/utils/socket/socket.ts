@@ -1,7 +1,8 @@
+import dotenv from "dotenv";
 import * as http from "http";
 import { Server } from "socket.io";
+
 import { Interation, ISocket } from "./interface/socket.interface";
-import dotenv = require("dotenv");
 dotenv.config();
 
 let io: Server;

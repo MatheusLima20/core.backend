@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import * as jwt from "jsonwebtoken";
-import { AdmLogin } from "../encripty/AdmLogin";
+
+import { ChargesController } from "../../../controller/ChargesController";
 import { UserEntity } from "../../../entity/UserEntity";
 import { dataSource } from "../../database/database";
-import { ChargesController } from "../../../controller/ChargesController";
+import { AdmLogin } from "../encripty/AdmLogin";
 
 export const Authorization = {
     auth: async (request: Request, response: Response) => {

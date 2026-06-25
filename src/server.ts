@@ -1,9 +1,11 @@
-import "reflect-metadata";
+import "module-alias/register";
 import "process";
-import 'module-alias/register';
-import dotenv = require('dotenv');
-import { serverClass, ServerClass } from "./services/server/server";
+import "reflect-metadata";
+
+import dotenv from "dotenv";
+
 import { databaseClass } from "./services/database/database";
+import { ServerClass, serverClass } from "./services/server/server";
 import { SocketClass } from "./utils/socket/socket";
 dotenv.config();
 

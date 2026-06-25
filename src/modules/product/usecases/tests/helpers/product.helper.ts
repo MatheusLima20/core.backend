@@ -1,7 +1,8 @@
 import { CreateProductDTO } from "@/modules/product/dtos/create-product.dto";
-import { ProductUsecase } from "../../product.usecase";
-import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 import { AppError, AppErrorClass } from "@/shared/errors/app.error";
+import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
+
+import { ProductUsecase } from "../../product.usecase";
 
 export async function setupProducts(
     usecase: ProductUsecase,

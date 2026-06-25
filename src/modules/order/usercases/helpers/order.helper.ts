@@ -1,7 +1,8 @@
-import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 import { AppError, AppErrorClass } from "@/shared/errors/app.error";
-import { OrderUsecase } from "../order.usecase";
+import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
+
 import { CreateOrderDTO } from "../../dtos/create-order.dto";
+import { OrderUsecase } from "../order.usecase";
 
 export async function setupOrders(
     usecase: OrderUsecase,

@@ -1,27 +1,29 @@
 import { randomUUID } from "crypto";
-import { IProductRepository } from "../repositories/product-repository.interface";
+
+import { RequestContext } from "@/shared/context/request-context";
+import { AppError } from "@/shared/errors/app.error";
+import { PersistenceError } from "@/shared/errors/persistence.error";
+import { FailureResult, Result, SuccessResult } from "@/shared/result";
+import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
+import { ResultMapper } from "@/shared/result/result.mapper";
+
 import {
     CreateProductDTO,
     CreateProductResponseDTO,
 } from "../dtos/create-product.dto";
-import { ProductEntity } from "../entities/product.entity";
+import { FindProductsDTO } from "../dtos/find-products.dto";
+import { ProductResponseDTO } from "../dtos/product-response.dto";
 import {
     UpdateProductDTO,
     UpdateProductResponseDTO,
 } from "../dtos/update-product.dto";
-import { RequestContext } from "@/shared/context/request-context";
+import { ProductEntity } from "../entities/product.entity";
+import { ProductProps } from "../entities/product.props";
 import { ProductAlreadyExistsError } from "../errors/product-already-exists.error";
 import { ProductNotFoundError } from "../errors/product-not-found.error";
-import { PersistenceError } from "@/shared/errors/persistence.error";
-import { FailureResult, Result, SuccessResult } from "@/shared/result";
 import { ProductMapper } from "../mappers/product.mapper";
-import { ResultFactory } from "@/shared/result/result.factory";
-import { ResultMapper } from "@/shared/result/result.mapper";
-import { ProductResponseDTO } from "../dtos/product-response.dto";
-import { AppError } from "@/shared/errors/app.error";
-import { ProductProps } from "../entities/product.props";
-import { FindProductsDTO } from "../dtos/find-products.dto";
-import { isFailure } from "@/shared/result/result.guard";
+import { IProductRepository } from "../repositories/product-repository.interface";
 
 export class ProductUsecase {
     constructor(

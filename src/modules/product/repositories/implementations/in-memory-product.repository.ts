@@ -1,9 +1,10 @@
-import { Result } from "@/shared/result";
-import { IProductRepository } from "../product-repository.interface";
-import { ProductProps } from "../../entities/product.props";
-import { ResultFactory } from "@/shared/result/result.factory";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { Result } from "@/shared/result";
+import { ResultFactory } from "@/shared/result/result.factory";
+
 import { FindProductsDTO } from "../../dtos/find-products.dto";
+import { ProductProps } from "../../entities/product.props";
+import { IProductRepository } from "../product-repository.interface";
 
 export class InMemoryProductRepository implements IProductRepository {
     products: ProductProps[] = [];

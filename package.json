@@ -68,6 +68,7 @@
             "pre-commit": "lint-staged"
         }
     },
+    "type": "module",
     "scripts": {
         "dev": "nodemon src/server.ts",
         "start": "node build/server.js",

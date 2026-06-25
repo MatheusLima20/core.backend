@@ -1,6 +1,7 @@
 import { AuthUser } from "@/shared/context/auth.user";
-import { OrderUsecase } from "../order.usecase";
+
 import { InMemoryOrderRepository } from "../../repositories/implementations/in-memory-order.repository";
+import { OrderUsecase } from "../order.usecase";
 
 export function makeOrderUsecase(
     user: AuthUser,

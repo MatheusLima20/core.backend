@@ -1,11 +1,12 @@
 import { AuthUser } from "@/shared/context/auth.user";
+import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
+
 import { CreateProductDTO } from "../../dtos/create-product.dto";
 import { UpdateProductDTO } from "../../dtos/update-product.dto";
-import { ProductUsecase } from "../product.usecase";
-import { scenario } from "./core/test-factory";
-import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 import { ProductAlreadyExistsError } from "../../errors/product-already-exists.error";
 import { ProductNotFoundError } from "../../errors/product-not-found.error";
+import { ProductUsecase } from "../product.usecase";
+import { scenario } from "./core/test-factory";
 import {
     expectCreateProductFailure,
     setupProduct,

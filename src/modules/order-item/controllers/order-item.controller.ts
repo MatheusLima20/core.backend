@@ -1,8 +1,6 @@
 export class RegisterItemController {
-
-    async handle(request: Request, response: Response) {
-
-        /*const { id, name, price } =
+    /*async handle(request: Request, response: Response) {
+        const { id, name, price } =
             request.body;
 
         const repository =
@@ -20,6 +18,6 @@ export class RegisterItemController {
                 price
             });
 
-        return response.json(result);*/
-    }
+        return response.json(result);
+    }*/
 }
