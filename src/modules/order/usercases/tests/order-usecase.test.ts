@@ -1,12 +1,13 @@
 import { AuthUser } from "@/shared/context/auth.user";
+import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
+
 import { CreateOrderDTO } from "../../dtos/create-order.dto";
 import { UpdateOrderDTO } from "../../dtos/update-order.dto";
-import { OrderUsecase } from "../order.usecase";
-import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 import { OrderAlreadyExistsError } from "../../errors/order-already-exists.error";
 import { OrderNotFoundError } from "../../errors/order-not-found.error";
 import { scenario } from "../core/test-factory";
 import { expectCreateOrderFailure, setupOrder, setupOrders } from "../helpers/order.helper";
+import { OrderUsecase } from "../order.usecase";
 
 describe("OrderUsecase", () => {
     const dataOrder1: CreateOrderDTO = {
@@ -18,13 +19,6 @@ describe("OrderUsecase", () => {
         description: "Need Tables",
     };
 
-    const makeOrder = (
-        data?: Partial<CreateOrderDTO>,
-    ): CreateOrderDTO => ({
-        ...dataOrder1,
-        ...data,
-    });
-
     let usecaseUser1!: OrderUsecase;
     let usecaseUser2!: OrderUsecase;
 
@@ -35,9 +29,7 @@ describe("OrderUsecase", () => {
         ({
             usecases: [usecaseUser1, usecaseUser2],
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"]))
-            .createUsecases()
-            .build());
+        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
     test("Should register an order", async () => {
@@ -69,28 +61,18 @@ describe("OrderUsecase", () => {
     test("Should not create duplicated order", async () => {
         await setupOrder(usecaseUser1, dataOrder1);
 
-        await expectCreateOrderFailure(
-            usecaseUser1,
-            dataOrder1,
-            OrderAlreadyExistsError,
-        );
+        await expectCreateOrderFailure(usecaseUser1, dataOrder1, OrderAlreadyExistsError);
     });
 
     test("Should update an order", async () => {
-        const [orderCreated] = await setupOrders(
-            usecaseUser1,
-            dataOrder1,
-            dataOrder2,
-        );
+        const [orderCreated] = await setupOrders(usecaseUser1, dataOrder1, dataOrder2);
 
         const updated: UpdateOrderDTO = {
             uid: orderCreated.uid,
             description: "Need Updated Tables",
         };
 
-        const orderUpdated = expectSuccess(
-            await usecaseUser1.update(updated),
-        );
+        const orderUpdated = expectSuccess(await usecaseUser1.update(updated));
 
         expect(orderUpdated).toMatchObject({
             uid: orderCreated.uid,
@@ -98,9 +80,7 @@ describe("OrderUsecase", () => {
             updatedBy: user1.uid,
         });
 
-        const found = expectSuccess(
-            await usecaseUser1.findByUID(orderUpdated.uid),
-        );
+        const found = expectSuccess(await usecaseUser1.findByUID(orderUpdated.uid));
 
         expect(found).toMatchObject({
             uid: orderUpdated.uid,
@@ -110,27 +90,21 @@ describe("OrderUsecase", () => {
     });
 
     test("Should not update duplicated order", async () => {
-        const [orderA] = await setupOrders(
-            usecaseUser1,
-            dataOrder1,
-            dataOrder2,
-        );
+        const [orderA] = await setupOrders(usecaseUser1, dataOrder1, dataOrder2);
 
         expectFailure(
             await usecaseUser1.update({
                 uid: orderA.uid,
                 description: dataOrder2.description,
             }),
-            OrderAlreadyExistsError,
+            OrderAlreadyExistsError
         );
     });
 
     test("Should find order by uid", async () => {
         const [created] = await setupOrders(usecaseUser1, dataOrder1);
 
-        const found = expectSuccess(
-            await usecaseUser1.findByUID(created.uid),
-        );
+        const found = expectSuccess(await usecaseUser1.findByUID(created.uid));
 
         expect(found).toMatchObject({
             uid: created.uid,
@@ -139,24 +113,17 @@ describe("OrderUsecase", () => {
     });
 
     test("Should throw when order not found", async () => {
-        expectFailure(
-            await usecaseUser1.findByUID("invalid-id"),
-            OrderNotFoundError,
-        );
+        expectFailure(await usecaseUser1.findByUID("invalid-id"), OrderNotFoundError);
     });
 
     test("Should return all orders of platform", async () => {
-        await setupOrders(usecaseUser1, dataOrder1, dataOrder2);
+        await setupOrders(usecaseUser2, dataOrder1, dataOrder2);
 
-        const orders = expectSuccess(await usecaseUser1.find());
+        const orders = expectSuccess(await usecaseUser2.find());
 
         expect(orders).toHaveLength(2);
 
-        expect(
-            orders.every(
-                (o) => o.platformUID === user1.platformUID,
-            ),
-        ).toBe(true);
+        expect(orders.every((o) => o.platformUID === user2.platformUID)).toBe(true);
     });
 
     test("Should return empty list when no orders exist", async () => {
@@ -176,9 +143,6 @@ describe("OrderUsecase", () => {
 
         expect(after.length).toBe(before.length - 1);
 
-        expectFailure(
-            await usecaseUser1.findByUID(created.uid),
-            OrderNotFoundError,
-        );
+        expectFailure(await usecaseUser1.findByUID(created.uid), OrderNotFoundError);
     });
 });

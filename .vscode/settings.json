@@ -1,9 +1,19 @@
 {
-    "cSpell.words": [
-        "dtos",
-        "Matheus",
-        "uids",
-        "usecase",
-        "usecases"
-    ]
+    "cSpell.words": ["dtos", "Matheus", "uids", "usecase", "usecases"],
+
+    "editor.formatOnSave": true,
+
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always",
+        "source.organizeImports": "always"
+    },
+
+    "eslint.validate": ["javascript", "typescript"],
+
+    "[json]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
 }
