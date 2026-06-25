@@ -7,5 +7,5 @@ export type UpdateOrderItemDTO = Pick<
 
 export type UpdateOrderItemResponseDTO = Pick<
     OrderItemProps,
-    "uid" | "orderUID" | "productUID" | "amount" | "unitPrice" | "updatedAt"
+    "uid" | "orderUID" | "productUID" | "amount" | "unitPrice" | "updatedBy" | "updatedAt"
 >;

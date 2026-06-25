@@ -8,6 +8,8 @@ export type OrderItemResponseDTO = Pick<
     | "unitPrice"
     | "amount"
     | "orderUID"
+    | "createdBy"
+    | "updatedBy"
     | "createdAt"
     | "updatedAt"
 >;

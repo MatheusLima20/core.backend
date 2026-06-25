@@ -3,8 +3,8 @@ import { InMemoryOrderRepository } from "@/modules/order/repositories/implementa
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { RequestContext } from "@/shared/context/request-context";
 
-import { InMemoryOrderItemRepository } from "../../repositories/implementations/in-memory-item.repository";
-import { ItemUsecase } from "../item.usecase";
+import { InMemoryOrderItemRepository } from "../../repositories/implementations/in-memory-order-item.repository";
+import { OrderItemUsecase } from "../order-item.usecase";
 
 export async function makeItemUsecase() {
     const itemRepository = new InMemoryOrderItemRepository();
@@ -19,7 +19,7 @@ export async function makeItemUsecase() {
         user: authUser,
     };
 
-    const usecase = new ItemUsecase(context, itemRepository, orderRepository);
+    const usecase = new OrderItemUsecase(context, itemRepository, orderRepository);
 
     return {
         usecase,

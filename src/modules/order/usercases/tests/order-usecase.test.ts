@@ -1,13 +1,13 @@
-import { AuthUser } from "@/shared/context/auth.user.js";
-import { expectFailure, expectSuccess } from "@/shared/tests/result.helper.js";
+import { AuthUser } from "@/shared/context/auth.user";
+import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 
-import { CreateOrderDTO } from "../../dtos/create-order.dto.js";
-import { UpdateOrderDTO } from "../../dtos/update-order.dto.js";
-import { OrderAlreadyExistsError } from "../../errors/order-already-exists.error.js";
-import { OrderNotFoundError } from "../../errors/order-not-found.error.js";
-import { scenario } from "../core/test-factory.js";
-import { expectCreateOrderFailure, setupOrder, setupOrders } from "../helpers/order.helper.js";
-import { OrderUsecase } from "../order.usecase.js";
+import { CreateOrderDTO } from "../../dtos/create-order.dto";
+import { UpdateOrderDTO } from "../../dtos/update-order.dto";
+import { OrderAlreadyExistsError } from "../../errors/order-already-exists.error";
+import { OrderNotFoundError } from "../../errors/order-not-found.error";
+import { scenario } from "../core/test-factory";
+import { expectCreateOrderFailure, setupOrder, setupOrders } from "../helpers/order.helper";
+import { OrderUsecase } from "../order.usecase";
 
 describe("OrderUsecase", () => {
     const dataOrder1: CreateOrderDTO = {

@@ -5,4 +5,7 @@ export type CreateOrderItemDTO = Pick<
     "orderUID" | "unitPrice" | "amount" | "productUID"
 >;
 
-export type CreateOrderItemResponseDTO = Pick<OrderItemProps, "uid" | "orderUID" | "productUID" | "updatedAt">;
+export type CreateOrderItemResponseDTO = Pick<
+    OrderItemProps,
+    "uid" | "orderUID" | "productUID" | "createdBy" | "createdAt"
+>;

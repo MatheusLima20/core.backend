@@ -1,5 +1,3 @@
-
-
 export interface OrderItemProps {
     uid: string;
     productUID: string;
@@ -7,6 +5,8 @@ export interface OrderItemProps {
     platformUID: string;
     amount: number;
     unitPrice: number;
+    createdBy: string;
+    updatedBy: string | null;
     createdAt: Date;
-    updatedAt:Date;
+    updatedAt: Date;
 }

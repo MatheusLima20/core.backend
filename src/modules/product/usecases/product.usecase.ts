@@ -8,16 +8,10 @@ import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
 import { ResultMapper } from "@/shared/result/result.mapper";
 
-import {
-    CreateProductDTO,
-    CreateProductResponseDTO,
-} from "../dtos/create-product.dto";
+import { CreateProductDTO, CreateProductResponseDTO } from "../dtos/create-product.dto";
 import { FindProductsDTO } from "../dtos/find-products.dto";
 import { ProductResponseDTO } from "../dtos/product-response.dto";
-import {
-    UpdateProductDTO,
-    UpdateProductResponseDTO,
-} from "../dtos/update-product.dto";
+import { UpdateProductDTO, UpdateProductResponseDTO } from "../dtos/update-product.dto";
 import { ProductEntity } from "../entities/product.entity";
 import { ProductProps } from "../entities/product.props";
 import { ProductAlreadyExistsError } from "../errors/product-already-exists.error";
@@ -28,15 +22,13 @@ import { IProductRepository } from "../repositories/product-repository.interface
 export class ProductUsecase {
     constructor(
         private readonly context: RequestContext,
-        private readonly productRepository: IProductRepository,
+        private readonly productRepository: IProductRepository
     ) {}
 
-    async create(
-        data: CreateProductDTO,
-    ): Promise<Result<CreateProductResponseDTO>> {
+    async create(data: CreateProductDTO): Promise<Result<CreateProductResponseDTO>> {
         const validation = await this.validateProductAlreadyExists(
             data.name,
-            this.context.user.platformUID,
+            this.context.user.platformUID
         );
 
         if (!validation.success) {
@@ -56,45 +48,30 @@ export class ProductUsecase {
         const created = await this.productRepository.register(product);
 
         if (!created.success) {
-            return ResultFactory.failure(
-                new PersistenceError("Failed to create product."),
-            );
+            return ResultFactory.failure(new PersistenceError("Failed to create product."));
         }
 
         return ResultMapper.map(created, ProductMapper.toCreatedResponseDTO);
     }
 
     async findByUID(uid: string): Promise<Result<ProductResponseDTO>> {
-        const result = await this.productRepository.findByUID(
-            uid,
-            this.context.user.platformUID,
-        );
+        const result = await this.productRepository.findByUID(uid, this.context.user.platformUID);
 
-        const product = ResultMapper.requireData(
-            result,
-            new ProductNotFoundError({ uid }),
-        );
+        const product = ResultMapper.requireData(result, new ProductNotFoundError({ uid }));
 
         return ResultMapper.map(product, ProductMapper.toResponseDTO);
     }
 
-    async find(
-        filters?: FindProductsDTO,
-    ): Promise<Result<ProductResponseDTO[]>> {
-        const product = await this.productRepository.find(
-            this.context.user.platformUID,
-            filters,
-        );
+    async find(filters?: FindProductsDTO): Promise<Result<ProductResponseDTO[]>> {
+        const product = await this.productRepository.find(this.context.user.platformUID, filters);
 
         return ResultMapper.map(product, ProductMapper.toResponseDTOList);
     }
 
-    async update(
-        data: UpdateProductDTO,
-    ): Promise<Result<UpdateProductResponseDTO>> {
+    async update(data: UpdateProductDTO): Promise<Result<UpdateProductResponseDTO>> {
         const result = await this.productRepository.findByUID(
             data.uid,
-            this.context.user.platformUID,
+            this.context.user.platformUID
         );
 
         if (!result.success) {
@@ -103,20 +80,14 @@ export class ProductUsecase {
 
         const oldProduct = ResultMapper.requireData(
             result,
-            new ProductNotFoundError({ uid: data.uid }),
+            new ProductNotFoundError({ uid: data.uid })
         );
 
         if (!oldProduct.success) {
-            return ResultFactory.failure(
-                new ProductNotFoundError({ uid: data.uid }),
-            );
+            return ResultFactory.failure(new ProductNotFoundError({ uid: data.uid }));
         }
 
-        const validation = await this.validateProductAlreadyExists(
-            data.name,
-            this.context.user.platformUID,
-            data.uid,
-        );
+        const validation = await this.validateProductAlreadyExists(data.name, data.uid);
 
         if (!validation.success) {
             return validation;
@@ -140,9 +111,7 @@ export class ProductUsecase {
         const isDeleted = await this.productRepository.delete(uid);
 
         if (!isDeleted.success) {
-            return ResultFactory.failure(
-                new PersistenceError("Failed to delete product."),
-            );
+            return ResultFactory.failure(new PersistenceError("Failed to delete product."));
         }
 
         return ResultFactory.ok();
@@ -150,10 +119,9 @@ export class ProductUsecase {
 
     private async validateProductAlreadyExists(
         name: string,
-        platformUID: string,
-        uid?: string,
+        uid?: string
     ): Promise<FailureResult<AppError> | SuccessResult<ProductProps | null>> {
-        const result = await this.productRepository.find(platformUID, {
+        const result = await this.productRepository.find(this.context.user.platformUID, {
             name,
         });
 

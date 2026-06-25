@@ -7,11 +7,7 @@ import { ProductAlreadyExistsError } from "../../errors/product-already-exists.e
 import { ProductNotFoundError } from "../../errors/product-not-found.error";
 import { ProductUsecase } from "../product.usecase";
 import { scenario } from "./core/test-factory";
-import {
-    expectCreateProductFailure,
-    setupProduct,
-    setupProducts,
-} from "./helpers/product.helper";
+import { expectCreateProductFailure, setupProduct, setupProducts } from "./helpers/product.helper";
 
 describe("ProductUsecase", () => {
     const dataProduct1: CreateProductDTO = {
@@ -30,9 +26,7 @@ describe("ProductUsecase", () => {
         amount: 5,
     };
 
-    const makeProduct = (
-        data?: Partial<CreateProductDTO>,
-    ): CreateProductDTO => ({
+    const makeProduct = (data?: Partial<CreateProductDTO>): CreateProductDTO => ({
         ...dataProduct1,
         ...data,
     });
@@ -89,19 +83,11 @@ describe("ProductUsecase", () => {
 
     test("Should not register duplicated product", async () => {
         await setupProduct(usecaseUser1, dataProduct1);
-        await expectCreateProductFailure(
-            usecaseUser1,
-            dataProduct1,
-            ProductAlreadyExistsError,
-        );
+        await expectCreateProductFailure(usecaseUser1, dataProduct1, ProductAlreadyExistsError);
     });
 
     test("Should update a product", async () => {
-        const [productCreatedA] = await setupProducts(
-            usecaseUser1,
-            dataProduct1,
-            dataProduct2,
-        );
+        const [productCreatedA] = await setupProducts(usecaseUser1, dataProduct1, dataProduct2);
 
         const mergedProduct: UpdateProductDTO = {
             ...dataProduct1,
@@ -110,9 +96,7 @@ describe("ProductUsecase", () => {
             currentPrice: 7.5,
         };
 
-        const productUpdated = expectSuccess(
-            await usecaseUser1.update(mergedProduct),
-        );
+        const productUpdated = expectSuccess(await usecaseUser1.update(mergedProduct));
 
         expect(productUpdated).toMatchObject({
             uid: productCreatedA.uid,
@@ -124,9 +108,7 @@ describe("ProductUsecase", () => {
             updatedBy: user1.uid,
         });
 
-        const foundProduct = expectSuccess(
-            await usecaseUser1.findByUID(productUpdated.uid),
-        );
+        const foundProduct = expectSuccess(await usecaseUser1.findByUID(productUpdated.uid));
 
         expect(foundProduct).toMatchObject({
             uid: productUpdated.uid,
@@ -146,18 +128,14 @@ describe("ProductUsecase", () => {
             await usecaseUser1.update({
                 ...product,
                 description: "Updated",
-            }),
+            })
         );
 
         expect(updated.name).toBe(product.name);
     });
 
     test("Should not update duplicated product", async () => {
-        const [productCreatedA] = await setupProducts(
-            usecaseUser1,
-            dataProduct1,
-            dataProduct2,
-        );
+        const [productCreatedA] = await setupProducts(usecaseUser1, dataProduct1, dataProduct2);
 
         const mergedProduct: UpdateProductDTO = {
             ...productCreatedA,
@@ -166,10 +144,7 @@ describe("ProductUsecase", () => {
             currentPrice: 7.5,
         };
 
-        expectFailure(
-            await usecaseUser1.update(mergedProduct),
-            ProductAlreadyExistsError,
-        );
+        expectFailure(await usecaseUser1.update(mergedProduct), ProductAlreadyExistsError);
     });
 
     test("Should find a product by uid", async () => {
@@ -182,12 +157,10 @@ describe("ProductUsecase", () => {
                 description: "Buy a gym equipment to training arms.",
                 currentPrice: 20,
                 amount: 2,
-            }),
+            })
         );
 
-        const foundProduct = expectSuccess(
-            await usecaseUser1.findByUID(productCreatedC.uid),
-        );
+        const foundProduct = expectSuccess(await usecaseUser1.findByUID(productCreatedC.uid));
 
         expect(foundProduct).toMatchObject({
             uid: productCreatedC.uid,
@@ -204,10 +177,7 @@ describe("ProductUsecase", () => {
     });
 
     test("Should throw when product uid does not exist", async () => {
-        expectFailure(
-            await usecaseUser1.findByUID("777"),
-            ProductNotFoundError,
-        );
+        expectFailure(await usecaseUser1.findByUID("777"), ProductNotFoundError);
     });
 
     test("Should find all platform products", async () => {
@@ -218,7 +188,7 @@ describe("ProductUsecase", () => {
                 name: "Halters",
                 description: "Buy a gym equipment to training arms.",
                 amount: 2,
-            }),
+            })
         );
 
         const platform1Products = expectSuccess(await usecaseUser1.find());
@@ -226,16 +196,14 @@ describe("ProductUsecase", () => {
 
         expect(
             platform1Products.every(
-                (platformProducts) =>
-                    platformProducts.platformUID === user1.platformUID,
-            ),
+                (platformProducts) => platformProducts.platformUID === user1.platformUID
+            )
         ).toBe(true);
 
         expect(
             platform2Products.every(
-                (platformProducts) =>
-                    platformProducts.platformUID === user2.platformUID,
-            ),
+                (platformProducts) => platformProducts.platformUID === user2.platformUID
+            )
         ).toBe(true);
     });
 
@@ -250,20 +218,18 @@ describe("ProductUsecase", () => {
             usecaseUser1,
             makeProduct({ name: "Whey" }),
             makeProduct({ name: "Creatine" }),
-            makeProduct({ name: "Whey Isolate" }),
+            makeProduct({ name: "Whey Isolate" })
         );
 
         const products = expectSuccess(
             await usecaseUser1.find({
                 name: "Whey",
-            }),
+            })
         );
 
         expect(products).toHaveLength(2);
 
-        expect(products.every((product) => product.name.includes("Whey"))).toBe(
-            true,
-        );
+        expect(products.every((product) => product.name.includes("Whey"))).toBe(true);
     });
 
     test("Should filter products by description", async () => {
@@ -275,7 +241,7 @@ describe("ProductUsecase", () => {
         const products = expectSuccess(
             await usecaseUser1.find({
                 description: "Supplementation",
-            }),
+            })
         );
 
         expect(products).toHaveLength(1);
@@ -295,19 +261,17 @@ describe("ProductUsecase", () => {
                 name: "Halter 5KG",
                 description: "Buy a gym equipment to training arms.",
                 amount: 2,
-            }),
+            })
         );
 
         const foundProducts = expectSuccess(
             await usecaseUser2.find({
                 name: "Halter",
                 description: "arms",
-            }),
+            })
         );
 
-        expect(
-            foundProducts.every((product) => product.name.includes("Halter")),
-        ).toBe(true);
+        expect(foundProducts.every((product) => product.name.includes("Halter"))).toBe(true);
 
         expect(foundProducts).toHaveLength(2);
 
@@ -319,7 +283,7 @@ describe("ProductUsecase", () => {
                 expect.objectContaining({
                     name: createdProductB.name,
                 }),
-            ]),
+            ])
         );
     });
 
@@ -328,13 +292,13 @@ describe("ProductUsecase", () => {
             usecaseUser1,
             makeProduct({
                 name: "Creatine",
-            }),
+            })
         );
 
         const products = expectSuccess(
             await usecaseUser1.find({
                 name: "Banana",
-            }),
+            })
         );
 
         expect(products).toEqual([]);
@@ -345,21 +309,17 @@ describe("ProductUsecase", () => {
             usecaseUser1,
             makeProduct({ name: "Whey C" }),
             makeProduct({ name: "Whey A" }),
-            makeProduct({ name: "Whey B" }),
+            makeProduct({ name: "Whey B" })
         );
 
         const products = expectSuccess(
             await usecaseUser1.find({
                 orderBy: "name",
                 order: "asc",
-            }),
+            })
         );
 
-        expect(products.map((product) => product.name)).toEqual([
-            "Whey A",
-            "Whey B",
-            "Whey C",
-        ]);
+        expect(products.map((product) => product.name)).toEqual(["Whey A", "Whey B", "Whey C"]);
     });
 
     test("Should order products by name descending.", async () => {
@@ -367,21 +327,17 @@ describe("ProductUsecase", () => {
             usecaseUser1,
             makeProduct({ name: "A" }),
             makeProduct({ name: "C" }),
-            makeProduct({ name: "B" }),
+            makeProduct({ name: "B" })
         );
 
         const products = expectSuccess(
             await usecaseUser1.find({
                 orderBy: "name",
                 order: "desc",
-            }),
+            })
         );
 
-        expect(products.map((product) => product.name)).toEqual([
-            "C",
-            "B",
-            "A",
-        ]);
+        expect(products.map((product) => product.name)).toEqual(["C", "B", "A"]);
     });
 
     test("Should return first page.", async () => {
@@ -393,22 +349,19 @@ describe("ProductUsecase", () => {
             makeProduct({ name: "D" }),
             makeProduct({ name: "E" }),
             makeProduct({ name: "F" }),
-            makeProduct({ name: "G" }),
+            makeProduct({ name: "G" })
         );
 
         const products = expectSuccess(
             await usecaseUser1.find({
                 page: 1,
                 limit: 2,
-            }),
+            })
         );
 
         expect(products).toHaveLength(2);
 
-        expect(products.map((product) => product.name)).toEqual([
-            productA.name,
-            productB.name,
-        ]);
+        expect(products.map((product) => product.name)).toEqual([productA.name, productB.name]);
     });
 
     test("Should return second page.", async () => {
@@ -420,22 +373,19 @@ describe("ProductUsecase", () => {
             makeProduct({ name: "D" }),
             makeProduct({ name: "E" }),
             makeProduct({ name: "F" }),
-            makeProduct({ name: "G" }),
+            makeProduct({ name: "G" })
         );
 
         const products = expectSuccess(
             await usecaseUser1.find({
                 page: 2,
                 limit: 2,
-            }),
+            })
         );
 
         expect(products).toHaveLength(2);
 
-        expect(products.map((product) => product.name)).toEqual([
-            productC.name,
-            productD.name,
-        ]);
+        expect(products.map((product) => product.name)).toEqual([productC.name, productD.name]);
     });
 
     test("Should return remaining products on last page.", async () => {
@@ -445,19 +395,17 @@ describe("ProductUsecase", () => {
             makeProduct({ name: "Creatine B" }),
             makeProduct({ name: "Creatine C" }),
             makeProduct({ name: "Creatine D" }),
-            makeProduct({ name: "Creatine E" }),
+            makeProduct({ name: "Creatine E" })
         );
 
         const products = expectSuccess(
             await usecaseUser1.find({
                 page: 3,
                 limit: 2,
-            }),
+            })
         );
 
-        expect(products.map((product) => product.name)).toEqual([
-            productE.name,
-        ]);
+        expect(products.map((product) => product.name)).toEqual([productE.name]);
     });
 
     test("Should return empty list when page does not exist.", async () => {
@@ -467,7 +415,7 @@ describe("ProductUsecase", () => {
             await usecaseUser1.find({
                 page: 5,
                 limit: 10,
-            }),
+            })
         );
 
         expect(products).toEqual([]);
@@ -478,7 +426,7 @@ describe("ProductUsecase", () => {
             usecaseUser1,
             makeProduct({ name: "Whey B" }),
             makeProduct({ name: "Creatine" }),
-            makeProduct({ name: "Whey A" }),
+            makeProduct({ name: "Whey A" })
         );
 
         const products = expectSuccess(
@@ -486,13 +434,10 @@ describe("ProductUsecase", () => {
                 name: "Whey",
                 orderBy: "name",
                 order: "asc",
-            }),
+            })
         );
 
-        expect(products.map((product) => product.name)).toEqual([
-            productA.name,
-            productB.name,
-        ]);
+        expect(products.map((product) => product.name)).toEqual([productA.name, productB.name]);
     });
 
     test("Should order before paginate", async () => {
@@ -502,7 +447,7 @@ describe("ProductUsecase", () => {
             makeProduct({ name: "Whey A" }),
             makeProduct({ name: "Whey E" }),
             makeProduct({ name: "Whey C" }),
-            makeProduct({ name: "Whey B" }),
+            makeProduct({ name: "Whey B" })
         );
 
         const products = expectSuccess(
@@ -511,13 +456,10 @@ describe("ProductUsecase", () => {
                 order: "asc",
                 page: 2,
                 limit: 2,
-            }),
+            })
         );
 
-        expect(products.map((product) => product.name)).toEqual([
-            productC.name,
-            productD.name,
-        ]);
+        expect(products.map((product) => product.name)).toEqual([productC.name, productD.name]);
     });
 
     test("Should filter, order and paginate products", async () => {
@@ -527,7 +469,7 @@ describe("ProductUsecase", () => {
             makeProduct({ name: "Whey E" }),
             makeProduct({ name: "Whey A" }),
             makeProduct({ name: "Whey C" }),
-            makeProduct({ name: "Whey B" }),
+            makeProduct({ name: "Whey B" })
         );
 
         const products = expectSuccess(
@@ -537,13 +479,10 @@ describe("ProductUsecase", () => {
                 order: "asc",
                 page: 2,
                 limit: 2,
-            }),
+            })
         );
 
-        expect(products.map((product) => product.name)).toEqual([
-            productC.name,
-            productD.name,
-        ]);
+        expect(products.map((product) => product.name)).toEqual([productC.name, productD.name]);
     });
 
     test("Should empty products.", async () => {
@@ -551,11 +490,7 @@ describe("ProductUsecase", () => {
     });
 
     test("Should to delete a product.", async () => {
-        const [createdProductA] = await setupProducts(
-            usecaseUser1,
-            dataProduct1,
-            dataProduct2,
-        );
+        const [createdProductA] = await setupProducts(usecaseUser1, dataProduct1, dataProduct2);
 
         const productBefore = expectSuccess(await usecaseUser1.find());
 
@@ -565,9 +500,6 @@ describe("ProductUsecase", () => {
 
         expect(productBefore.length).not.toEqual(productAfter.length);
 
-        expectFailure(
-            await usecaseUser1.findByUID(createdProductA.uid),
-            ProductNotFoundError,
-        );
+        expectFailure(await usecaseUser1.findByUID(createdProductA.uid), ProductNotFoundError);
     });
 });

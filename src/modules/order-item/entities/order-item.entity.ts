@@ -1,6 +1,5 @@
 import { OrderItemProps } from "./order-item.props";
 
-
 export class OrderItemEntity implements OrderItemProps {
     uid!: string;
     productUID!: string;
@@ -8,12 +7,12 @@ export class OrderItemEntity implements OrderItemProps {
     platformUID!: string;
     unitPrice!: number;
     amount!: number;
+    createdBy!: string;
+    updatedBy!: string | null;
     createdAt!: Date;
-    updatedAt!:Date;
-    
+    updatedAt!: Date;
 
     constructor(props: OrderItemProps) {
         Object.assign(this, props);
     }
-
 }
