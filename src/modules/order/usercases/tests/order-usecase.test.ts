@@ -5,9 +5,9 @@ import { CreateOrderDTO } from "../../dtos/create-order.dto";
 import { UpdateOrderDTO } from "../../dtos/update-order.dto";
 import { OrderAlreadyExistsError } from "../../errors/order-already-exists.error";
 import { OrderNotFoundError } from "../../errors/order-not-found.error";
-import { scenario } from "../core/test-factory";
-import { expectCreateOrderFailure, setupOrder, setupOrders } from "../helpers/order.helper";
 import { OrderUsecase } from "../order.usecase";
+import { expectCreateOrderFailure, setupOrder, setupOrders } from "../setup/order.tests.setup";
+import { scenario } from "../setup/test-factory";
 
 describe("OrderUsecase", () => {
     const dataOrder1: CreateOrderDTO = {

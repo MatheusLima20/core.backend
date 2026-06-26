@@ -5,13 +5,13 @@ import { CreateOrderItemDTO } from "../../dtos/create-order-item.dto";
 import { UpdateOrderItemDTO } from "../../dtos/update-order-item.dto";
 import { OrderItemAlreadyExistsError } from "../../errors/order-item-already-exists.error";
 import { OrderItemNotFoundError } from "../../errors/order-item-not-found.error";
-import { scenario } from "../core/test-factory";
+import { OrderItemUsecase } from "../order-item.usecase";
 import {
     expectCreateOrderItemFailure,
     setupOrderItem,
     setupOrderItems,
-} from "../helpers/order-item.helper";
-import { OrderItemUsecase } from "../order-item.usecase";
+} from "../setup/order-tests.setup";
+import { scenario } from "../setup/test-factory";
 
 describe("OrderItemUsecase", () => {
     const dataOrderItem1: CreateOrderItemDTO = {

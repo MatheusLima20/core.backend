@@ -6,8 +6,12 @@ import { UpdateProductDTO } from "../../dtos/update-product.dto";
 import { ProductAlreadyExistsError } from "../../errors/product-already-exists.error";
 import { ProductNotFoundError } from "../../errors/product-not-found.error";
 import { ProductUsecase } from "../product.usecase";
-import { scenario } from "./core/test-factory";
-import { expectCreateProductFailure, setupProduct, setupProducts } from "./helpers/product.helper";
+import {
+    expectCreateProductFailure,
+    setupProduct,
+    setupProducts,
+} from "./setup/product-test.setup";
+import { scenario } from "./setup/test-factory";
 
 describe("ProductUsecase", () => {
     const dataProduct1: CreateProductDTO = {
