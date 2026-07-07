@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
 
-import { OrderNotFoundError } from "@/modules/order/errors/order-not-found.error";
-import { IOrderRepository } from "@/modules/order/repositories/order-repository.interface";
-import { ProductNotFoundError } from "@/modules/product/errors/product-not-found.error";
+import { OrderNotFoundError } from "@/modules/gym/order/errors/order-not-found.error";
+import { IOrderRepository } from "@/modules/gym/order/repositories/order-repository.interface";
+import { ProductNotFoundError } from "@/modules/gym/product/errors/product-not-found.error";
 import { RequestContext } from "@/shared/context/request-context";
 import { AppError } from "@/shared/errors/app.error";
 import { PersistenceError } from "@/shared/errors/persistence.error";

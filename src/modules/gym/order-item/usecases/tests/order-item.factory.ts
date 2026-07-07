@@ -1,5 +1,5 @@
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
-import { InMemoryOrderRepository } from "@/modules/order/repositories/implementations/in-memory-order.repository";
+import { InMemoryOrderRepository } from "@/modules/gym/order/repositories/implementations/in-memory-order.repository";
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { RequestContext } from "@/shared/context/request-context";
 

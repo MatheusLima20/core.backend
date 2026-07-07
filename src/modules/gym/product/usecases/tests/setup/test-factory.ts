@@ -1,5 +1,5 @@
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
-import { makeProductUsecase } from "@/modules/product/usecases/tests/factories/product-usecase.factory";
+import { makeProductUsecase } from "@/modules/gym/product/usecases/tests/factories/product-usecase.factory";
 
 import { TestContext } from "./test-context";
 
@@ -8,10 +8,7 @@ export class TestBuilder {
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {
-            const user = await makeLoggedUser(
-                this.testContext.userRepository,
-                uid,
-            );
+            const user = await makeLoggedUser(this.testContext.userRepository, uid);
             this.testContext.users.push(user);
         }
         return this;
@@ -19,9 +16,7 @@ export class TestBuilder {
 
     createUsecases() {
         this.testContext.usecases = this.testContext.users.map(
-            (user) =>
-                makeProductUsecase(user, this.testContext.productRepository)
-                    .usecase,
+            (user) => makeProductUsecase(user, this.testContext.productRepository).usecase
         );
         return this;
     }

@@ -1,4 +1,4 @@
-import { InMemoryOrderRepository } from "@/modules/order/repositories/implementations/in-memory-order.repository";
+import { InMemoryOrderRepository } from "@/modules/gym/order/repositories/implementations/in-memory-order.repository";
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { AuthUser } from "@/shared/context/auth.user";
 
