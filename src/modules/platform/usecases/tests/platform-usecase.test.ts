@@ -1,16 +1,19 @@
 import { CreatePlatformDTO } from "../../dto/create-platform.dto";
 import { UpdatePlatformDTO } from "../../dto/update-platform.dto";
+import { PlatformCategory } from "../../enum/platform.category-enum";
 import { InMemoryPlatformRepository } from "../../repositories/implementations/in-memory-platform.repository";
 import { PlatformUsecase } from "../platform.usecase";
 
 const platform: CreatePlatformDTO = {
     name: "Beautiful Lag.",
-    createdBy: '1',
+    category: PlatformCategory.GYM,
+    createdBy: "1",
 };
 
 const platform2: CreatePlatformDTO = {
     name: "Beautiful Arm.",
-    createdBy: '1'
+    category: PlatformCategory.ONBOARDLY,
+    createdBy: "1",
 };
 
 describe("PlatformUsecase", () => {
@@ -34,14 +37,16 @@ describe("PlatformUsecase", () => {
     test("Should not create duplicated platform", async () => {
         await usecase.create({
             name: "Beautiful Lag",
-            createdBy: '1'
+            category: PlatformCategory.GYM,
+            createdBy: "1",
         });
 
         await expect(
             usecase.create({
                 name: "Beautiful Lag",
-                createdBy: '1'
-            }),
+                category: PlatformCategory.GYM,
+                createdBy: "1",
+            })
         ).rejects.toThrow();
     });
 
@@ -53,7 +58,7 @@ describe("PlatformUsecase", () => {
             uid: result.uid,
             isActivated: true,
             name: "Beautiful Calf.",
-            updatedBy: '1'
+            updatedBy: "1",
         };
 
         const updatedPlatform = await usecase.update(updatePlatform);
@@ -64,7 +69,8 @@ describe("PlatformUsecase", () => {
     test("Should not updated platform duplicate name", async () => {
         await usecase.create({
             name: "Beautiful Lag",
-            createdBy: '1'
+            category: PlatformCategory.GYM,
+            createdBy: "1",
         });
         const result = await usecase.create(platform2);
 
@@ -73,15 +79,16 @@ describe("PlatformUsecase", () => {
                 uid: result.uid,
                 isActivated: true,
                 name: "Beautiful Lag",
-                updatedBy: '1'
-            }),
+                updatedBy: "1",
+            })
         ).rejects.toThrow();
     });
 
     test("Should find a platform by uid ", async () => {
         const lag = await usecase.create({
             name: "Beautiful Lag",
-            createdBy: '1'
+            category: PlatformCategory.GYM,
+            createdBy: "1",
         });
 
         const result = await usecase.findByUID(lag.uid);
@@ -94,7 +101,8 @@ describe("PlatformUsecase", () => {
     test("Should find a platform by name ", async () => {
         const lag = await usecase.create({
             name: "Beautiful Lag",
-            createdBy: '1'
+            category: PlatformCategory.GYM,
+            createdBy: "1",
         });
 
         const result = await usecase.findByName(lag.name);
@@ -109,7 +117,8 @@ describe("PlatformUsecase", () => {
         await usecase.create(platform2);
         await usecase.create({
             name: "Beautiful Lag",
-            createdBy: '1'
+            category: PlatformCategory.GYM,
+            createdBy: "1",
         });
 
         const result = await usecase.find();
@@ -122,7 +131,8 @@ describe("PlatformUsecase", () => {
         await usecase.create(platform2);
         await usecase.create({
             name: "Beautiful Lag",
-            createdBy: '1'
+            category: PlatformCategory.GYM,
+            createdBy: "1",
         });
 
         const isDeleted = await usecase.delete(result.uid);
@@ -131,8 +141,6 @@ describe("PlatformUsecase", () => {
 
         expect(isDeleted).toBe(true);
 
-        expect(platforms.every((platform) => platform.uid !== result.uid)).toBe(
-            true,
-        );
+        expect(platforms.every((platform) => platform.uid !== result.uid)).toBe(true);
     });
 });
