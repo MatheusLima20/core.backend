@@ -59,7 +59,7 @@ export class CourseUsecase {
     }
 
     async findByUID(uid: string): Promise<Result<CourseResponseDTO>> {
-        const result = await this.courseRepository.findByUID(uid, this.context.user.platformUID);
+        const result = await this.courseRepository.findByUID(this.context.user.platformUID, uid);
 
         const course = ResultMapper.requireData(
             result,
@@ -79,8 +79,8 @@ export class CourseUsecase {
 
     async update(data: UpdateCourseDTO): Promise<Result<UpdateCourseResponseDTO>> {
         const result = await this.courseRepository.findByUID(
-            data.uid,
-            this.context.user.platformUID
+            this.context.user.platformUID,
+            data.uid
         );
 
         if (!result.success) {

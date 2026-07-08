@@ -58,7 +58,7 @@ export class InMemoryCourseRepository implements ICourseRepository {
         return ResultFactory.success(courses);
     }
 
-    async findByUID(uid: string, platformUID: string): Promise<Result<CourseProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<CourseProps | null>> {
         const course =
             this.courses.find(
                 (course) => course.uid === uid && course.platformUID === platformUID

@@ -46,7 +46,7 @@ export const CourseMapper = {
         };
     },
 
-    toResponseDTOList: (products: CourseProps[]): CourseResponseDTO[] => {
-        return products.map(CourseMapper.toResponseDTO);
+    toResponseDTOList: (contents: CourseProps[]): CourseResponseDTO[] => {
+        return contents.map(CourseMapper.toResponseDTO);
     },
 };
