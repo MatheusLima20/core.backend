@@ -1,5 +1,14 @@
 {
-    "cSpell.words": ["dtos", "Interation", "Matheus", "ONBOARDLY", "uids", "usecase", "usecases"],
+    "cSpell.words": [
+        "dtos",
+        "Interation",
+        "Laravel",
+        "Matheus",
+        "ONBOARDLY",
+        "uids",
+        "usecase",
+        "usecases"
+    ],
 
     "editor.formatOnSave": true,
 
