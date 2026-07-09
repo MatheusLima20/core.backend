@@ -26,7 +26,7 @@ export class ContentUsecase {
     ) {}
 
     async create(data: CreateContentDTO): Promise<Result<CreateContentResponseDTO>> {
-        const validation = await this.validateContentAlreadyExists(data.title);
+        const validation = await this.validateContentAlreadyExists(data.lessonUID, data.title);
 
         if (!validation.success) {
             return validation;
@@ -71,10 +71,6 @@ export class ContentUsecase {
             data.uid
         );
 
-        if (!result.success) {
-            return result;
-        }
-
         const oldContent = ResultMapper.requireData(
             result,
             new ContentNotFoundError({
@@ -83,25 +79,22 @@ export class ContentUsecase {
         );
 
         if (!oldContent.success) {
-            return ResultFactory.failure(
-                new ContentNotFoundError({
-                    uid: data.uid,
-                })
-            );
+            return oldContent;
         }
 
-        if (data.title) {
-            const validation = await this.validateContentAlreadyExists(data.title, data.uid);
+        const lessonUID = data.lessonUID ?? oldContent.data.lessonUID;
+        const title = data.title ?? oldContent.data.title;
 
-            if (!validation.success) {
-                return validation;
-            }
+        const validation = await this.validateContentAlreadyExists(lessonUID, title, data.uid);
+
+        if (!validation.success) {
+            return validation;
         }
 
         const mergedContent = new ContentEntity({
             ...oldContent.data,
-
             ...data,
+
             updatedBy: this.context.user.uid,
             updatedAt: new Date(),
         });
@@ -128,10 +121,12 @@ export class ContentUsecase {
     }
 
     private async validateContentAlreadyExists(
+        lessonUID: string,
         title: string,
         uid?: string
     ): Promise<FailureResult<AppError> | SuccessResult<ContentProps | null>> {
         const result = await this.contentRepository.find(this.context.user.platformUID, {
+            lessonUID,
             title,
         });
 

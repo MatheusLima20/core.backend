@@ -136,8 +136,11 @@ describe("ContentUsecase - update", () => {
         expect(updated.title).toBe(content.title);
     });
 
-    test("Should not update duplicated content title", async () => {
-        const [content] = await setupContents(usecaseUser1, dataContent1, dataContent2);
+    test("Should not update duplicated content title in the same lesson", async () => {
+        const [content] = await setupContents(usecaseUser1, dataContent1, {
+            ...dataContent2,
+            lessonUID: dataContent1.lessonUID,
+        });
 
         expectFailure(
             await usecaseUser1.update({
