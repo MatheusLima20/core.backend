@@ -26,20 +26,15 @@ export class ContentUsecase {
     ) {}
 
     async create(data: CreateContentDTO): Promise<Result<CreateContentResponseDTO>> {
-        const validation = await this.validateContentAlreadyExists(data.lessonUID, data.title);
+        const validation = await this.validateContentAlreadyExists(data.title);
 
         if (!validation.success) {
             return validation;
         }
 
         const content = new ContentEntity({
+            ...data,
             uid: randomUUID(),
-            lessonUID: data.lessonUID,
-            title: data.title,
-            description: data.description,
-            type: data.type,
-            order: data.order,
-            isPreview: data.isPreview,
             platformUID: this.context.user.platformUID,
             createdBy: this.context.user.uid,
             updatedBy: null,

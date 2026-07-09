@@ -5,6 +5,7 @@ export interface FindContentsDTO {
     title?: string;
     description?: string;
     type?: ContentType;
+    lessonUID?: string;
     createdAt?: Date;
     updatedAt?: Date;
 

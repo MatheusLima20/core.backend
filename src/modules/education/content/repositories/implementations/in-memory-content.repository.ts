@@ -10,10 +10,10 @@ export class InMemoryContentRepository implements IContentRepository {
     private contents: ContentProps[] = [];
 
     async find(
-        lessonUID: string,
+        platformUID: string,
         filters?: FindContentsDTO
     ): Promise<Result<ContentProps[], PersistenceError>> {
-        let contents = this.contents.filter((content) => content.lessonUID === lessonUID);
+        let contents = this.contents.filter((content) => content.platformUID === platformUID);
 
         if (filters?.title) {
             const title = filters.title.toLowerCase();
@@ -31,6 +31,10 @@ export class InMemoryContentRepository implements IContentRepository {
 
         if (filters?.type) {
             contents = contents.filter((content) => content.type === filters.type);
+        }
+
+        if (filters?.lessonUID) {
+            contents = contents.filter((content) => content.lessonUID === filters.lessonUID);
         }
 
         if (filters?.orderBy) {
