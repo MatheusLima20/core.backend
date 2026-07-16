@@ -36,6 +36,19 @@ export class InMemoryUserRepository implements IUserRepository {
             createdAt: new Date(),
             updatedAt: new Date(),
         },
+        {
+            uid: "3",
+            name: "Nara",
+            email: "nara@email.com",
+            password: "hashed_12345678",
+            docNumberBusiness: null,
+            docNumberPerson: null,
+            gender: Gender.FEMALE,
+            userType: UserType.ADMINISTRATOR,
+            platformUID: "1",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        },
     ];
 
     async findByUID(uid: string): Promise<UserResponseDTO | null> {
@@ -63,9 +76,7 @@ export class InMemoryUserRepository implements IUserRepository {
         return UserMapper.toUserFindResponseList(users);
     }
     async find(platform: string): Promise<UserResponseDTO[]> {
-        const users = this.users.filter(
-            (users) => users.platformUID === platform,
-        );
+        const users = this.users.filter((users) => users.platformUID === platform);
 
         return UserMapper.toUserFindResponseList(users);
     }
@@ -75,9 +86,7 @@ export class InMemoryUserRepository implements IUserRepository {
         return user;
     }
     async update(user: UserProps): Promise<UpdateUserResponseDTO | null> {
-        const index = this.users.findIndex(
-            (oldUser) => oldUser.uid === user.uid,
-        );
+        const index = this.users.findIndex((oldUser) => oldUser.uid === user.uid);
 
         const updatedUser = (this.users[index] = user);
 

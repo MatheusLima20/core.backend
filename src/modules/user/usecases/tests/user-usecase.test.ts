@@ -99,7 +99,7 @@ describe("UserUsecase", () => {
 
         const result = await useCase.find("1");
 
-        expect(result).toHaveLength(4);
+        expect(result).toHaveLength(5);
     });
 
     test("should to get all registered users by type", async () => {
