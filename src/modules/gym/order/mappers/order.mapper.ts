@@ -20,11 +20,11 @@ export const OrderMapper = {
     },
 
     toUpdatedResponseDTO: (product: OrderProps): UpdateOrderResponseDTO => {
-            return {
-                uid: product.uid,
-                description: product.description,
-                updatedBy: product.updatedBy,
-                updatedAt: product.updatedAt,
-            };
-        },
+        return {
+            uid: product.uid,
+            description: product.description,
+            updatedBy: product.updatedBy,
+            updatedAt: product.updatedAt,
+        };
+    },
 };

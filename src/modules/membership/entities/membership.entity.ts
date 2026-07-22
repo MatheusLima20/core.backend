@@ -1,9 +1,7 @@
 import { MembershipRole } from "../enums/membership-role.enum";
 import { MembershipProps } from "./membership.props";
 
-
 export class Membership implements MembershipProps {
-    
     uid!: string;
     platformUID!: string;
     userUID!: string;
@@ -11,7 +9,6 @@ export class Membership implements MembershipProps {
     createdAt!: Date;
 
     constructor(props: MembershipProps) {
-        Object.assign(props);
+        Object.assign(this, props);
     }
-
 }
