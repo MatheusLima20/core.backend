@@ -18,12 +18,12 @@ describe("TransactionCategoryUsecase - create", () => {
     let usecaseUser2!: TransactionCategoryUsecase;
 
     let user1!: AuthUser;
-    //let user2!: AuthUser;
+    let user2!: AuthUser;
 
     beforeEach(async () => {
         ({
             usecases: [usecaseUser1, usecaseUser2],
-            users: [user1],
+            users: [user1, user2],
         } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
@@ -38,6 +38,42 @@ describe("TransactionCategoryUsecase - create", () => {
             platformUID: user1.platformUID,
 
             createdBy: user1.uid,
+
+            uid: expect.any(String),
+
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+        });
+    });
+
+    test("Should register transactions categories", async () => {
+        const category1 = await setupTransactionCategory(usecaseUser1, dataTransactionCategory1);
+
+        const category2 = await setupTransactionCategory(usecaseUser2, dataTransactionCategory2);
+
+        expect(category1).toMatchObject({
+            name: dataTransactionCategory1.name,
+            description: dataTransactionCategory1.description,
+            type: dataTransactionCategory1.type,
+
+            platformUID: user1.platformUID,
+
+            createdBy: user1.uid,
+
+            uid: expect.any(String),
+
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+        });
+
+        expect(category2).toMatchObject({
+            name: dataTransactionCategory2.name,
+            description: dataTransactionCategory2.description,
+            type: dataTransactionCategory2.type,
+
+            platformUID: user2.platformUID,
+
+            createdBy: user2.uid,
 
             uid: expect.any(String),
 

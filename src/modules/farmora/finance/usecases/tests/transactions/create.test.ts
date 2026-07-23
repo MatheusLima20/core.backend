@@ -11,13 +11,13 @@ describe("TransactionUsecase - create", () => {
     let transactionUsecaseUser2!: TransactionUsecase;
 
     let user1!: AuthUser;
-    //let user2!: AuthUser;
+    let user2!: AuthUser;
 
     beforeEach(async () => {
         ({
             usecases: [transactionUsecaseUser1, transactionUsecaseUser2],
 
-            users: [user1],
+            users: [user1, user2],
         } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
@@ -38,6 +38,54 @@ describe("TransactionUsecase - create", () => {
             amount: dataTransaction1.amount,
 
             occurredAt: dataTransaction1.occurredAt,
+
+            uid: expect.any(String),
+
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+        });
+    });
+
+    test("Should register transactions with different users", async () => {
+        const transaction1 = await setupTransaction(transactionUsecaseUser1, dataTransaction1);
+
+        const transaction2 = await setupTransaction(transactionUsecaseUser2, dataTransaction2);
+
+        expect(transaction1).toMatchObject({
+            platformUID: user1.platformUID,
+
+            createdBy: user1.uid,
+
+            categoryUID: dataTransaction1.categoryUID,
+
+            type: dataTransaction1.type,
+
+            description: dataTransaction1.description,
+
+            amount: dataTransaction1.amount,
+
+            occurredAt: dataTransaction1.occurredAt,
+
+            uid: expect.any(String),
+
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+        });
+
+        expect(transaction2).toMatchObject({
+            platformUID: user2.platformUID,
+
+            createdBy: user2.uid,
+
+            categoryUID: dataTransaction2.categoryUID,
+
+            type: dataTransaction2.type,
+
+            description: dataTransaction2.description,
+
+            amount: dataTransaction2.amount,
+
+            occurredAt: dataTransaction2.occurredAt,
 
             uid: expect.any(String),
 
