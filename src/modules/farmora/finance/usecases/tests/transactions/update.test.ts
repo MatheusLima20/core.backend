@@ -37,7 +37,6 @@ describe("TransactionUsecase - update", () => {
         };
 
         const updated = expectSuccess(await usecaseUser1.update(data));
-
         expect(updated).toMatchObject({
             uid: transaction.uid,
             categoryUID: data.categoryUID,
@@ -47,6 +46,7 @@ describe("TransactionUsecase - update", () => {
             occurredAt: data.occurredAt,
             notes: data.notes,
             updatedBy: user1.uid,
+            updatedAt: expect.any(Date),
         });
 
         const found = expectSuccess(await usecaseUser1.findByUID(transaction.uid));

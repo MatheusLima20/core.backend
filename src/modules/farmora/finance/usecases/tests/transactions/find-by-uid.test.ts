@@ -43,9 +43,6 @@ describe("TransactionUsecase - findByUID", () => {
             occurredAt: dataTransaction1.occurredAt,
 
             createdBy: user1.uid,
-
-            createdAt: transaction.createdAt,
-            updatedAt: transaction.updatedAt,
         });
     });
 
@@ -76,7 +73,7 @@ describe("TransactionUsecase - findByUID", () => {
 
                 description: dataTransaction1.description,
 
-                sourceType: dataTransaction1.source,
+                source: dataTransaction1.source,
                 sourceUID: dataTransaction1.sourceUID,
 
                 amount: dataTransaction1.amount,

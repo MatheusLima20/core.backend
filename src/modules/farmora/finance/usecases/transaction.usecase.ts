@@ -98,7 +98,7 @@ export class TransactionUsecase {
         const existing = await this.findByUID(uid);
 
         if (!existing.success) {
-            return existing;
+            return ResultFactory.failure(new TransactionNotFoundError({ uid }));
         }
 
         const deleted = await this.transactionRepository.delete(uid);

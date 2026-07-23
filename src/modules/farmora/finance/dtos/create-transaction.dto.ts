@@ -14,5 +14,5 @@ export type CreateTransactionDTO = Pick<
 
 export type CreateTransactionResponseDTO = Pick<
     TransactionProps,
-    "uid" | "description" | "amount" | "createdBy"
+    "uid" | "description" | "type" | "source" | "notes" | "sourceUID" | "amount" | "createdBy"
 >;

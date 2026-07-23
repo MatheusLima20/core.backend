@@ -27,7 +27,9 @@ export const TransactionCategoryMapper = {
         return {
             uid: category.uid,
             name: category.name,
+            type: category.type,
             description: category.description,
+            updatedBy: category.updatedBy,
             updatedAt: category.updatedAt,
         };
     },

@@ -126,7 +126,7 @@ export class TransactionCategoryUsecase {
         const existing = await this.findByUID(uid);
 
         if (!existing.success) {
-            return existing;
+            return ResultFactory.failure(new TransactionCategoryNotFoundError({ uid }));
         }
 
         const deleted = await this.transactionCategoryRepository.delete(uid);

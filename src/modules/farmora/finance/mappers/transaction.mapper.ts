@@ -30,7 +30,9 @@ export const TransactionMapper = {
         return {
             uid: transaction.uid,
             description: transaction.description,
+            type: transaction.type,
             amount: transaction.amount,
+            notes: transaction.notes,
             categoryUID: transaction.categoryUID,
             occurredAt: transaction.occurredAt,
             updatedBy: transaction.updatedBy,

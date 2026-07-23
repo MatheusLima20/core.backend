@@ -18,6 +18,7 @@ export type UpdateTransactionResponseDTO = Pick<
     | "uid"
     | "categoryUID"
     | "description"
+    | "type"
     | "notes"
     | "amount"
     | "occurredAt"

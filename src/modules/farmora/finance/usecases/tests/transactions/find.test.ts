@@ -17,7 +17,7 @@ describe("TransactionUsecase - find", () => {
         ({
             usecases: [usecaseUser1, usecaseUser2],
             users: [user1],
-        } = (await scenario().loadUsers(["1"])).createUsecases().build());
+        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
     test("Should find all platform transactions", async () => {

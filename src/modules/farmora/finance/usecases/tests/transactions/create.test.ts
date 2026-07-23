@@ -18,7 +18,7 @@ describe("TransactionUsecase - create", () => {
             usecases: [transactionUsecaseUser1, transactionUsecaseUser2],
 
             users: [user1],
-        } = (await scenario().loadUsers(["1"])).createUsecases().build());
+        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
     test("Should register a transaction", async () => {
