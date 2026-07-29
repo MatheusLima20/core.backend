@@ -1,0 +1,15 @@
+export enum LossReason {
+    BROKEN_EGGS = "BROKEN_EGGS",
+
+    FEED_WASTE = "FEED_WASTE",
+
+    DEAD_ANIMAL = "DEAD_ANIMAL",
+
+    EXPIRED_PRODUCT = "EXPIRED_PRODUCT",
+
+    THEFT = "THEFT",
+
+    DONATION = "DONATION",
+
+    OTHER = "OTHER",
+}
