@@ -1,6 +1,6 @@
-import { ResponseTransactionDTO } from "../transaction/dtos/transaction-response.dto";
-import { UpdateTransactionResponseDTO } from "../transaction/dtos/update-transaction.dto";
-import { TransactionProps } from "../transaction/entities/transaction.props";
+import { ResponseTransactionDTO } from "../dtos/transaction-response.dto";
+import { UpdateTransactionResponseDTO } from "../dtos/update-transaction.dto";
+import { TransactionProps } from "../entities/transaction.props";
 
 export const TransactionMapper = {
     toResponseDTO: (transaction: TransactionProps): ResponseTransactionDTO => {

@@ -1,9 +1,9 @@
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
-import { FindTransactionsDTO } from "../../transaction/dtos/find-transaction.dto";
-import { TransactionProps } from "../../transaction/entities/transaction.props";
-import { ITransactionRepository } from "../../transaction/repositories/transaction-repository.interface";
+import { FindTransactionsDTO } from "../../dtos/find-transaction.dto";
+import { TransactionProps } from "../../entities/transaction.props";
+import { ITransactionRepository } from "../transaction-repository.interface";
 
 export class InMemoryTransactionRepository implements ITransactionRepository {
     private transactions: TransactionProps[] = [];
