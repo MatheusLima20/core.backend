@@ -68,4 +68,26 @@ export const DateUtil = {
     ageInDays(date: Date): number {
         return this.daysBetween(date, new Date());
     },
+
+    isSameDay(dateA: Date, dateB: Date): boolean {
+        return (
+            dateA.getFullYear() === dateB.getFullYear() &&
+            dateA.getMonth() === dateB.getMonth() &&
+            dateA.getDate() === dateB.getDate()
+        );
+    },
+
+    isBefore(dateA: Date, dateB: Date): boolean {
+        return dateA.getTime() < dateB.getTime();
+    },
+
+    isAfter(dateA: Date, dateB: Date): boolean {
+        return dateA.getTime() > dateB.getTime();
+    },
+
+    differenceInDays(dateA: Date, dateB: Date): number {
+        const millisecondsPerDay = 1000 * 60 * 60 * 24;
+
+        return Math.floor(Math.abs(dateA.getTime() - dateB.getTime()) / millisecondsPerDay);
+    },
 };
