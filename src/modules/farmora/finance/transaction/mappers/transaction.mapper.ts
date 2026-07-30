@@ -1,3 +1,4 @@
+import { CreateTransactionResponseDTO } from "../dtos/create-transaction.dto";
 import { ResponseTransactionDTO } from "../dtos/transaction-response.dto";
 import { UpdateTransactionResponseDTO } from "../dtos/update-transaction.dto";
 import { TransactionProps } from "../entities/transaction.props";
@@ -24,6 +25,23 @@ export const TransactionMapper = {
 
     toResponseDTOList: (transactions: TransactionProps[]): ResponseTransactionDTO[] => {
         return transactions.map(TransactionMapper.toResponseDTO);
+    },
+
+    toCreateResponseDTO: (transaction: TransactionProps): CreateTransactionResponseDTO => {
+        return {
+            uid: transaction.uid,
+            platformUID: transaction.platformUID,
+            description: transaction.description,
+            occurredAt: transaction.occurredAt,
+            type: transaction.type,
+            amount: transaction.amount,
+            notes: transaction.notes,
+            categoryUID: transaction.categoryUID,
+            source: transaction.source,
+            sourceUID: transaction.sourceUID,
+            createdAt: transaction.createdAt,
+            createdBy: transaction.createdBy,
+        };
     },
 
     toUpdatedResponseDTO: (transaction: TransactionProps): UpdateTransactionResponseDTO => {

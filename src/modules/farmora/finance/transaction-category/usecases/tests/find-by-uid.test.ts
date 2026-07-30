@@ -41,7 +41,6 @@ describe("TransactionCategoryUsecase - findByUID", () => {
             createdBy: user1.uid,
 
             createdAt: category.createdAt,
-            updatedAt: category.updatedAt,
         });
     });
 

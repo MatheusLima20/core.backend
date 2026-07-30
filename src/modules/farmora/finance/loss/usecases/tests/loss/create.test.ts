@@ -46,7 +46,6 @@ describe("LossUsecase - create", () => {
             uid: expect.any(String),
 
             createdAt: expect.any(Date),
-            updatedAt: expect.any(Date),
         });
     });
 

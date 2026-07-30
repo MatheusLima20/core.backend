@@ -41,7 +41,7 @@ export class TransactionUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to create transaction."));
         }
 
-        return ResultFactory.success(created.data);
+        return ResultMapper.map(created, TransactionMapper.toCreateResponseDTO);
     }
 
     async findByUID(uid: string): Promise<Result<ResponseTransactionDTO>> {
@@ -50,11 +50,9 @@ export class TransactionUsecase {
             uid
         );
 
-        if (!result.success || !result.data) {
-            return ResultFactory.failure(new TransactionNotFoundError({ uid }));
-        }
+        const transaction = ResultMapper.requireData(result, new TransactionNotFoundError({ uid }));
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(transaction, TransactionMapper.toResponseDTO);
     }
 
     async find(filters?: FindTransactionsDTO): Promise<Result<ResponseTransactionDTO[]>> {
@@ -67,7 +65,7 @@ export class TransactionUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch transactions."));
         }
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(result, TransactionMapper.toResponseDTOList);
     }
 
     async update(data: UpdateTransactionDTO): Promise<Result<UpdateTransactionResponseDTO>> {

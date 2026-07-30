@@ -37,21 +37,15 @@ export class LossUsecase {
 
         const created = await this.lossRepository.register(loss);
 
-        if (!created.success) {
-            return ResultFactory.failure(new PersistenceError("Failed to create loss."));
-        }
-
-        return ResultFactory.success(created.data);
+        return ResultMapper.map(created, LossMapper.toCreateResponseDTO);
     }
 
     async findByUID(uid: string): Promise<Result<ResponseLossDTO>> {
         const result = await this.lossRepository.findByUID(this.context.user.platformUID, uid);
 
-        if (!result.success || !result.data) {
-            return ResultFactory.failure(new LossNotFoundError());
-        }
+        const loss = ResultMapper.requireData(result, new LossNotFoundError({ uid }));
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(loss, LossMapper.toResponseDTO);
     }
 
     async find(filters?: FindLossesDTO): Promise<Result<ResponseLossDTO[]>> {
@@ -61,7 +55,7 @@ export class LossUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch losses."));
         }
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(result, LossMapper.toResponseDTOList);
     }
 
     async update(data: UpdateLossDTO): Promise<Result<UpdateLossResponseDTO>> {
@@ -92,7 +86,7 @@ export class LossUsecase {
         const existing = await this.findByUID(uid);
 
         if (!existing.success) {
-            return ResultFactory.failure(new LossNotFoundError());
+            return ResultFactory.failure(new LossNotFoundError({ uid }));
         }
 
         const deleted = await this.lossRepository.delete(uid);

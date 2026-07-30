@@ -1,3 +1,4 @@
+import { CreateTransactionCategoryResponseDTO } from "../dtos/create-transaction-category.dto";
 import { TransactionCategoryResponseDTO } from "../dtos/transaction-category-response.dto";
 import { UpdateTransactionCategoryResponseDTO } from "../dtos/update-transaction-category.dto";
 import { TransactionCategoryProps } from "../entities/transaction-category.props";
@@ -10,6 +11,9 @@ export const TransactionCategoryMapper = {
             name: category.name,
             type: category.type,
             description: category.description,
+            color: category.color,
+            createdBy: category.createdBy,
+            updatedBy: category.updatedBy,
             createdAt: category.createdAt,
             updatedAt: category.updatedAt,
         };
@@ -19,6 +23,21 @@ export const TransactionCategoryMapper = {
         categories: TransactionCategoryProps[]
     ): TransactionCategoryResponseDTO[] => {
         return categories.map(TransactionCategoryMapper.toResponseDTO);
+    },
+
+    toCreatedResponseDTO: (
+        category: TransactionCategoryProps
+    ): CreateTransactionCategoryResponseDTO => {
+        return {
+            uid: category.uid,
+            color: category.color,
+            platformUID: category.platformUID,
+            name: category.name,
+            type: category.type,
+            description: category.description,
+            createdBy: category.createdBy,
+            createdAt: category.createdAt,
+        };
     },
 
     toUpdatedResponseDTO: (

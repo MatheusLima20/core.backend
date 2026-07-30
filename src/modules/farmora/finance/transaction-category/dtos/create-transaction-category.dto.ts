@@ -7,5 +7,5 @@ export type CreateTransactionCategoryDTO = Pick<
 
 export type CreateTransactionCategoryResponseDTO = Pick<
     TransactionCategoryProps,
-    "uid" | "name" | "createdBy"
+    "uid" | "name" | "description" | "color" | "platformUID" | "type" | "createdBy" | "createdAt"
 >;

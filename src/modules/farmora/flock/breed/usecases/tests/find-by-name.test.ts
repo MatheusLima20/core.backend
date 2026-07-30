@@ -1,5 +1,6 @@
-import { expectSuccess } from "@/shared/tests/result.helper";
+import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 
+import { BreedNotFoundError } from "../../errors/breed-not-found.error";
 import { BreedUsecase } from "../breed.usecase";
 import { dataBreed1, dataBreed2 } from "./factories/breed-data.factory";
 import { scenario } from "./setup/breed.builder";
@@ -51,16 +52,12 @@ describe("BreedUsecase - findByName", () => {
     test("Should return null when breed does not exist", async () => {
         await setupBreeds(usecaseUser1, dataBreed1, dataBreed2);
 
-        const found = expectSuccess(await usecaseUser1.findByName("Hy-Line Brown"));
-
-        expect(found).toBeNull();
+        expectFailure(await usecaseUser1.findByName("Hy-Line Brown"), BreedNotFoundError);
     });
 
     test("Should not find breed from another platform", async () => {
         await setupBreed(usecaseUser1, dataBreed1);
 
-        const found = expectSuccess(await usecaseUser2.findByName(dataBreed1.name));
-
-        expect(found).toBeNull();
+        expectFailure(await usecaseUser2.findByName(dataBreed1.name), BreedNotFoundError);
     });
 });

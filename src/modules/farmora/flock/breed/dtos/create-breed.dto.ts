@@ -14,5 +14,6 @@ export type CreateBreedResponseDTO = Pick<
     | "description"
     | "eggColor"
     | "breedPurpose"
+    | "createdAt"
     | "createdBy"
 >;

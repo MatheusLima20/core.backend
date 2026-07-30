@@ -1,4 +1,5 @@
 import { ResponseBreedDTO } from "../dtos/breed-response.dto";
+import { CreateBreedResponseDTO } from "../dtos/create-breed.dto";
 import { UpdateBreedResponseDTO } from "../dtos/update-breed.dto";
 import { BreedProps } from "../entities/breed.props";
 
@@ -21,6 +22,20 @@ export const BreedMapper = {
 
     toResponseDTOList: (breeds: BreedProps[]): ResponseBreedDTO[] => {
         return breeds.map(BreedMapper.toResponseDTO);
+    },
+
+    toCreateResponseDTO: (breed: BreedProps): CreateBreedResponseDTO => {
+        return {
+            uid: breed.uid,
+            platformUID: breed.platformUID,
+            name: breed.name,
+            scientificName: breed.scientificName,
+            eggColor: breed.eggColor,
+            breedPurpose: breed.breedPurpose,
+            description: breed.description,
+            createdAt: breed.createdAt,
+            createdBy: breed.createdBy,
+        };
     },
 
     toUpdatedResponseDTO: (breed: BreedProps): UpdateBreedResponseDTO => {

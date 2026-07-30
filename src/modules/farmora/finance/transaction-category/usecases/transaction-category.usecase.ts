@@ -7,14 +7,17 @@ import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
 import { ResultMapper } from "@/shared/result/result.mapper";
 
-import { CreateTransactionCategoryDTO } from "../dtos/create-transaction-category.dto";
+import {
+    CreateTransactionCategoryDTO,
+    CreateTransactionCategoryResponseDTO,
+} from "../dtos/create-transaction-category.dto";
 import { FindTransactionCategoriesDTO } from "../dtos/find-transaction-category.dto";
+import { TransactionCategoryResponseDTO } from "../dtos/transaction-category-response.dto";
 import {
     UpdateTransactionCategoryDTO,
     UpdateTransactionCategoryResponseDTO,
 } from "../dtos/update-transaction-category.dto";
 import { TransactionCategoryEntity } from "../entities/transaction-category.entity";
-import { TransactionCategoryProps } from "../entities/transaction-category.props";
 import { TransactionCategoryAlreadyExistsError } from "../errors/transaction-category-already-exists.error";
 import { TransactionCategoryNotFoundError } from "../errors/transaction-category-not-found.error";
 import { TransactionCategoryMapper } from "../mappers/transaction-category.mapper";
@@ -26,7 +29,9 @@ export class TransactionCategoryUsecase {
         private readonly transactionCategoryRepository: ITransactionCategoryRepository
     ) {}
 
-    async create(data: CreateTransactionCategoryDTO): Promise<Result<TransactionCategoryProps>> {
+    async create(
+        data: CreateTransactionCategoryDTO
+    ): Promise<Result<CreateTransactionCategoryResponseDTO>> {
         const validation = await this.validateCategoryAlreadyExists(data.name);
 
         if (!validation.success) {
@@ -55,25 +60,26 @@ export class TransactionCategoryUsecase {
             );
         }
 
-        return ResultFactory.success(created.data);
+        return ResultMapper.map(created, TransactionCategoryMapper.toCreatedResponseDTO);
     }
 
-    async findByUID(uid: string): Promise<Result<TransactionCategoryProps>> {
+    async findByUID(uid: string): Promise<Result<TransactionCategoryResponseDTO>> {
         const result = await this.transactionCategoryRepository.findByUID(
             this.context.user.platformUID,
             uid
         );
 
-        if (!result.success || !result.data) {
-            return ResultFactory.failure(new TransactionCategoryNotFoundError({ uid }));
-        }
+        const category = ResultMapper.requireData(
+            result,
+            new TransactionCategoryNotFoundError({ uid })
+        );
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(category, TransactionCategoryMapper.toResponseDTO);
     }
 
     async find(
         filters?: FindTransactionCategoriesDTO
-    ): Promise<Result<TransactionCategoryProps[]>> {
+    ): Promise<Result<TransactionCategoryResponseDTO[]>> {
         const result = await this.transactionCategoryRepository.find(
             filters,
             this.context.user.platformUID
@@ -85,7 +91,7 @@ export class TransactionCategoryUsecase {
             );
         }
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(result, TransactionCategoryMapper.toResponseDTOList);
     }
 
     async update(
@@ -143,7 +149,7 @@ export class TransactionCategoryUsecase {
     private async validateCategoryAlreadyExists(
         name: string,
         uid?: string
-    ): Promise<Result<TransactionCategoryProps | null>> {
+    ): Promise<Result<TransactionCategoryResponseDTO | null>> {
         const result = await this.transactionCategoryRepository.find(
             {
                 name,

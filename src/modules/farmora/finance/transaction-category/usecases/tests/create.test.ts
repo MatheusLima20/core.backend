@@ -42,7 +42,6 @@ describe("TransactionCategoryUsecase - create", () => {
             uid: expect.any(String),
 
             createdAt: expect.any(Date),
-            updatedAt: expect.any(Date),
         });
     });
 
@@ -63,7 +62,6 @@ describe("TransactionCategoryUsecase - create", () => {
             uid: expect.any(String),
 
             createdAt: expect.any(Date),
-            updatedAt: expect.any(Date),
         });
 
         expect(category2).toMatchObject({
@@ -78,7 +76,6 @@ describe("TransactionCategoryUsecase - create", () => {
             uid: expect.any(String),
 
             createdAt: expect.any(Date),
-            updatedAt: expect.any(Date),
         });
     });
 

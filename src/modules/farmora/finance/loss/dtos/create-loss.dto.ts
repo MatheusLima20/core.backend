@@ -19,8 +19,11 @@ export type CreateLossResponseDTO = Pick<
     | "productUID"
     | "transactionUID"
     | "quantity"
+    | "totalCost"
+    | "occurredAt"
     | "unitCost"
     | "description"
     | "reason"
+    | "createdAt"
     | "createdBy"
 >;

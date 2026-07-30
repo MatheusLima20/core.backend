@@ -44,41 +44,29 @@ export class BreedUsecase {
 
         const created = await this.breedRepository.register(breed);
 
-        if (!created.success) {
-            return ResultFactory.failure(new PersistenceError("Failed to create breed."));
-        }
-
-        return ResultFactory.success(created.data);
+        return ResultMapper.map(created, BreedMapper.toCreateResponseDTO);
     }
 
     async findByUID(uid: string): Promise<Result<ResponseBreedDTO>> {
         const result = await this.breedRepository.findByUID(this.context.user.platformUID, uid);
 
-        if (!result.success || !result.data) {
-            return ResultFactory.failure(new BreedNotFoundError());
-        }
+        const breed = ResultMapper.requireData(result, new BreedNotFoundError({ uid }));
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(breed, BreedMapper.toResponseDTO);
     }
 
     async findByName(name: string): Promise<Result<ResponseBreedDTO | null>> {
         const result = await this.breedRepository.findByName(this.context.user.platformUID, name);
 
-        if (!result.success || !result.data) {
-            return ResultFactory.success(null);
-        }
+        const breed = ResultMapper.requireData(result, new BreedNotFoundError({ name }));
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(breed, BreedMapper.toResponseDTO);
     }
 
     async find(filters?: FindBreedsDTO): Promise<Result<ResponseBreedDTO[]>> {
         const result = await this.breedRepository.find(this.context.user.platformUID, filters);
 
-        if (!result.success) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch breeds."));
-        }
-
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(result, BreedMapper.toResponseDTOList);
     }
 
     async update(data: UpdateBreedDTO): Promise<Result<UpdateBreedResponseDTO>> {
@@ -106,10 +94,6 @@ export class BreedUsecase {
 
         const updated = await this.breedRepository.update(breed);
 
-        if (!updated.success) {
-            return ResultFactory.failure(new PersistenceError("Failed to update breed."));
-        }
-
         return ResultMapper.map(updated, BreedMapper.toUpdatedResponseDTO);
     }
 
@@ -117,7 +101,7 @@ export class BreedUsecase {
         const existing = await this.findByUID(uid);
 
         if (!existing.success) {
-            return ResultFactory.failure(new BreedNotFoundError());
+            return ResultFactory.failure(new BreedNotFoundError({ uid }));
         }
 
         const deleted = await this.breedRepository.delete(uid);
