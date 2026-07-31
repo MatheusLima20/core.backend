@@ -1,7 +1,6 @@
 import { AuthUser } from "@/shared/context/auth.user";
-import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
+import { expectSuccess } from "@/shared/tests/result.helper";
 
-import { BreedNotFoundError } from "../../errors/breed-not-found.error";
 import { BreedUsecase } from "../breed.usecase";
 import { dataBreed1 } from "./factories/breed-data.factory";
 import { scenario } from "./setup/breed.builder";
@@ -50,13 +49,17 @@ describe("BreedUsecase - findByUID", () => {
     });
 
     test("Should return BreedNotFoundError when uid does not exist", async () => {
-        expectFailure(await usecaseUser1.findByUID("invalid-uid"), BreedNotFoundError);
+        const find = expectSuccess(await usecaseUser1.findByUID("invalid-uid"));
+
+        expect(find).toBe(null);
     });
 
     test("Should not find a breed from another platform", async () => {
         const breed = await setupBreed(usecaseUser1, dataBreed1);
 
-        expectFailure(await usecaseUser2.findByUID(breed.uid), BreedNotFoundError);
+        const find = expectSuccess(await usecaseUser2.findByUID(breed.uid));
+
+        expect(find).toBe(null);
     });
 
     test("Should return all persisted breed data", async () => {
@@ -87,6 +90,6 @@ describe("BreedUsecase - findByUID", () => {
             })
         );
 
-        expect(found.createdBy).not.toBe(user2.uid);
+        expect(found?.createdBy).not.toBe(user2.uid);
     });
 });

@@ -28,7 +28,9 @@ describe("BreedUsecase - delete", () => {
         expect(before).toHaveLength(1);
         expect(after).toHaveLength(0);
 
-        expectFailure(await usecaseUser1.findByUID(breed.uid), BreedNotFoundError);
+        const find = expectSuccess(await usecaseUser1.findByUID(breed.uid));
+
+        expect(find).toBe(null);
     });
 
     test("Should delete only selected breed", async () => {
@@ -36,11 +38,13 @@ describe("BreedUsecase - delete", () => {
 
         expectSuccess(await usecaseUser1.delete(breedA.uid));
 
-        expectFailure(await usecaseUser1.findByUID(breedA.uid), BreedNotFoundError);
+        const find = expectSuccess(await usecaseUser1.findByUID(breedA.uid));
+
+        expect(find).toBe(null);
 
         const remaining = expectSuccess(await usecaseUser1.findByUID(breedB.uid));
 
-        expect(remaining.uid).toBe(breedB.uid);
+        expect(remaining?.uid).toBe(breedB.uid);
     });
 
     test("Should not delete an inexistent breed", async () => {
@@ -75,6 +79,8 @@ describe("BreedUsecase - delete", () => {
             expect.arrayContaining([breedA.uid, breedC.uid])
         );
 
-        expectFailure(await usecaseUser1.findByUID(breedB.uid), BreedNotFoundError);
+        const find = expectSuccess(await usecaseUser1.findByUID(breedB.uid));
+
+        expect(find).toBe(null);
     });
 });

@@ -4,6 +4,7 @@ import { RequestContext } from "@/shared/context/request-context";
 import { PersistenceError } from "@/shared/errors/persistence.error";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
 import { ResultMapper } from "@/shared/result/result.mapper";
 
 import { ResponseBreedDTO } from "../dtos/breed-response.dto";
@@ -25,8 +26,8 @@ export class BreedUsecase {
     async create(data: CreateBreedDTO): Promise<Result<CreateBreedResponseDTO>> {
         const validation = await this.validateBreedAlreadyExists(data.name);
 
-        if (!validation.success) {
-            return ResultFactory.failure(new BreedAlreadyExistsError(data.name));
+        if (isFailure(validation)) {
+            return validation;
         }
 
         const breed = new BreedEntity({
@@ -47,20 +48,36 @@ export class BreedUsecase {
         return ResultMapper.map(created, BreedMapper.toCreateResponseDTO);
     }
 
-    async findByUID(uid: string): Promise<Result<ResponseBreedDTO>> {
+    async findByUID(uid: string): Promise<Result<ResponseBreedDTO | null>> {
         const result = await this.breedRepository.findByUID(this.context.user.platformUID, uid);
 
-        const breed = ResultMapper.requireData(result, new BreedNotFoundError({ uid }));
+        if (isFailure(result)) {
+            return ResultFactory.success(null);
+        }
 
-        return ResultMapper.map(breed, BreedMapper.toResponseDTO);
+        const breed = result.data;
+
+        if (!breed) {
+            return ResultFactory.success(null);
+        }
+
+        return ResultMapper.map(ResultFactory.success(breed), BreedMapper.toResponseDTO);
     }
 
     async findByName(name: string): Promise<Result<ResponseBreedDTO | null>> {
         const result = await this.breedRepository.findByName(this.context.user.platformUID, name);
 
-        const breed = ResultMapper.requireData(result, new BreedNotFoundError({ name }));
+        if (isFailure(result)) {
+            return ResultFactory.success(null);
+        }
 
-        return ResultMapper.map(breed, BreedMapper.toResponseDTO);
+        const breed = result.data;
+
+        if (!breed) {
+            return ResultFactory.success(null);
+        }
+
+        return ResultMapper.map(ResultFactory.success(breed), BreedMapper.toResponseDTO);
     }
 
     async find(filters?: FindBreedsDTO): Promise<Result<ResponseBreedDTO[]>> {
@@ -72,8 +89,17 @@ export class BreedUsecase {
     async update(data: UpdateBreedDTO): Promise<Result<UpdateBreedResponseDTO>> {
         const existing = await this.findByUID(data.uid);
 
-        if (!existing.success) {
+        if (isFailure(existing)) {
             return existing;
+        }
+
+        const requiredBreed = ResultMapper.requireData(
+            existing,
+            new BreedNotFoundError({ uid: data.uid })
+        );
+
+        if (isFailure(requiredBreed)) {
+            return requiredBreed;
         }
 
         if (data.name) {
@@ -85,7 +111,7 @@ export class BreedUsecase {
         }
 
         const breed = new BreedEntity({
-            ...existing.data,
+            ...requiredBreed.data,
             ...data,
 
             updatedBy: this.context.user.uid,
@@ -100,13 +126,17 @@ export class BreedUsecase {
     async delete(uid: string): Promise<Result<void>> {
         const existing = await this.findByUID(uid);
 
-        if (!existing.success) {
+        if (isFailure(existing)) {
+            return existing;
+        }
+
+        if (existing.data === null) {
             return ResultFactory.failure(new BreedNotFoundError({ uid }));
         }
 
         const deleted = await this.breedRepository.delete(uid);
 
-        if (!deleted.success) {
+        if (isFailure(deleted)) {
             return ResultFactory.failure(new PersistenceError("Failed to delete breed."));
         }
 
@@ -119,7 +149,7 @@ export class BreedUsecase {
             name.trim()
         );
 
-        if (!result.success) {
+        if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to validate breed."));
         }
 
