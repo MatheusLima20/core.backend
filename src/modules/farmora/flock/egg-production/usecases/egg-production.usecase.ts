@@ -5,6 +5,7 @@ import { FlockClosedError } from "@/shared/errors/flock-closed.error";
 import { PersistenceError } from "@/shared/errors/persistence.error";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
 import { ResultMapper } from "@/shared/result/result.mapper";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
@@ -41,14 +42,14 @@ export class EggProductionUsecase {
             data.productionDate
         );
 
-        if (!validation.success) {
-            return ResultFactory.failure(new EggProductionAlreadyRegisteredError());
+        if (isFailure(validation)) {
+            return validation;
         }
 
         const flockValidation = await this.validateFlock(data.flockUID, data.totalEggs);
 
-        if (!flockValidation.success) {
-            return ResultFactory.failure(new FlockNotFoundError({}));
+        if (isFailure(flockValidation)) {
+            return flockValidation;
         }
 
         const productionValidation = await this.validateProductionAlreadyRegistered(
@@ -56,8 +57,8 @@ export class EggProductionUsecase {
             data.productionDate
         );
 
-        if (!productionValidation.success) {
-            return ResultFactory.failure(new EggProductionAlreadyRegisteredError());
+        if (isFailure(productionValidation)) {
+            return productionValidation;
         }
 
         const eggProduction = new EggProductionEntity({
@@ -75,25 +76,30 @@ export class EggProductionUsecase {
 
         const created = await this.eggProductionRepository.register(eggProduction);
 
-        if (!created.success) {
+        if (isFailure(created)) {
             return ResultFactory.failure(new PersistenceError("Failed to create egg production."));
         }
 
         return ResultMapper.map(created, EggProductionMapper.toCreateResponseDTO);
     }
 
-    async findByUID(uid: string): Promise<Result<ResponseEggProductionDTO>> {
+    async findByUID(uid: string): Promise<Result<ResponseEggProductionDTO | null>> {
         const result = await this.eggProductionRepository.findByUID(
             this.context.user.platformUID,
             uid
         );
 
-        const eggProduction = ResultMapper.requireData(
-            result,
-            new EggProductionNotFoundError({ uid })
-        );
+        if (isFailure(result)) {
+            return ResultFactory.success(null);
+        }
 
-        return ResultMapper.map(eggProduction, EggProductionMapper.toResponseDTO);
+        const egg = result.data;
+
+        if (!egg) {
+            return ResultFactory.success(null);
+        }
+
+        return ResultMapper.map(ResultFactory.success(egg), EggProductionMapper.toResponseDTO);
     }
 
     async findByFlockAndDate(
@@ -106,13 +112,17 @@ export class EggProductionUsecase {
             productionDate
         );
 
-        if (!result.success) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch egg production."));
+        if (isFailure(result)) {
+            return ResultFactory.success(null);
         }
 
-        const egg = ResultMapper.requireData(result, new EggProductionNotFoundError({}));
+        if (!result.data) {
+            return ResultFactory.success(null);
+        }
 
-        return ResultMapper.map(egg, EggProductionMapper.toResponseDTO);
+        const egg = result.data;
+
+        return ResultMapper.map(ResultFactory.success(egg), EggProductionMapper.toResponseDTO);
     }
 
     async find(filters?: FindEggProductionsDTO): Promise<Result<ResponseEggProductionDTO[]>> {
@@ -121,7 +131,7 @@ export class EggProductionUsecase {
             filters
         );
 
-        if (!result.success) {
+        if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch egg productions."));
         }
 
@@ -131,12 +141,29 @@ export class EggProductionUsecase {
     async update(data: UpdateEggProductionDTO): Promise<Result<UpdateEggProductionResponseDTO>> {
         const existing = await this.findByUID(data.uid);
 
-        if (!existing.success) {
+        if (isFailure(existing)) {
             return existing;
         }
 
+        const requiredEgg = ResultMapper.requireData(
+            existing,
+            new EggProductionNotFoundError({ uid: data.uid })
+        );
+
+        if (isFailure(requiredEgg)) {
+            return requiredEgg;
+        }
+
+        if (data.flockUID) {
+            const flockValidation = await this.validateFlock(data.flockUID, data.totalEggs ?? 0);
+
+            if (isFailure(flockValidation)) {
+                return flockValidation;
+            }
+        }
+
         const eggProduction = new EggProductionEntity({
-            ...existing.data,
+            ...requiredEgg.data,
             ...data,
 
             updatedBy: this.context.user.uid,
@@ -149,13 +176,13 @@ export class EggProductionUsecase {
             eggProduction.uid
         );
 
-        if (!validation.success) {
-            return ResultFactory.failure(new EggProductionAlreadyRegisteredError());
+        if (isFailure(validation)) {
+            return validation;
         }
 
         const updated = await this.eggProductionRepository.update(eggProduction);
 
-        if (!updated.success) {
+        if (isFailure(updated)) {
             return ResultFactory.failure(new PersistenceError("Failed to update egg production."));
         }
 
@@ -165,13 +192,13 @@ export class EggProductionUsecase {
     async delete(uid: string): Promise<Result<void>> {
         const existing = await this.findByUID(uid);
 
-        if (!existing.success) {
+        if (isFailure(existing)) {
             return ResultFactory.failure(new EggProductionNotFoundError({ uid }));
         }
 
         const deleted = await this.eggProductionRepository.delete(uid);
 
-        if (!deleted.success) {
+        if (isFailure(deleted)) {
             return ResultFactory.failure(new PersistenceError("Failed to delete egg production."));
         }
 
@@ -189,7 +216,7 @@ export class EggProductionUsecase {
             productionDate
         );
 
-        if (!result.success) {
+        if (isFailure(result)) {
             return ResultFactory.failure(
                 new PersistenceError("Failed to validate egg production.")
             );
@@ -202,12 +229,15 @@ export class EggProductionUsecase {
         return ResultFactory.ok();
     }
 
-    private async validateFlock(flockUID: string, totalEggs: number): Promise<Result<void>> {
+    private async validateFlock(
+        flockUID: string,
+        totalEggs: number
+    ): Promise<Result<void, FlockNotFoundError | FlockClosedError | InvalidEggProductionError>> {
         const flock = await this.flockRepository.findByUID(this.context.user.platformUID, flockUID);
 
         const existing = ResultMapper.requireData(flock, new FlockNotFoundError({ uid: flockUID }));
 
-        if (!existing.success) {
+        if (isFailure(existing)) {
             return ResultFactory.failure(new FlockNotFoundError({ uid: flockUID }));
         }
 

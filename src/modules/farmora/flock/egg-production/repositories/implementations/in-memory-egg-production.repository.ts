@@ -31,7 +31,7 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
         const eggProduction =
             this.eggProductions.find(
                 (eggProduction) =>
-                    StringUtil.equals(eggProduction.platformUID!, platformUID) &&
+                    StringUtil.equals(eggProduction.platformUID, platformUID) &&
                     StringUtil.equals(eggProduction.flockUID, flockUID) &&
                     DateUtil.isSameDay(eggProduction.productionDate, productionDate)
             ) ?? null;

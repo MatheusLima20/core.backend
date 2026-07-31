@@ -1,7 +1,6 @@
 import { AuthUser } from "@/shared/context/auth.user";
-import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
+import { expectSuccess } from "@/shared/tests/result.helper";
 
-import { FlockNotFoundError } from "../../errors/flock-not-found.error";
 import { FlockUsecase } from "../flock.usecase";
 import { activeFlock } from "./factories/flock-data.factory";
 import { scenario } from "./setup/flock-builder";
@@ -51,14 +50,18 @@ describe("FlockUsecase - findByUID", () => {
         });
     });
 
-    test("Should return FlockNotFoundError when uid does not exist", async () => {
-        expectFailure(await usecaseUser1.findByUID("invalid-uid"), FlockNotFoundError);
+    test("Should return null when uid does not exist", async () => {
+        const find = expectSuccess(await usecaseUser1.findByUID("invalid-uid"));
+
+        expect(find).toBe(null);
     });
 
     test("Should not find a flock from another platform", async () => {
         const flock = await setupFlock(usecaseUser1, activeFlock);
 
-        expectFailure(await usecaseUser2.findByUID(flock.uid), FlockNotFoundError);
+        const find = expectSuccess(await usecaseUser2.findByUID(flock.uid));
+
+        expect(find).toBe(null);
     });
 
     test("Should return all persisted flock data", async () => {
@@ -91,6 +94,6 @@ describe("FlockUsecase - findByUID", () => {
             })
         );
 
-        expect(found.createdBy).not.toBe(user2.uid);
+        expect(found?.createdBy).not.toBe(user2.uid);
     });
 });

@@ -22,7 +22,7 @@ describe("EggProductionUsecase - findByFlockAndDate", () => {
             eggProductionUsecases: [usecaseUser1, usecaseUser2],
             flockUsecases: [flockUsecaseUser1],
             users: [user1],
-        } = (await scenario().loadUsers(["1"])).createUsecases().build());
+        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
     test("Should find egg production by flock and date", async () => {

@@ -4,7 +4,7 @@ import { expectSuccess } from "@/shared/tests/result.helper";
 import { FlockUsecase } from "../../../flock/usecases/flock.usecase";
 import {
     activeFlock,
-    closedFlock,
+    smallFlock,
 } from "../../../flock/usecases/tests/factories/flock-data.factory";
 import { setupFlock } from "../../../flock/usecases/tests/setup/flock-tests.setup";
 import { EggProductionUsecase } from "../egg-production.usecase";
@@ -60,7 +60,7 @@ describe("EggProductionUsecase - find", () => {
     test("Should filter productions by flock", async () => {
         const flockA = await setupFlock(flockUsecaseUser1, activeFlock);
 
-        const flockB = await setupFlock(flockUsecaseUser1, closedFlock);
+        const flockB = await setupFlock(flockUsecaseUser1, smallFlock);
 
         await setupEggProduction(
             usecaseUser1,
@@ -73,7 +73,8 @@ describe("EggProductionUsecase - find", () => {
             usecaseUser1,
             makeEggProduction({
                 flockUID: flockB.uid,
-                productionDate: new Date("2026-07-29"),
+                totalEggs: 20,
+                productionDate: new Date("2026-07-10"),
             })
         );
 
@@ -221,7 +222,7 @@ describe("EggProductionUsecase - find", () => {
             usecaseUser1,
             makeEggProduction({
                 flockUID: flock.uid,
-                totalEggs: 150,
+                totalEggs: 110,
                 productionDate: new Date("2026-07-30"),
             })
         );

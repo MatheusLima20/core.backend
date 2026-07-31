@@ -79,7 +79,7 @@ describe("EggProductionUsecase - update", () => {
 
         expect(found).toMatchObject(updated);
 
-        expect(found.updatedBy).not.toBe(user2.uid);
+        expect(found?.updatedBy).not.toBe(user2.uid);
     });
 
     test("Should update only total eggs", async () => {
@@ -202,6 +202,7 @@ describe("EggProductionUsecase - update", () => {
         expectFailure(
             await usecaseUser1.update({
                 uid: production.uid,
+                flockUID: flock1.uid,
                 totalEggs: flock1.quantity + 1,
             }),
             InvalidEggProductionError

@@ -33,7 +33,9 @@ describe("FlockUsecase - delete", () => {
 
         expect(after).toHaveLength(0);
 
-        expectFailure(await usecaseUser1.findByUID(flock.uid), FlockNotFoundError);
+        const find = expectSuccess(await usecaseUser1.findByUID(flock.uid));
+
+        expect(find).toBe(null);
     });
 
     test("Should delete only selected flock", async () => {
@@ -41,11 +43,13 @@ describe("FlockUsecase - delete", () => {
 
         expectSuccess(await usecaseUser1.delete(flockA.uid));
 
-        expectFailure(await usecaseUser1.findByUID(flockA.uid), FlockNotFoundError);
+        const find = expectSuccess(await usecaseUser1.findByUID(flockA.uid));
+
+        expect(find).toBe(null);
 
         const remaining = expectSuccess(await usecaseUser1.findByUID(flockB.uid));
 
-        expect(remaining.uid).toBe(flockB.uid);
+        expect(remaining?.uid).toBe(flockB.uid);
     });
 
     test("Should not delete an inexistent flock", async () => {
@@ -95,7 +99,9 @@ describe("FlockUsecase - delete", () => {
             expect.arrayContaining([flockA.uid, flockC.uid])
         );
 
-        expectFailure(await usecaseUser1.findByUID(flockB.uid), FlockNotFoundError);
+        const find = expectSuccess(await usecaseUser1.findByUID(flockB.uid));
+
+        expect(find).toBe(null);
     });
 
     test("Should delete closed flock", async () => {
@@ -103,6 +109,8 @@ describe("FlockUsecase - delete", () => {
 
         expectSuccess(await usecaseUser1.delete(flock.uid));
 
-        expectFailure(await usecaseUser1.findByUID(flock.uid), FlockNotFoundError);
+        const find = expectSuccess(await usecaseUser1.findByUID(flock.uid));
+
+        expect(find).toBe(null);
     });
 });
