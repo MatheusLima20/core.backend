@@ -18,4 +18,8 @@ export const StringUtil = {
     isEmpty(value?: string | null): boolean {
         return !value || value.trim().length === 0;
     },
+
+    equalsIgnoreCase(value1: string, value2: string): boolean {
+        return value1.trim().toLowerCase() === value2.trim().toLowerCase();
+    },
 };
