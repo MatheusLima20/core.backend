@@ -1,5 +1,8 @@
 import { randomUUID } from "crypto";
 
+import { InventoryCategory } from "@/modules/farmora/inventory/enums/inventory-category.enum";
+import { InventoryItemNotFoundError } from "@/modules/farmora/inventory/errors/inventory-item-not-found.error";
+import { IInventoryItemRepository } from "@/modules/farmora/inventory/repositories/inventory-item-repository.interface";
 import { RequestContext } from "@/shared/context/request-context";
 import { FlockClosedError } from "@/shared/errors/flock-closed.error";
 import { PersistenceError } from "@/shared/errors/persistence.error";
@@ -19,6 +22,7 @@ import { VaccinationEntity } from "../entities/vaccination.entity";
 import { VaccinationErrorCode } from "../enums/vaccination.error-code.enum";
 import { DuplicateVaccinationError } from "../errors/duplicate-vaccination.error";
 import { InvalidVaccinationError } from "../errors/invalid-vaccination.error";
+import { VaccinationNotFoundError } from "../errors/vaccination.not-found.error";
 import { VaccinationMapper } from "../mappers/vaccination.mapper";
 import { IVaccinationRepository } from "../repositories/vaccination-repository.interface";
 
@@ -26,13 +30,14 @@ export class VaccinationUsecase {
     constructor(
         private readonly context: RequestContext,
         private readonly vaccinationRepository: IVaccinationRepository,
-        private readonly flockRepository: IFlockRepository
+        private readonly flockRepository: IFlockRepository,
+        private readonly inventoryItemRepository: IInventoryItemRepository
     ) {}
 
     async create(data: CreateVaccinationDTO): Promise<Result<CreateVaccinationResponseDTO>> {
         const validation = await this.validateVaccination(
             data.flockUID,
-            data.vaccineName,
+            data.itemUID,
             data.applicationDate
         );
 
@@ -69,11 +74,7 @@ export class VaccinationUsecase {
             uid
         );
 
-        if (isFailure(result)) {
-            return ResultFactory.success(null);
-        }
-
-        if (!result.data) {
+        if (isFailure(result) || !result.data) {
             return ResultFactory.success(null);
         }
 
@@ -105,7 +106,7 @@ export class VaccinationUsecase {
 
         const vaccination = ResultMapper.requireData(
             existing,
-            new InvalidVaccinationError(VaccinationErrorCode.INVALID_VACCINE)
+            new VaccinationNotFoundError(data.uid)
         );
 
         if (isFailure(vaccination)) {
@@ -122,7 +123,7 @@ export class VaccinationUsecase {
 
         const validation = await this.validateVaccination(
             updatedVaccination.flockUID,
-            updatedVaccination.vaccineName,
+            updatedVaccination.itemUID,
             updatedVaccination.applicationDate,
             updatedVaccination.uid
         );
@@ -143,16 +144,8 @@ export class VaccinationUsecase {
     async delete(uid: string): Promise<Result<void>> {
         const existing = await this.findByUID(uid);
 
-        if (isFailure(existing)) {
-            return ResultFactory.failure(
-                new InvalidVaccinationError(VaccinationErrorCode.INVALID_VACCINE)
-            );
-        }
-
-        if (existing.data === null) {
-            return ResultFactory.failure(
-                new InvalidVaccinationError(VaccinationErrorCode.INVALID_VACCINE)
-            );
+        if (isFailure(existing) || existing.data === null) {
+            return ResultFactory.failure(new VaccinationNotFoundError(uid));
         }
 
         const deleted = await this.vaccinationRepository.delete(uid);
@@ -166,7 +159,7 @@ export class VaccinationUsecase {
 
     private async validateVaccination(
         flockUID: string,
-        vaccineName: string,
+        itemUID: string,
         applicationDate: Date,
         uid?: string
     ): Promise<
@@ -174,68 +167,74 @@ export class VaccinationUsecase {
             void,
             | FlockNotFoundError
             | FlockClosedError
+            | InventoryItemNotFoundError
             | DuplicateVaccinationError
-            | InvalidVaccinationError
+            | VaccinationNotFoundError
         >
     > {
         const flock = await this.flockRepository.findByUID(this.context.user.platformUID, flockUID);
 
         const existingFlock = ResultMapper.requireData(
             flock,
-            new FlockNotFoundError({ uid: flockUID })
+            new FlockNotFoundError({
+                uid: flockUID,
+            })
         );
 
         if (isFailure(existingFlock)) {
-            return ResultFactory.failure(new FlockNotFoundError({ uid: flockUID }));
+            return ResultFactory.failure(
+                new FlockNotFoundError({
+                    uid: flockUID,
+                })
+            );
         }
 
         if (existingFlock.data.status === FlockStatus.CLOSED) {
             return ResultFactory.failure(new FlockClosedError());
         }
 
-        if (!vaccineName.trim()) {
+        const item = await this.inventoryItemRepository.findByUID(
+            this.context.user.platformUID,
+            itemUID
+        );
+
+        const existingItem = ResultMapper.requireData(
+            item,
+            new InventoryItemNotFoundError({
+                uid: itemUID,
+            })
+        );
+
+        if (isFailure(existingItem)) {
             return ResultFactory.failure(
-                new InvalidVaccinationError(VaccinationErrorCode.INVALID_VACCINE)
+                new InventoryItemNotFoundError({
+                    uid: itemUID,
+                })
+            );
+        }
+
+        if (existingItem.data.category !== InventoryCategory.VACCINE) {
+            return ResultFactory.failure(
+                new InvalidVaccinationError(VaccinationErrorCode.INVALID_ITEM)
             );
         }
 
         const duplicated = await this.vaccinationRepository.exists(this.context.user.platformUID, {
             flockUID,
-            vaccineName,
+            itemUID,
             applicationDate,
+            ignoreUID: uid,
         });
 
         if (isFailure(duplicated)) {
             return duplicated;
         }
 
-        if (duplicated.data && uid !== undefined) {
-            // permite editar a própria vacinação
-            const current = await this.vaccinationRepository.findByUID(
-                this.context.user.platformUID,
-                uid
-            );
-
-            if (isFailure(current)) {
-                return current;
-            }
-
-            if (!current.data) {
-                return ResultFactory.failure(
-                    new DuplicateVaccinationError({
-                        flockUID,
-                        vaccineName,
-                        vaccinationDate: applicationDate,
-                    })
-                );
-            }
-        }
-
-        if (duplicated.data && uid === undefined) {
+        if (duplicated.data) {
             return ResultFactory.failure(
                 new DuplicateVaccinationError({
                     flockUID,
-                    vaccineName,
+                    itemUID,
                     vaccinationDate: applicationDate,
                 })
             );

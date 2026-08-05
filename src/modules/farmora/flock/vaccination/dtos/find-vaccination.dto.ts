@@ -3,7 +3,7 @@ import { VaccinationProps } from "../entities/vaccination.props";
 export interface FindVaccinationsDTO {
     flockUID?: string;
 
-    vaccineName?: string;
+    itemUID?: string;
 
     applicationDate?: Date;
 
@@ -12,8 +12,6 @@ export interface FindVaccinationsDTO {
 
     nextDoseDate?: Date;
 
-    manufacturer?: string;
-
     batch?: string;
 
     page?: number;
@@ -21,7 +19,7 @@ export interface FindVaccinationsDTO {
 
     orderBy?: keyof Pick<
         VaccinationProps,
-        "applicationDate" | "vaccineName" | "manufacturer" | "batch" | "createdAt" | "updatedAt"
+        "applicationDate" | "itemUID" | "batch" | "createdAt" | "updatedAt"
     >;
 
     order?: "asc" | "desc";

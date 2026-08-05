@@ -2,14 +2,7 @@ import { VaccinationProps } from "../entities/vaccination.props";
 
 export type CreateVaccinationDTO = Pick<
     VaccinationProps,
-    | "flockUID"
-    | "vaccineName"
-    | "applicationDate"
-    | "dose"
-    | "manufacturer"
-    | "batch"
-    | "nextDoseDate"
-    | "notes"
+    "flockUID" | "itemUID" | "applicationDate" | "dose" | "batch" | "nextDoseDate" | "notes"
 > &
     Partial<Pick<VaccinationProps, "createdAt">>;
 
@@ -18,10 +11,9 @@ export type CreateVaccinationResponseDTO = Pick<
     | "uid"
     | "platformUID"
     | "flockUID"
-    | "vaccineName"
+    | "itemUID"
     | "applicationDate"
     | "dose"
-    | "manufacturer"
     | "batch"
     | "nextDoseDate"
     | "notes"

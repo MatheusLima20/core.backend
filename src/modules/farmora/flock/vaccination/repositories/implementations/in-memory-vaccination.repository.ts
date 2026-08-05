@@ -31,15 +31,15 @@ export class InMemoryVaccinationRepository implements IVaccinationRepository {
             StringUtil.equals(vaccination.platformUID!, platformUID)
         );
 
-        if (filters?.flockUID) {
+        if (filters?.itemUID) {
             vaccinations = vaccinations.filter((vaccination) =>
-                StringUtil.equals(vaccination.flockUID, filters.flockUID!)
+                StringUtil.equals(vaccination.itemUID, filters.itemUID!)
             );
         }
 
-        if (filters?.vaccineName) {
+        if (filters?.flockUID) {
             vaccinations = vaccinations.filter((vaccination) =>
-                StringUtil.equals(vaccination.vaccineName, filters.vaccineName!)
+                StringUtil.equals(vaccination.flockUID, filters.flockUID!)
             );
         }
 
@@ -64,12 +64,6 @@ export class InMemoryVaccinationRepository implements IVaccinationRepository {
         if (filters?.nextDoseDate) {
             vaccinations = vaccinations.filter((vaccination) =>
                 DateUtil.isSameDay(vaccination.nextDoseDate!, filters.nextDoseDate!)
-            );
-        }
-
-        if (filters?.manufacturer) {
-            vaccinations = vaccinations.filter((vaccination) =>
-                StringUtil.equals(vaccination.manufacturer!, filters.manufacturer!)
             );
         }
 
@@ -98,16 +92,18 @@ export class InMemoryVaccinationRepository implements IVaccinationRepository {
         platformUID: string,
         data: {
             flockUID: string;
-            vaccineName: string;
+            itemUID: string;
             applicationDate: Date;
+            ignoreUID?: string;
         }
     ): Promise<Result<boolean>> {
         const exists = this.vaccinations.some(
             (vaccination) =>
                 StringUtil.equals(vaccination.platformUID!, platformUID) &&
                 StringUtil.equals(vaccination.flockUID, data.flockUID) &&
-                StringUtil.equals(vaccination.vaccineName, data.vaccineName) &&
-                DateUtil.isSameDay(vaccination.applicationDate, data.applicationDate)
+                StringUtil.equals(vaccination.itemUID, data.itemUID) &&
+                DateUtil.isSameDay(vaccination.applicationDate, data.applicationDate) &&
+                (!data.ignoreUID || !StringUtil.equals(vaccination.uid, data.ignoreUID))
         );
 
         return ResultFactory.success(exists);

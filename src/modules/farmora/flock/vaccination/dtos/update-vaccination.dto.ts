@@ -4,14 +4,7 @@ export type UpdateVaccinationDTO = Pick<VaccinationProps, "uid"> &
     Partial<
         Pick<
             VaccinationProps,
-            | "flockUID"
-            | "vaccineName"
-            | "applicationDate"
-            | "dose"
-            | "manufacturer"
-            | "batch"
-            | "nextDoseDate"
-            | "notes"
+            "flockUID" | "itemUID" | "applicationDate" | "dose" | "batch" | "nextDoseDate" | "notes"
         >
     >;
 
@@ -19,10 +12,9 @@ export type UpdateVaccinationResponseDTO = Pick<
     VaccinationProps,
     | "uid"
     | "flockUID"
-    | "vaccineName"
+    | "itemUID"
     | "applicationDate"
     | "dose"
-    | "manufacturer"
     | "batch"
     | "nextDoseDate"
     | "notes"

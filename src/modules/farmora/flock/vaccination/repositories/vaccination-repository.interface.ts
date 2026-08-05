@@ -12,8 +12,9 @@ export interface IVaccinationRepository {
         platformUID: string,
         data: {
             flockUID: string;
-            vaccineName: string;
+            itemUID: string;
             applicationDate: Date;
+            ignoreUID?: string;
         }
     ): Promise<Result<boolean>>;
 

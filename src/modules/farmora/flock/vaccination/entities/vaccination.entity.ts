@@ -7,13 +7,11 @@ export class VaccinationEntity implements VaccinationProps {
 
     flockUID!: string;
 
-    vaccineName!: string;
+    itemUID!: string;
 
     applicationDate!: Date;
 
     dose?: string;
-
-    manufacturer?: string;
 
     batch?: string;
 
