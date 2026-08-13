@@ -4,7 +4,16 @@ export type UpdateInventoryItemDTO = Pick<InventoryItemProps, "uid"> &
     Partial<
         Pick<
             InventoryItemProps,
-            "name" | "category" | "unit" | "trackStock" | "minimumStock" | "description"
+            | "name"
+            | "category"
+            | "unit"
+            | "trackStock"
+            | "minimumStock"
+            | "description"
+            | "crudeProtein"
+            | "crudeFiber"
+            | "metabolizableEnergy"
+            | "calcium"
         >
     >;
 

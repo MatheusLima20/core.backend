@@ -15,6 +15,14 @@ export class InventoryItemEntity implements InventoryItemProps {
 
     unit!: InventoryUnit;
 
+    crudeProtein?: number;
+
+    metabolizableEnergy?: number;
+
+    crudeFiber?: number;
+
+    calcium?: number;
+
     minimumStock?: number;
 
     description?: string;

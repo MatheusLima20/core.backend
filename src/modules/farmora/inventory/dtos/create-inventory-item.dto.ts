@@ -2,7 +2,16 @@ import { InventoryItemProps } from "../entities/inventory-item.props";
 
 export type CreateInventoryItemDTO = Pick<
     InventoryItemProps,
-    "name" | "category" | "unit" | "trackStock" | "minimumStock" | "description"
+    | "name"
+    | "category"
+    | "unit"
+    | "trackStock"
+    | "crudeProtein"
+    | "crudeFiber"
+    | "metabolizableEnergy"
+    | "calcium"
+    | "minimumStock"
+    | "description"
 > &
     Partial<Pick<InventoryItemProps, "createdAt">>;
 

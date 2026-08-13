@@ -16,6 +16,14 @@ export interface InventoryItemProps {
 
     minimumStock?: number;
 
+    crudeProtein?: number;
+
+    metabolizableEnergy?: number;
+
+    crudeFiber?: number;
+
+    calcium?: number;
+
     description?: string;
 
     createdBy?: string;
