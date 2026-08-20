@@ -1,13 +1,13 @@
 import "module-alias/register";
-import "process";
 import "reflect-metadata";
 
 import dotenv from "dotenv";
 
+dotenv.config();
+
 import { databaseClass } from "./services/database/database";
 import { ServerClass, serverClass } from "./services/server/server";
 import { SocketClass } from "./utils/socket/socket";
-dotenv.config();
 
 const server: ServerClass = serverClass;
 

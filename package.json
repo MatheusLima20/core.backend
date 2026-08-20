@@ -1,5 +1,5 @@
 {
-    "name": "gym.app",
+    "name": "core.app",
     "version": "0.0.1",
     "main": "build/src/server.js",
     "description": "Awesome project developed with TypeORM.",
@@ -55,6 +55,7 @@
         "typeorm": "^0.3.20"
     },
     "_moduleAliases": {
+        "@": "src",
         "@modules": "src/modules",
         "@shared": "src/shared"
     },
@@ -68,9 +69,8 @@
             "pre-commit": "lint-staged"
         }
     },
-    "type": "module",
     "scripts": {
-        "dev": "nodemon src/server.ts",
+        "dev": "nodemon --exec ts-node src/server.ts",
         "start": "node build/server.js",
         "build": "tsc --build",
         "clean": "tsc --build --clean",

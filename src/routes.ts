@@ -1,15 +1,14 @@
 import { Request, Response, Router } from "express";
 import { readdirSync, statSync } from "fs";
 import path from "path";
-import { pathToFileURL } from "url";
 
 const routes = Router();
 
 routes.get("/", (request: Request, response: Response) => {
-    response.send({ msg: "Serviço rodando." });
+    response.send({ msg: "It's run." });
 });
 
-async function loadRoutes(folderPath: string) {
+async function loadRoutes(folderPath: string): Promise<void> {
     const files = readdirSync(folderPath);
 
     for (const fileName of files) {
@@ -18,18 +17,26 @@ async function loadRoutes(folderPath: string) {
         const isDirectory = statSync(fullPath).isDirectory();
 
         if (isDirectory) {
-            loadRoutes(fullPath);
+            await loadRoutes(fullPath);
             continue;
         }
 
         const isMapFile = fileName.endsWith(".map");
         const isRouteFile = fileName.endsWith("routes.ts");
 
-        if (!isMapFile && isRouteFile) {
-            const route = await import(pathToFileURL(fullPath).href);
-
-            routes.use(route.default || route);
+        if (isMapFile || !isRouteFile) {
+            continue;
         }
+
+        const route = await import(fullPath);
+
+        if (route.default?.router && route.default?.path) {
+            routes.use(route.default.path, route.default.router);
+
+            continue;
+        }
+
+        routes.use(route.default || route);
     }
 }
 

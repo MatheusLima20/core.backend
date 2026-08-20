@@ -88,15 +88,23 @@ export class InMemoryUserRepository implements IUserRepository {
     async update(user: UserProps): Promise<UpdateUserResponseDTO | null> {
         const index = this.users.findIndex((oldUser) => oldUser.uid === user.uid);
 
-        const updatedUser = (this.users[index] = user);
+        if (index === -1) {
+            return null;
+        }
 
-        return updatedUser;
+        this.users[index] = user;
+
+        return user;
     }
     async delete(uid: string): Promise<boolean> {
-        const index = this.users.findIndex((oldUsers) => oldUsers.uid === uid);
+        const index = this.users.findIndex((user) => user.uid === uid);
 
-        const removedUser = this.users.splice(index, 1);
+        if (index === -1) {
+            return false;
+        }
 
-        return !!removedUser;
+        this.users.splice(index, 1);
+
+        return true;
     }
 }

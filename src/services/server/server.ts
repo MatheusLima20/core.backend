@@ -1,8 +1,8 @@
-import * as cors from "cors";
-import * as express from "express";
+import { errorMiddleware } from "@shared/errors/error.middleware";
+import cors from "cors";
+import express from "express";
 import { createServer, Server } from "http";
 
-import { customErrors } from "../../middlwares/CustomErrors/CelebrationMiddleware";
 import routes from "../../routes";
 import { IServer } from "./interface/server.interface";
 
@@ -14,13 +14,7 @@ const corsOptions = {
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false,
     optionsSuccessStatus: 204,
-    allowedHeaders: [
-        "Accept-Version",
-        "Authorization",
-        "Credentials",
-        "Content-Type",
-        "Origin",
-    ],
+    allowedHeaders: ["Accept-Version", "Authorization", "Credentials", "Content-Type", "Origin"],
 };
 
 export class ServerClass implements IServer {
@@ -33,8 +27,7 @@ export class ServerClass implements IServer {
         this.server = createServer(this.app);
     }
 
-    private addResources(): void {    
-        
+    private addResources(): void {
         const app = this.app;
 
         app.use(express.static(__dirname, { dotfiles: "allow" }));
@@ -45,13 +38,12 @@ export class ServerClass implements IServer {
 
         app.use(routes);
 
-        app.use(customErrors());
+        app.use(errorMiddleware);
     }
 
     public start(): void {
-
         this.server.listen(port, host, () => {
-            return console.log("Server started on port: " + port + " 🏆!");
+            return console.log("Server started on host: " + host + " port: " + port + " 🏆!");
         });
     }
 }

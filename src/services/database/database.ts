@@ -7,18 +7,19 @@ import { IDatabase } from "./interface/database.interface";
 
 dotenv.config();
 
-type DatabaseType = "mysql" | "mariadb";
-
 function getEnv(name: string): string {
     const value = process.env[name];
+
     if (!value) {
         throw new Error(`Missing environment variable: ${name}`);
     }
+
     return value;
 }
 
 const config: DataSourceOptions = {
-    type: getEnv("DB_TYPE") as DatabaseType,
+    type: "postgres",
+
     host: getEnv("DB_HOST"),
     port: Number(getEnv("DB_PORT")),
     username: getEnv("DB_USER"),

@@ -1,4 +1,4 @@
-import { UploadFile } from "../../middlwares/Files/UploadFilesMiddlware";
+/*import { UploadFile } from "../../middlwares/Files/UploadFilesMiddlware";
 
 
 export const Archive = {
@@ -8,4 +8,4 @@ export const Archive = {
         const archive = `${path}${fileName}`;
         UploadFile.delete(archive);
     }
-}
+}*/
