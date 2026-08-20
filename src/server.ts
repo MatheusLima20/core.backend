@@ -15,6 +15,10 @@ const socket = new SocketClass(server.server);
 
 socket.runSocket(socket);
 
-databaseClass.start();
+async function bootstrap() {
+    await databaseClass.start();
 
-server.start();
+    server.start();
+}
+
+bootstrap();

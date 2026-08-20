@@ -1,29 +1,34 @@
 import { Router } from "express";
 
+import { dataSource } from "@/services/database/database";
+
 import { PlatformController } from "../controllers/platform.controller";
-import { InMemoryPlatformRepository } from "../repositories/implementations/in-memory-platform.repository";
+import { PlatformEntity } from "../entities/platform.entities";
+import { TypeORMPlatformRepository } from "../repositories/implementations/type-orm-platform.repository";
 import { PlatformUsecase } from "../usecases/platform.usecase";
 
 const router = Router();
 
-const repository = new InMemoryPlatformRepository();
+const repository = new TypeORMPlatformRepository(dataSource.getRepository(PlatformEntity));
+
 const usecase = new PlatformUsecase(repository);
+
 const controller = new PlatformController(usecase);
 
 router.post("/", async (request, response) => {
     await controller.create(request, response);
 });
 
-router.get("/", async (request, response) => {
-    await controller.find(request, response);
+router.put("/:uid", async (request, response) => {
+    await controller.update(request, response);
 });
 
 router.get("/:uid", async (request, response) => {
     await controller.findByUID(request, response);
 });
 
-router.put("/:uid", async (request, response) => {
-    await controller.update(request, response);
+router.get("/", async (request, response) => {
+    await controller.find(request, response);
 });
 
 router.delete("/:uid", async (request, response) => {
@@ -31,6 +36,6 @@ router.delete("/:uid", async (request, response) => {
 });
 
 export default {
-    router,
     path: "/platform",
+    router,
 };
