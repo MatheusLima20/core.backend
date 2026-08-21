@@ -14,6 +14,8 @@ export class UserEntity implements UserProps {
     platformUID!: string;
     createdAt!: Date;
     updatedAt!: Date;
+    createdBy?: string | null;
+    updatedBy?: string | null;
 
     constructor(props: UserEntity) {
         Object.assign(this, props);

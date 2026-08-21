@@ -55,7 +55,7 @@ export class PlatformUsecase {
         const result = await this.platformRepository.findByUID(uid);
 
         if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch platform."));
+            return ResultFactory.success(null);
         }
 
         return ResultFactory.success(result.data);
@@ -65,7 +65,7 @@ export class PlatformUsecase {
         const result = await this.platformRepository.findByName(name);
 
         if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch platform."));
+            return ResultFactory.success(null);
         }
 
         return ResultFactory.success(result.data);

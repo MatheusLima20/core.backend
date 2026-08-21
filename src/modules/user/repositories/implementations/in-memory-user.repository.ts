@@ -1,11 +1,9 @@
-import { CreateUserResponseDTO } from "../../dtos/create-user.dto";
-import { UpdateUserResponseDTO } from "../../dtos/update-user.dto";
-import { UserResponseDTO } from "../../dtos/user-response.dto copy";
-import { UserEntity } from "../../entities/user.entity";
+import { Result } from "@/shared/result";
+import { ResultFactory } from "@/shared/result/result.factory";
+
 import { UserProps } from "../../entities/user.props";
 import { Gender } from "../../enum/gender.enum";
 import { UserType } from "../../enum/user-type.enum";
-import { UserMapper } from "../../mappers/user.mapper";
 import { IUserRepository } from "../user-repository-interface";
 
 export class InMemoryUserRepository implements IUserRepository {
@@ -51,60 +49,56 @@ export class InMemoryUserRepository implements IUserRepository {
         },
     ];
 
-    async findByUID(uid: string): Promise<UserResponseDTO | null> {
+    async findByUID(uid: string): Promise<Result<UserProps | null>> {
         const user = this.users.find((users) => users.uid === uid);
 
         if (!user) {
-            return null;
+            return ResultFactory.success(null);
         }
 
-        return UserMapper.toUserFindResponse(user);
+        return ResultFactory.success(user);
     }
 
-    async findByEmail(email: string): Promise<UserResponseDTO | null> {
+    async findByEmail(email: string): Promise<Result<UserProps | null>> {
         const user = this.users.find((users) => users.email === email);
 
         if (!user) {
-            return null;
+            return ResultFactory.success(null);
         }
 
-        return UserMapper.toUserFindResponse(user);
+        return ResultFactory.success(user);
     }
-    async findByType(type: UserType): Promise<UserResponseDTO[]> {
+    async findByType(type: UserType): Promise<Result<UserProps[]>> {
         const users = this.users.filter((users) => users.userType === type);
 
-        return UserMapper.toUserFindResponseList(users);
+        return ResultFactory.success(users);
     }
-    async find(platform: string): Promise<UserResponseDTO[]> {
+    async find(platform: string): Promise<Result<UserProps[]>> {
         const users = this.users.filter((users) => users.platformUID === platform);
 
-        return UserMapper.toUserFindResponseList(users);
+        return ResultFactory.success(users);
     }
-    async register(user: UserEntity): Promise<CreateUserResponseDTO | null> {
+    async register(user: UserProps): Promise<Result<UserProps>> {
         this.users.push(user);
 
-        return user;
+        return ResultFactory.success(user);
     }
-    async update(user: UserProps): Promise<UpdateUserResponseDTO | null> {
+    async update(user: UserProps): Promise<Result<UserProps>> {
         const index = this.users.findIndex((oldUser) => oldUser.uid === user.uid);
-
-        if (index === -1) {
-            return null;
-        }
 
         this.users[index] = user;
 
-        return user;
+        return ResultFactory.success(user);
     }
-    async delete(uid: string): Promise<boolean> {
+    async delete(uid: string): Promise<Result<boolean>> {
         const index = this.users.findIndex((user) => user.uid === uid);
 
         if (index === -1) {
-            return false;
+            return ResultFactory.success(false);
         }
 
         this.users.splice(index, 1);
 
-        return true;
+        return ResultFactory.success(true);
     }
 }

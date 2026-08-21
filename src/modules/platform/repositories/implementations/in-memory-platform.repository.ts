@@ -1,7 +1,6 @@
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
-import { PlatformResponseDTO } from "../../dto/platform-response.dto";
 import { PlatformProps } from "../../entities/platform.props";
 import { PlatformCategory } from "../../enum/platform.category-enum";
 import { PlatformMapper } from "../../mappers/platform.mapper";
@@ -33,17 +32,17 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
         },
     ];
 
-    async find(): Promise<Result<PlatformResponseDTO[]>> {
+    async find(): Promise<Result<PlatformProps[]>> {
         return ResultFactory.success(PlatformMapper.toPlatformResponseList(this.platforms));
     }
 
-    async findByUID(uid: string): Promise<Result<PlatformResponseDTO | null>> {
+    async findByUID(uid: string): Promise<Result<PlatformProps | null>> {
         const platform = this.platforms.find((platform) => platform.uid === uid);
 
         return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
     }
 
-    async findByName(name: string): Promise<Result<PlatformResponseDTO | null>> {
+    async findByName(name: string): Promise<Result<PlatformProps | null>> {
         const platform = this.platforms.find((platform) => platform.name === name);
 
         return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);

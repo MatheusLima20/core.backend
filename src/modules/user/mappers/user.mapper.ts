@@ -1,14 +1,10 @@
-import { UserResponseDTO } from "../dtos/user-response.dto copy";
+import { CreateUserResponseDTO } from "../dtos/create-user.dto";
+import { UpdateUserResponseDTO } from "../dtos/update-user.dto";
+import { UserResponseDTO } from "../dtos/user-response.dto";
 import { UserProps } from "../entities/user.props";
 
-
-
 export const UserMapper = {
-
-    toUserFindResponse: (
-        user: UserProps,
-    ): UserResponseDTO => {
-
+    toUserFindResponse: (user: UserProps): UserResponseDTO => {
         return {
             uid: user.uid,
             name: user.name,
@@ -24,12 +20,26 @@ export const UserMapper = {
         };
     },
 
-    toUserFindResponseList: (
-        users: UserProps[],
-    ): UserResponseDTO[] => {
+    toUserFindResponseList: (users: UserProps[]): UserResponseDTO[] => {
+        return users.map(UserMapper.toUserFindResponse);
+    },
 
-        return users.map(
-            UserMapper.toUserFindResponse
-        );
+    toCreateUserResponseDTO: (user: UserProps): CreateUserResponseDTO => {
+        return {
+            uid: user.uid,
+            email: user.email,
+            name: user.name,
+            userType: user.userType,
+        };
+    },
+
+    toUpdateUserResponseDTO: (user: UserProps): UpdateUserResponseDTO => {
+        return {
+            uid: user.uid,
+            email: user.email,
+            name: user.name,
+            userType: user.userType,
+            updatedAt: user.updatedAt,
+        };
     },
 };

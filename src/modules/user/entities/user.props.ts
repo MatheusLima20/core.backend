@@ -11,6 +11,8 @@ export interface UserProps {
     email: string;
     password: string;
     platformUID: string;
+    createdBy?: string | null;
+    updatedBy?: string | null;
     createdAt: Date;
     updatedAt: Date;
 }

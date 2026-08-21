@@ -1,49 +1,86 @@
 import { randomUUID } from "crypto";
 
+import { RequestContext } from "@/shared/context/request-context";
+import { PersistenceError } from "@/shared/errors/persistence.error";
+import { Result } from "@/shared/result";
+import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
+import { ResultMapper } from "@/shared/result/result.mapper";
+
 import { CreateUserDTO, CreateUserResponseDTO } from "../dtos/create-user.dto";
-import { UpdateUserDTO } from "../dtos/update-user.dto";
-import { UserResponseDTO } from "../dtos/user-response.dto copy";
+import { UpdateUserDTO, UpdateUserResponseDTO } from "../dtos/update-user.dto";
+import { UserResponseDTO } from "../dtos/user-response.dto";
 import { UserEntity } from "../entities/user.entity";
 import { UserType } from "../enum/user-type.enum";
+import { UserAlreadyExistsError } from "../errors/user-already-exists.error";
+import { UserNotFoundError } from "../errors/user-not-found.error";
+import { UserMapper } from "../mappers/user.mapper";
 import { IUserRepository } from "../repositories/user-repository-interface";
 
 export class UserUseCase {
-    constructor(private userRepository: IUserRepository) {}
+    constructor(
+        private readonly context: RequestContext,
+        private userRepository: IUserRepository
+    ) {}
 
-    async find(platform: string): Promise<UserResponseDTO[]> {
-        return await this.userRepository.find(platform);
-    }
+    async find(): Promise<Result<UserResponseDTO[]>> {
+        const result = await this.userRepository.find(this.context.user.platformUID);
 
-    async findByUID(uid: string): Promise<UserResponseDTO> {
-        const user = await this.userRepository.findByUID(uid);
-
-        if (!user) {
-            throw new Error("User not found.");
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch platforms."));
         }
 
-        return user;
+        return ResultFactory.success(result.data);
     }
 
-    async findByType(userType: UserType): Promise<UserResponseDTO[]> {
-        return await this.userRepository.findByType(userType);
-    }
+    async findByUID(uid: string): Promise<Result<UserResponseDTO | null>> {
+        const result = await this.userRepository.findByUID(uid);
 
-    async findByEmail(email: string): Promise<UserResponseDTO> {
-        const user = await this.userRepository.findByEmail(email);
-
-        if (!user) {
-            throw new Error("User not found.");
+        if (isFailure(result)) {
+            return ResultFactory.success(null);
         }
 
-        return user;
+        return ResultFactory.success(result.data);
     }
 
-    async create(data: CreateUserDTO): Promise<CreateUserResponseDTO> {
-        await this.validateEmailAlreadyExists(data.email);
+    async findByType(userType: UserType): Promise<Result<UserResponseDTO[]>> {
+        const result = await this.userRepository.findByType(userType);
+
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch platforms."));
+        }
+
+        return ResultFactory.success(result.data);
+    }
+
+    async findByEmail(email: string): Promise<Result<UserResponseDTO | null>> {
+        const result = await this.userRepository.findByEmail(email);
+
+        if (isFailure(result)) {
+            return ResultFactory.success(null);
+        }
+
+        return ResultFactory.success(result.data);
+    }
+
+    async create(data: CreateUserDTO): Promise<Result<CreateUserResponseDTO>> {
+        const existingUser = await this.userRepository.findByEmail(data.email);
+
+        if (isFailure(existingUser)) {
+            return ResultFactory.failure(new PersistenceError("Failed to validate platform."));
+        }
+
+        if (existingUser.data) {
+            return ResultFactory.failure(
+                new UserAlreadyExistsError({ name: existingUser.data.name })
+            );
+        }
 
         const user = new UserEntity({
             uid: randomUUID(),
             ...data,
+            createdBy: this.context.user.uid,
+            updatedBy: null,
             createdAt: new Date(),
             updatedAt: new Date(),
         });
@@ -54,47 +91,86 @@ export class UserUseCase {
             throw new Error("User Not Register");
         }
 
-        return result;
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to register platform."));
+        }
+
+        return ResultFactory.success(UserMapper.toCreateUserResponseDTO(result.data));
     }
 
-    async update(data: UpdateUserDTO) {
-        await this.validateEmailAlreadyExists(data.email, data.uid);
+    async update(data: UpdateUserDTO): Promise<Result<UpdateUserResponseDTO>> {
+        const existingUser = await this.userRepository.findByEmail(data.email);
+
+        if (isFailure(existingUser)) {
+            return ResultFactory.failure(new PersistenceError("Failed to validate platform."));
+        }
+
+        if (existingUser.data && existingUser.data.uid !== data.uid) {
+            return ResultFactory.failure(new UserAlreadyExistsError({ name: data.name }));
+        }
 
         const oldUser = await this.findByUID(data.uid);
 
+        if (isFailure(oldUser)) {
+            return oldUser;
+        }
+
+        const requiredUser = ResultMapper.requireData(
+            oldUser,
+            new UserNotFoundError({
+                uid: data.uid,
+            })
+        );
+
+        if (isFailure(requiredUser)) {
+            return requiredUser;
+        }
+
+        if (isFailure(requiredUser)) {
+            return requiredUser;
+        }
+
         const user = new UserEntity({
-            ...oldUser,
+            ...requiredUser.data,
             ...data,
             password: data.password,
+            updatedBy: this.context.user.uid,
             updatedAt: new Date(),
         });
 
         const result = await this.userRepository.update(user);
 
-        if (!result) {
-            throw new Error("User Not Updated.");
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to update User."));
         }
 
-        return result;
+        return ResultFactory.success(UserMapper.toUpdateUserResponseDTO(result.data));
     }
 
-    async delete(uid: string) {
-        await this.findByUID(uid);
+    async delete(uid: string): Promise<Result<boolean>> {
+        const user = await this.findByUID(uid);
 
-        const isDeleted = await this.userRepository.delete(uid);
-
-        if (!isDeleted) {
-            throw new Error("User not found!");
+        if (isFailure(user)) {
+            return user;
         }
 
-        return isDeleted;
-    }
+        const requiredUser = ResultMapper.requireData(
+            user,
+            new UserNotFoundError({
+                uid: uid,
+            })
+        );
 
-    private async validateEmailAlreadyExists(email: string, uid?: string) {
-        const user = await this.userRepository.findByEmail(email);
-
-        if (user && user.uid !== uid) {
-            throw new Error("Email already registered!");
+        if (isFailure(requiredUser)) {
+            return requiredUser;
         }
+
+        const result = await this.userRepository.delete(uid);
+
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to delete platform."));
+        }
+
+        return ResultFactory.success(result.data);
     }
 }
