@@ -1,8 +1,10 @@
+import { CreatePlatformResponseDTO } from "../dto/create-platform.dto";
 import { PlatformResponseDTO } from "../dto/platform-response.dto";
-import { PlatformEntity } from "../entities/platform.entities";
+import { UpdatePlatformResponseDTO } from "../dto/update-platform.dto";
+import { PlatformProps } from "../entities/platform.props";
 
 export const PlatformMapper = {
-    toPlatformUIDResponse: (platform: PlatformEntity): PlatformResponseDTO => {
+    toPlatformResponse: (platform: PlatformProps): PlatformResponseDTO => {
         return {
             uid: platform.uid,
             name: platform.name,
@@ -16,7 +18,27 @@ export const PlatformMapper = {
         };
     },
 
-    toPlatformUIDResponseList: (platforms: PlatformEntity[]): PlatformResponseDTO[] => {
-        return platforms.map(PlatformMapper.toPlatformUIDResponse);
+    toPlatformResponseList: (platforms: PlatformProps[]): PlatformResponseDTO[] => {
+        return platforms.map(PlatformMapper.toPlatformResponse);
+    },
+
+    toCreateResponse: (platform: PlatformProps): CreatePlatformResponseDTO => {
+        return {
+            uid: platform.uid,
+            name: platform.name,
+            category: platform.category,
+        };
+    },
+
+    toUpdateResponse: (platform: PlatformProps): UpdatePlatformResponseDTO => {
+        return {
+            uid: platform.uid,
+            name: platform.name,
+            category: platform.category,
+            isActivated: platform.isActivated,
+            slug: platform.slug,
+            updatedBy: platform.updatedBy,
+            updatedAt: platform.updatedAt,
+        };
     },
 };

@@ -15,23 +15,27 @@ const usecase = new PlatformUsecase(repository);
 
 const controller = new PlatformController(usecase);
 
-router.post("/", async (request, response) => {
+router.post("/create", async (request, response) => {
     await controller.create(request, response);
 });
 
-router.put("/:uid", async (request, response) => {
+router.put("/update/:uid", async (request, response) => {
     await controller.update(request, response);
 });
 
-router.get("/:uid", async (request, response) => {
+router.get("/find/name/:name", async (request, response) => {
+    await controller.findByName(request, response);
+});
+
+router.get("/find/:uid", async (request, response) => {
     await controller.findByUID(request, response);
 });
 
-router.get("/", async (request, response) => {
+router.get("/find", async (request, response) => {
     await controller.find(request, response);
 });
 
-router.delete("/:uid", async (request, response) => {
+router.delete("delete/:uid", async (request, response) => {
     await controller.delete(request, response);
 });
 

@@ -1,19 +1,36 @@
 import { randomUUID } from "crypto";
 
+import { PersistenceError } from "@/shared/errors/persistence.error";
+import { Result } from "@/shared/result";
+import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
+import { ResultMapper } from "@/shared/result/result.mapper";
 import { Slug } from "@/shared/utils/slug/slug";
 
-import { CreatePlatformDTO } from "../dto/create-platform.dto";
-import { UpdatePlatformDTO } from "../dto/update-platform.dto";
+import { CreatePlatformDTO, CreatePlatformResponseDTO } from "../dto/create-platform.dto";
+import { PlatformResponseDTO } from "../dto/platform-response.dto";
+import { UpdatePlatformDTO, UpdatePlatformResponseDTO } from "../dto/update-platform.dto";
 import { PlatformEntity } from "../entities/platform.entities";
+import { PlatformAlreadyExistsError } from "../errors/platform-already-exists.error";
+import { PlatformNotFoundError } from "../errors/platform-not-found.error";
+import { PlatformMapper } from "../mappers/platform.mapper";
 import { IPlatformRepository } from "../repositories/platform-repository.interface";
 
 export class PlatformUsecase {
-    constructor(
-        private readonly platformRepository: IPlatformRepository,
-    ) {}
+    constructor(private readonly platformRepository: IPlatformRepository) {}
 
-    async create(data: CreatePlatformDTO) {
-        await this.validatePlatformAlreadyExists(data.name);
+    async create(data: CreatePlatformDTO): Promise<Result<CreatePlatformResponseDTO>> {
+        const existingPlatform = await this.platformRepository.findByName(data.name);
+
+        if (isFailure(existingPlatform)) {
+            return ResultFactory.failure(new PersistenceError("Failed to validate platform."));
+        }
+
+        if (existingPlatform.data) {
+            return ResultFactory.failure(
+                new PlatformAlreadyExistsError({ name: existingPlatform.data.name })
+            );
+        }
 
         const platform = new PlatformEntity({
             uid: randomUUID(),
@@ -27,50 +44,77 @@ export class PlatformUsecase {
 
         const result = await this.platformRepository.register(platform);
 
-        if (!result) {
-            throw new Error("Platform not register!");
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to register platform."));
         }
 
-        return result;
+        return ResultMapper.map(result, PlatformMapper.toCreateResponse);
     }
 
-    async findByUID(uid: string) {
-        const platform = await this.platformRepository.findByUID(uid);
+    async findByUID(uid: string): Promise<Result<PlatformResponseDTO | null>> {
+        const result = await this.platformRepository.findByUID(uid);
 
-        if (!platform) {
-            throw new Error("Platform not found!");
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch platform."));
         }
 
-        return platform;
+        return ResultFactory.success(result.data);
     }
 
-    async findByName(name: string) {
-        const platform = await this.platformRepository.findByName(name);
+    async findByName(name: string): Promise<Result<PlatformResponseDTO | null>> {
+        const result = await this.platformRepository.findByName(name);
 
-        if (!platform) {
-            throw new Error("Platform not found!");
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch platform."));
         }
 
-        return platform;
+        return ResultFactory.success(result.data);
     }
 
-    async find() {
-        const platforms = await this.platformRepository.find();
+    async find(): Promise<Result<PlatformResponseDTO[]>> {
+        const result = await this.platformRepository.find();
 
-        if (!platforms) {
-            throw new Error("Platforms not found!");
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch platforms."));
         }
 
-        return platforms;
+        return ResultFactory.success(result.data);
     }
 
-    async update(data: UpdatePlatformDTO) {
-        await this.validatePlatformAlreadyExists(data.name, data.uid);
+    async update(data: UpdatePlatformDTO): Promise<Result<UpdatePlatformResponseDTO>> {
+        const existingPlatform = await this.platformRepository.findByName(data.name ?? "");
+
+        if (isFailure(existingPlatform)) {
+            return ResultFactory.failure(new PersistenceError("Failed to validate platform."));
+        }
+
+        if (existingPlatform.data && existingPlatform.data.uid !== data.uid) {
+            return ResultFactory.failure(new PlatformAlreadyExistsError({ name: data.name }));
+        }
 
         const oldPlatform = await this.findByUID(data.uid);
 
+        if (isFailure(oldPlatform)) {
+            return oldPlatform;
+        }
+
+        const requiredPlatform = ResultMapper.requireData(
+            oldPlatform,
+            new PlatformNotFoundError({
+                uid: data.uid,
+            })
+        );
+
+        if (isFailure(requiredPlatform)) {
+            return requiredPlatform;
+        }
+
+        if (isFailure(requiredPlatform)) {
+            return requiredPlatform;
+        }
+
         const mergedPlatform = new PlatformEntity({
-            ...oldPlatform,
+            ...requiredPlatform.data,
             ...data,
             updatedBy: data.updatedBy,
             updatedAt: new Date(),
@@ -78,30 +122,37 @@ export class PlatformUsecase {
 
         const result = await this.platformRepository.update(mergedPlatform);
 
-        if (!result) {
-            throw new Error("Platform not updated!");
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to update platform."));
         }
 
-        return result;
+        return ResultMapper.map(result, PlatformMapper.toUpdateResponse);
     }
 
-    async delete(uid: string) {
-        await this.findByUID(uid);
+    async delete(uid: string): Promise<Result<boolean>> {
+        const platform = await this.findByUID(uid);
 
-        const isDeleted = await this.platformRepository.delete(uid);
-
-        if (!isDeleted) {
-            throw new Error("Platform not deleted!");
+        if (isFailure(platform)) {
+            return platform;
         }
 
-        return isDeleted;
-    }
+        const requiredPlatform = ResultMapper.requireData(
+            platform,
+            new PlatformNotFoundError({
+                uid: uid,
+            })
+        );
 
-    private async validatePlatformAlreadyExists(name: string, uid?: string) {
-        const platform = await this.platformRepository.findByName(name);
-
-        if (platform && platform.uid !== uid) {
-            throw new Error("Platform already exists!");
+        if (isFailure(requiredPlatform)) {
+            return requiredPlatform;
         }
+
+        const result = await this.platformRepository.delete(uid);
+
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to delete platform."));
+        }
+
+        return ResultFactory.success(result.data);
     }
 }

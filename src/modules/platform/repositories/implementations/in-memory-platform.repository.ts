@@ -1,13 +1,14 @@
-import { CreatePlatformResponseDTO } from "../../dto/create-platform.dto";
+import { Result } from "@/shared/result";
+import { ResultFactory } from "@/shared/result/result.factory";
+
 import { PlatformResponseDTO } from "../../dto/platform-response.dto";
-import { UpdatePlatformResponseDTO } from "../../dto/update-platform.dto";
-import { PlatformEntity } from "../../entities/platform.entities";
+import { PlatformProps } from "../../entities/platform.props";
 import { PlatformCategory } from "../../enum/platform.category-enum";
 import { PlatformMapper } from "../../mappers/platform.mapper";
 import { IPlatformRepository } from "../platform-repository.interface";
 
 export class InMemoryPlatformRepository implements IPlatformRepository {
-    platforms: PlatformEntity[] = [
+    platforms: PlatformProps[] = [
         {
             uid: "1",
             name: "Fitness up.",
@@ -32,37 +33,45 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
         },
     ];
 
-    async find(): Promise<PlatformResponseDTO[]> {
-        return PlatformMapper.toPlatformUIDResponseList(this.platforms);
+    async find(): Promise<Result<PlatformResponseDTO[]>> {
+        return ResultFactory.success(PlatformMapper.toPlatformResponseList(this.platforms));
     }
 
-    async findByUID(uid: string): Promise<PlatformResponseDTO | null> {
-        return this.platforms.find((platform) => platform.uid === uid) || null;
+    async findByUID(uid: string): Promise<Result<PlatformResponseDTO | null>> {
+        const platform = this.platforms.find((platform) => platform.uid === uid);
+
+        return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
     }
 
-    async findByName(name: string): Promise<PlatformResponseDTO | null> {
-        return this.platforms.find((platform) => platform.name === name) || null;
+    async findByName(name: string): Promise<Result<PlatformResponseDTO | null>> {
+        const platform = this.platforms.find((platform) => platform.name === name);
+
+        return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
     }
 
-    async register(platform: PlatformEntity): Promise<CreatePlatformResponseDTO | null> {
+    async register(platform: PlatformProps): Promise<Result<PlatformProps>> {
         this.platforms.push(platform);
 
-        return platform;
+        return ResultFactory.success(platform);
     }
 
-    async update(platform: PlatformEntity): Promise<UpdatePlatformResponseDTO | null> {
+    async update(platform: PlatformProps): Promise<Result<PlatformProps>> {
         const index = this.platforms.findIndex((oldPlatform) => oldPlatform.uid === platform.uid);
 
-        const newPlatform = (this.platforms[index] = platform);
+        this.platforms[index] = platform;
 
-        return newPlatform;
+        return ResultFactory.success(platform);
     }
 
-    async delete(uid: string): Promise<boolean> {
-        const index = this.platforms.findIndex((oldPlatform) => oldPlatform.uid === uid);
+    async delete(uid: string): Promise<Result<boolean>> {
+        const index = this.platforms.findIndex((platform) => platform.uid === uid);
 
-        const removedPlatform = this.platforms.splice(index, 1);
+        if (index === -1) {
+            return ResultFactory.success(false);
+        }
 
-        return !!removedPlatform;
+        this.platforms.splice(index, 1);
+
+        return ResultFactory.success(true);
     }
 }

@@ -1,146 +1,133 @@
-import { CreatePlatformDTO } from "../../dto/create-platform.dto";
-import { UpdatePlatformDTO } from "../../dto/update-platform.dto";
-import { PlatformCategory } from "../../enum/platform.category-enum";
-import { InMemoryPlatformRepository } from "../../repositories/implementations/in-memory-platform.repository";
+import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
+
+import { PlatformAlreadyExistsError } from "../../errors/platform-already-exists.error";
 import { PlatformUsecase } from "../platform.usecase";
-
-const platform: CreatePlatformDTO = {
-    name: "Beautiful Lag.",
-    category: PlatformCategory.GYM,
-    createdBy: "1",
-};
-
-const platform2: CreatePlatformDTO = {
-    name: "Beautiful Arm.",
-    category: PlatformCategory.ONBOARDLY,
-    createdBy: "1",
-};
+import { makePlatform, platform1, platform2 } from "./factories/platform.factory";
+import { setupPlatform, setupPlatforms } from "./setup/platform.setup";
+import { scenario } from "./setup/platform.test-builder";
 
 describe("PlatformUsecase", () => {
-    let repository: InMemoryPlatformRepository;
-
-    let usecase: PlatformUsecase;
+    let platformUsecase: PlatformUsecase;
 
     beforeEach(() => {
-        repository = new InMemoryPlatformRepository();
-        usecase = new PlatformUsecase(repository);
+        const context = scenario().createUsecases().build();
+
+        platformUsecase = context.platformUsecases[0];
     });
 
-    test("Should register a platform.", async () => {
-        const result = await usecase.create(platform);
-        const result2 = await usecase.create(platform2);
+    test("Should register a platform", async () => {
+        const result = expectSuccess(await platformUsecase.create(platform1));
 
-        expect(result.name).toBe(platform.name);
-        expect(result2.uid).not.toBeNull();
+        expect(result.name).toBe(platform1.name);
+        expect(result.category).toBe(platform1.category);
+        expect(result.uid).not.toBeNull();
     });
 
     test("Should not create duplicated platform", async () => {
-        await usecase.create({
-            name: "Beautiful Lag",
-            category: PlatformCategory.GYM,
-            createdBy: "1",
-        });
+        await setupPlatform(platformUsecase, platform1);
 
-        await expect(
-            usecase.create({
-                name: "Beautiful Lag",
-                category: PlatformCategory.GYM,
-                createdBy: "1",
-            })
-        ).rejects.toThrow();
+        expectFailure(await platformUsecase.create(platform1), PlatformAlreadyExistsError);
     });
 
     test("Should update a platform", async () => {
-        const result = await usecase.create(platform);
-        await usecase.create(platform2);
+        const platform = await setupPlatform(platformUsecase, platform1);
 
-        const updatePlatform: UpdatePlatformDTO = {
-            uid: result.uid,
-            isActivated: true,
-            name: "Beautiful Calf.",
-            updatedBy: "1",
-        };
+        await setupPlatform(platformUsecase, platform2);
 
-        const updatedPlatform = await usecase.update(updatePlatform);
-
-        expect(updatePlatform.name).toBe(updatedPlatform.name);
-    });
-
-    test("Should not updated platform duplicate name", async () => {
-        await usecase.create({
-            name: "Beautiful Lag",
-            category: PlatformCategory.GYM,
-            createdBy: "1",
-        });
-        const result = await usecase.create(platform2);
-
-        await expect(
-            usecase.update({
-                uid: result.uid,
+        const result = expectSuccess(
+            await platformUsecase.update({
+                uid: platform.uid,
                 isActivated: true,
-                name: "Beautiful Lag",
+                name: "Beautiful Calf.",
                 updatedBy: "1",
             })
-        ).rejects.toThrow();
+        );
+
+        expect(result.name).toBe("Beautiful Calf.");
+        expect(result.uid).toBe(platform.uid);
     });
 
-    test("Should find a platform by uid ", async () => {
-        const lag = await usecase.create({
-            name: "Beautiful Lag",
-            category: PlatformCategory.GYM,
-            createdBy: "1",
+    test("Should not update platform with duplicated name", async () => {
+        await setupPlatform(platformUsecase, platform1);
+
+        const platform = await setupPlatform(platformUsecase, platform2);
+
+        const result = await platformUsecase.update({
+            uid: platform.uid,
+            isActivated: true,
+            name: platform1.name,
+            updatedBy: "1",
         });
 
-        const result = await usecase.findByUID(lag.uid);
-        const fitnessUp = await usecase.findByUID("1");
+        const error = expectFailure(result, PlatformAlreadyExistsError);
 
-        expect(result.uid).toBe(lag.uid);
-        expect(fitnessUp.uid).toBe("1");
+        expect(error).toBeInstanceOf(PlatformAlreadyExistsError);
     });
 
-    test("Should find a platform by name ", async () => {
-        const lag = await usecase.create({
-            name: "Beautiful Lag",
-            category: PlatformCategory.GYM,
-            createdBy: "1",
-        });
+    test("Should find a platform by uid", async () => {
+        const platform = await setupPlatform(platformUsecase, platform1);
 
-        const result = await usecase.findByName(lag.name);
-        const fitnessUp = await usecase.findByName("Fitness up.");
+        const result = expectSuccess(await platformUsecase.findByUID(platform.uid));
 
-        expect(result.name).toBe(lag.name);
-        expect(fitnessUp.name).toBe("Fitness up.");
+        expect(result?.uid).toBe(platform.uid);
+        expect(result?.name).toBe(platform.name);
+    });
+
+    test("Should return failure when platform uid does not exist", async () => {
+        const result = expectSuccess(await platformUsecase.findByUID("not-found"));
+
+        expect(result).toBe(null);
+    });
+
+    test("Should find a platform by name", async () => {
+        const platform = await setupPlatform(platformUsecase, platform1);
+
+        const result = expectSuccess(await platformUsecase.findByName(platform.name));
+
+        expect(result).not.toBeNull();
+        expect(result?.name).toBe(platform.name);
+        expect(result?.uid).toBe(platform.uid);
+    });
+
+    test("Should return null when platform name does not exist", async () => {
+        const result = expectSuccess(await platformUsecase.findByName("Platform inexistente"));
+
+        expect(result).toBeNull();
     });
 
     test("Should find all platforms", async () => {
-        await usecase.create(platform);
-        await usecase.create(platform2);
-        await usecase.create({
-            name: "Beautiful Lag",
-            category: PlatformCategory.GYM,
-            createdBy: "1",
-        });
+        await setupPlatforms(
+            platformUsecase,
+            platform1,
+            platform2,
+            makePlatform({
+                name: "Beautiful Lag",
+            })
+        );
 
-        const result = await usecase.find();
+        const result = expectSuccess(await platformUsecase.find());
 
+        expect(result).toHaveLength(5);
         expect(result.every((platform) => platform.uid)).toBe(true);
     });
 
     test("Should delete a platform", async () => {
-        const result = await usecase.create(platform);
-        await usecase.create(platform2);
-        await usecase.create({
-            name: "Beautiful Lag",
-            category: PlatformCategory.GYM,
-            createdBy: "1",
-        });
+        const platform = await setupPlatform(platformUsecase, platform1);
 
-        const isDeleted = await usecase.delete(result.uid);
+        await setupPlatforms(
+            platformUsecase,
+            platform2,
+            makePlatform({
+                name: "Beautiful Lag",
+            })
+        );
 
-        const platforms = await usecase.find();
+        const result = expectSuccess(await platformUsecase.delete(platform.uid));
 
-        expect(isDeleted).toBe(true);
+        expect(result).toBe(true);
 
-        expect(platforms.every((platform) => platform.uid !== result.uid)).toBe(true);
+        const platforms = expectSuccess(await platformUsecase.find());
+
+        expect(platforms.every((item) => item.uid !== platform.uid)).toBe(true);
     });
 });

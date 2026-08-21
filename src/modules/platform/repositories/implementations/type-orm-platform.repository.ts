@@ -1,66 +1,59 @@
 import { Repository } from "typeorm";
 
-import { CreatePlatformResponseDTO } from "../../dto/create-platform.dto";
-import { PlatformResponseDTO } from "../../dto/platform-response.dto";
-import { UpdatePlatformResponseDTO } from "../../dto/update-platform.dto";
+import { Result } from "@/shared/result";
+import { ResultFactory } from "@/shared/result/result.factory";
+
 import { PlatformEntity } from "../../entities/platform.entities";
+import { PlatformProps } from "../../entities/platform.props";
 import { PlatformMapper } from "../../mappers/platform.mapper";
 import { IPlatformRepository } from "../platform-repository.interface";
 
 export class TypeORMPlatformRepository implements IPlatformRepository {
     constructor(private readonly repository: Repository<PlatformEntity>) {}
 
-    async find(): Promise<PlatformResponseDTO[]> {
+    async find(): Promise<Result<PlatformProps[]>> {
         const platforms = await this.repository.find();
 
-        return PlatformMapper.toPlatformUIDResponseList(platforms);
+        return ResultFactory.success(PlatformMapper.toPlatformResponseList(platforms));
     }
 
-    async findByUID(uid: string): Promise<PlatformResponseDTO | null> {
+    async findByUID(uid: string): Promise<Result<PlatformProps | null>> {
         const platform = await this.repository.findOne({
             where: {
                 uid,
             },
         });
 
-        if (!platform) {
-            return null;
-        }
-
-        return PlatformMapper.toPlatformUIDResponse(platform);
+        return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
     }
 
-    async findByName(name: string): Promise<PlatformResponseDTO | null> {
+    async findByName(name: string): Promise<Result<PlatformProps | null>> {
         const platform = await this.repository.findOne({
             where: {
                 name,
             },
         });
 
-        if (!platform) {
-            return null;
-        }
-
-        return PlatformMapper.toPlatformUIDResponse(platform);
+        return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
     }
 
-    async register(platform: PlatformEntity): Promise<CreatePlatformResponseDTO | null> {
+    async register(platform: PlatformProps): Promise<Result<PlatformProps>> {
         const savedPlatform = await this.repository.save(platform);
 
-        return savedPlatform;
+        return ResultFactory.success(savedPlatform);
     }
 
-    async update(platform: PlatformEntity): Promise<UpdatePlatformResponseDTO | null> {
+    async update(platform: PlatformProps): Promise<Result<PlatformProps>> {
         const updatedPlatform = await this.repository.save(platform);
 
-        return updatedPlatform;
+        return ResultFactory.success(updatedPlatform);
     }
 
-    async delete(uid: string): Promise<boolean> {
+    async delete(uid: string): Promise<Result<boolean>> {
         const result = await this.repository.delete({
             uid,
         });
 
-        return result.affected !== 0;
+        return ResultFactory.success(result.affected !== 0);
     }
 }
