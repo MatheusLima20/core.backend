@@ -5,7 +5,6 @@ import { ResultFactory } from "@/shared/result/result.factory";
 
 import { PlatformEntity } from "../../entities/platform.entities";
 import { PlatformProps } from "../../entities/platform.props";
-import { PlatformMapper } from "../../mappers/platform.mapper";
 import { IPlatformRepository } from "../platform-repository.interface";
 
 export class TypeORMPlatformRepository implements IPlatformRepository {
@@ -14,7 +13,7 @@ export class TypeORMPlatformRepository implements IPlatformRepository {
     async find(): Promise<Result<PlatformProps[]>> {
         const platforms = await this.repository.find();
 
-        return ResultFactory.success(PlatformMapper.toPlatformResponseList(platforms));
+        return ResultFactory.success(platforms);
     }
 
     async findByUID(uid: string): Promise<Result<PlatformProps | null>> {
@@ -24,7 +23,7 @@ export class TypeORMPlatformRepository implements IPlatformRepository {
             },
         });
 
-        return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
+        return ResultFactory.success(platform ? platform : null);
     }
 
     async findByName(name: string): Promise<Result<PlatformProps | null>> {
@@ -34,7 +33,7 @@ export class TypeORMPlatformRepository implements IPlatformRepository {
             },
         });
 
-        return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
+        return ResultFactory.success(platform ? platform : null);
     }
 
     async register(platform: PlatformProps): Promise<Result<PlatformProps>> {

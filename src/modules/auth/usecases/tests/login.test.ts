@@ -1,5 +1,7 @@
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
+import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 
+import { InvalidCredentialsError } from "../../errors/invalid-credentials.error";
 import { FakeHashProvider } from "../../providers/implementations/fake-hash.provider";
 import { FakeTokenProvider } from "../../providers/implementations/fake-token.provider";
 import { LoginUsecase } from "../login.usecase";
@@ -24,20 +26,22 @@ describe("LoginUseCase", () => {
     });
 
     test("Should login successfully", async () => {
-        const result = await usecase.execute("matheus@email.com", "12345678");
+        const result = expectSuccess(await usecase.execute("matheus@email.com", "12345678"));
 
         expect(result.token).toContain("token");
     });
 
-    test("Should not found user", async () => {
-        await expect(
-            usecase.execute("notfound@email.com", "123456"),
-        ).rejects.toThrow();
+    test("Should not login when user does not exist", async () => {
+        expectFailure(
+            await usecase.execute("notfound@email.com", "123456"),
+            InvalidCredentialsError
+        );
     });
 
-    test("Should not wrong password", async () => {
-        await expect(
-            usecase.execute("matheus@email.com", "wrong_12345678"),
-        ).rejects.toThrow();
+    test("Should not login with wrong password", async () => {
+        expectFailure(
+            await usecase.execute("matheus@email.com", "wrong_12345678"),
+            InvalidCredentialsError
+        );
     });
 });

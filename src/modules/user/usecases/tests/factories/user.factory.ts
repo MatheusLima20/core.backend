@@ -10,7 +10,7 @@ export const user1: CreateUserDTO = {
     docNumberPerson: 123456789,
     gender: Gender.MALE,
     userType: UserType.OWNER,
-    platformUID: "platform-1",
+    platformUID: "1",
 };
 
 export const user2: CreateUserDTO = {
@@ -21,7 +21,7 @@ export const user2: CreateUserDTO = {
     docNumberPerson: 987654321,
     gender: Gender.FEMALE,
     userType: UserType.MANAGER,
-    platformUID: "platform-1",
+    platformUID: "1",
 };
 
 export function makeUser(data?: Partial<CreateUserDTO>): CreateUserDTO {

@@ -13,7 +13,7 @@ describe("UserUseCase", () => {
     let userUsecase: UserUseCase;
 
     beforeEach(async () => {
-        const context = (await scenario().loadUsers(["user-1"])).createUsecases().build();
+        const context = (await scenario().loadUsers(["1"])).createUsecases().build();
 
         userUsecase = context.userUsecases[0];
     });
@@ -138,7 +138,7 @@ describe("UserUseCase", () => {
 
         const result = expectSuccess(await userUsecase.findByType(UserType.ADMINISTRATOR));
 
-        expect(result).toHaveLength(2);
+        expect(result).toHaveLength(3);
         expect(result.every((user) => user.userType === UserType.ADMINISTRATOR)).toBe(true);
     });
 
@@ -156,7 +156,7 @@ describe("UserUseCase", () => {
 
         const result = expectSuccess(await userUsecase.find());
 
-        expect(result).toHaveLength(3);
+        expect(result).toHaveLength(5);
         expect(result.every((user) => user.uid)).toBe(true);
     });
 

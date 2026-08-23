@@ -35,7 +35,7 @@ router.get("/find", async (request, response) => {
     await controller.find(request, response);
 });
 
-router.delete("delete/:uid", async (request, response) => {
+router.delete("/delete/:uid", async (request, response) => {
     await controller.delete(request, response);
 });
 
