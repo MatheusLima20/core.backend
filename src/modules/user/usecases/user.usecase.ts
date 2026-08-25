@@ -46,7 +46,10 @@ export class UserUseCase {
     }
 
     async findByType(userType: UserType): Promise<Result<UserResponseDTO[]>> {
-        const result = await this.userRepository.findByType(userType);
+        const result = await this.userRepository.findByType(
+            this.context.user.platformUID,
+            userType
+        );
 
         if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch Users."));
@@ -66,15 +69,20 @@ export class UserUseCase {
     }
 
     async create(data: CreateUserDTO): Promise<Result<CreateUserResponseDTO>> {
-        const existingUser = await this.userRepository.findByEmail(data.email);
+        const resultExistingUser = await this.userRepository.findByPlatformUIDAndEmail(
+            this.context.user.platformUID,
+            data.email
+        );
 
-        if (isFailure(existingUser)) {
+        if (isFailure(resultExistingUser)) {
             return ResultFactory.failure(new PersistenceError("Failed to validate User."));
         }
 
-        if (existingUser.data) {
+        if (resultExistingUser.data) {
             return ResultFactory.failure(
-                new UserAlreadyExistsError({ name: existingUser.data.name })
+                new UserAlreadyExistsError({
+                    name: resultExistingUser.data.name,
+                })
             );
         }
 
@@ -84,6 +92,7 @@ export class UserUseCase {
             uid: randomUUID(),
             ...data,
             password,
+            platformUID: this.context.user.platformUID,
             createdBy: this.context.user.uid,
             updatedBy: null,
             createdAt: new Date(),
@@ -94,10 +103,6 @@ export class UserUseCase {
 
         if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to register user."));
-        }
-
-        if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to register User."));
         }
 
         return ResultFactory.success(UserMapper.toCreateUserResponseDTO(result.data));

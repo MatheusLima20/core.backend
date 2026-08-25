@@ -31,9 +31,24 @@ export class TypeORMUserRepository implements IUserRepository {
         return ResultFactory.success(user ? user : null);
     }
 
-    async findByType(type: UserType): Promise<Result<UserProps[]>> {
+    async findByPlatformUIDAndEmail(
+        platformUID: string,
+        email: string
+    ): Promise<Result<UserProps | null>> {
+        const user = await this.repository.findOne({
+            where: {
+                platformUID,
+                email,
+            },
+        });
+
+        return ResultFactory.success(user ? user : null);
+    }
+
+    async findByType(platformUID: string, type: UserType): Promise<Result<UserProps[]>> {
         const users = await this.repository.find({
             where: {
+                platformUID,
                 userType: type,
             },
         });

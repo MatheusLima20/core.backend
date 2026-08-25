@@ -1,10 +1,11 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn, Unique, UpdateDateColumn } from "typeorm";
 
 import { Gender } from "../enum/gender.enum";
 import { UserType } from "../enum/user-type.enum";
 import { UserProps } from "./user.props";
 
 @Entity("users")
+@Unique(["platformUID", "email"])
 export class UserEntity implements UserProps {
     @PrimaryColumn()
     uid!: string;
@@ -30,7 +31,7 @@ export class UserEntity implements UserProps {
     })
     gender!: Gender;
 
-    @Column({ unique: true })
+    @Column()
     email!: string;
 
     @Column()

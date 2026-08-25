@@ -68,8 +68,26 @@ export class InMemoryUserRepository implements IUserRepository {
 
         return ResultFactory.success(user);
     }
-    async findByType(type: UserType): Promise<Result<UserProps[]>> {
-        const users = this.users.filter((users) => users.userType === type);
+
+    async findByPlatformUIDAndEmail(
+        platformUID: string,
+        email: string
+    ): Promise<Result<UserProps | null>> {
+        const users = this.users.filter((users) => users.platformUID === platformUID);
+
+        const user = users.find((users) => users.email === email);
+
+        if (!user) {
+            return ResultFactory.success(null);
+        }
+
+        return ResultFactory.success(user);
+    }
+
+    async findByType(platformUID: string, type: UserType): Promise<Result<UserProps[]>> {
+        const allUsers = this.users.filter((users) => users.platformUID === platformUID);
+
+        const users = allUsers.filter((users) => users.userType === type);
 
         return ResultFactory.success(users);
     }
