@@ -1,4 +1,3 @@
-export {};
 import { RequestContext } from "@/shared/context/request-context";
 
 declare global {
@@ -8,3 +7,5 @@ declare global {
         }
     }
 }
+
+export {};

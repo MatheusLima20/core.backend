@@ -72,7 +72,7 @@
         }
     },
     "scripts": {
-        "dev": "nodemon --exec ts-node src/server.ts",
+        "dev": "nodemon --exec \"ts-node --files src/server.ts\"",
         "start": "node build/server.js",
         "build": "tsc --build",
         "clean": "tsc --build --clean",

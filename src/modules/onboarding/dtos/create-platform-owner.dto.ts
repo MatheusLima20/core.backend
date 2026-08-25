@@ -6,13 +6,7 @@ export type CreatePlatformOwnerDTO = {
 
     owner: Pick<
         UserProps,
-        | "name"
-        | "email"
-        | "password"
-        | "docNumberBusiness"
-        | "docNumberPerson"
-        | "gender"
-        | "userType"
+        "name" | "email" | "password" | "docNumberBusiness" | "docNumberPerson" | "gender"
     >;
 };
 
