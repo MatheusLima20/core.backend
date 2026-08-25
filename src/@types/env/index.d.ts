@@ -16,5 +16,8 @@ declare namespace NodeJS {
         CLIENT_ID: string;
         CLIENT_SECRET: string;
         PATH_CERT: string;
+
+        JWT_SECRET: string;
+        EXPIRES_IN: string;
     }
 }

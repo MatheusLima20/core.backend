@@ -18,7 +18,12 @@ export class TestBuilder {
 
     createUsecases() {
         this.testContext.userUsecases = this.testContext.users.map(
-            (user) => makeUserUsecase(user, this.testContext.userRepository).usecase
+            (user) =>
+                makeUserUsecase(
+                    user,
+                    this.testContext.userRepository,
+                    this.testContext.fakeHashProvider
+                ).usecase
         );
 
         return this;

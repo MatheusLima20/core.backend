@@ -1,5 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 
+import { env } from "@/config/env";
 import { AuthUser } from "@/shared/context/auth.user";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
@@ -8,21 +9,15 @@ import { InvalidTokenError } from "../../errors/invalid-token.error";
 import { ITokenProvider } from "../token-provider.interface";
 
 export class JWTTokenProvider implements ITokenProvider {
-    private readonly secret = process.env.JWT_SECRET;
-
     async generate(userUID: string, platformUID: string): Promise<Result<string>> {
-        if (!this.secret) {
-            throw new Error("JWT_SECRET is not configured.");
-        }
-
         const token = jwt.sign(
             {
                 userUID,
                 platformUID,
             },
-            this.secret,
+            env.jwt.secret,
             {
-                expiresIn: "7d",
+                expiresIn: env.jwt.expiresIn,
             }
         );
 
@@ -30,12 +25,8 @@ export class JWTTokenProvider implements ITokenProvider {
     }
 
     async verify(token: string): Promise<Result<AuthUser>> {
-        if (!this.secret) {
-            throw new Error("JWT_SECRET is not configured.");
-        }
-
         try {
-            const decoded = jwt.verify(token, this.secret);
+            const decoded = jwt.verify(token, env.jwt.secret);
 
             if (typeof decoded === "string" || !this.isValidPayload(decoded)) {
                 return ResultFactory.failure(new InvalidTokenError());

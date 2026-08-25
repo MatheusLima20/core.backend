@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 
+import { IHashProvider } from "@/modules/auth/providers/hash-provider.interface";
 import { RequestContext } from "@/shared/context/request-context";
 import { PersistenceError } from "@/shared/errors/persistence.error";
 import { Result } from "@/shared/result";
@@ -20,14 +21,15 @@ import { IUserRepository } from "../repositories/user-repository-interface";
 export class UserUseCase {
     constructor(
         private readonly context: RequestContext,
-        private userRepository: IUserRepository
+        private readonly userRepository: IUserRepository,
+        private readonly hashProvider: IHashProvider
     ) {}
 
     async find(): Promise<Result<UserResponseDTO[]>> {
         const result = await this.userRepository.find(this.context.user.platformUID);
 
         if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch platforms."));
+            return ResultFactory.failure(new PersistenceError("Failed to fetch Users."));
         }
 
         return ResultFactory.success(result.data);
@@ -47,7 +49,7 @@ export class UserUseCase {
         const result = await this.userRepository.findByType(userType);
 
         if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch platforms."));
+            return ResultFactory.failure(new PersistenceError("Failed to fetch Users."));
         }
 
         return ResultFactory.success(result.data);
@@ -67,7 +69,7 @@ export class UserUseCase {
         const existingUser = await this.userRepository.findByEmail(data.email);
 
         if (isFailure(existingUser)) {
-            return ResultFactory.failure(new PersistenceError("Failed to validate platform."));
+            return ResultFactory.failure(new PersistenceError("Failed to validate User."));
         }
 
         if (existingUser.data) {
@@ -76,9 +78,12 @@ export class UserUseCase {
             );
         }
 
+        const password = await this.hashProvider.hash(data.password);
+
         const user = new UserEntity({
             uid: randomUUID(),
             ...data,
+            password,
             createdBy: this.context.user.uid,
             updatedBy: null,
             createdAt: new Date(),
@@ -87,12 +92,12 @@ export class UserUseCase {
 
         const result = await this.userRepository.register(user);
 
-        if (!result) {
-            throw new Error("User Not Register");
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to register user."));
         }
 
         if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to register platform."));
+            return ResultFactory.failure(new PersistenceError("Failed to register User."));
         }
 
         return ResultFactory.success(UserMapper.toCreateUserResponseDTO(result.data));
@@ -102,7 +107,7 @@ export class UserUseCase {
         const existingUser = await this.userRepository.findByEmail(data.email);
 
         if (isFailure(existingUser)) {
-            return ResultFactory.failure(new PersistenceError("Failed to validate platform."));
+            return ResultFactory.failure(new PersistenceError("Failed to validate User."));
         }
 
         if (existingUser.data && existingUser.data.uid !== data.uid) {
@@ -130,10 +135,14 @@ export class UserUseCase {
             return requiredUser;
         }
 
+        const password = data.password
+            ? await this.hashProvider.hash(data.password)
+            : requiredUser.data.password;
+
         const user = new UserEntity({
             ...requiredUser.data,
             ...data,
-            password: data.password,
+            password,
             updatedBy: this.context.user.uid,
             updatedAt: new Date(),
         });
@@ -168,7 +177,7 @@ export class UserUseCase {
         const result = await this.userRepository.delete(uid);
 
         if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to delete platform."));
+            return ResultFactory.failure(new PersistenceError("Failed to delete User."));
         }
 
         return ResultFactory.success(result.data);
