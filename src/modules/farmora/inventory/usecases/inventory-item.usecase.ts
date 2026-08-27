@@ -172,11 +172,7 @@ export class InventoryItemUsecase {
         const existing = await this.findByUID(uid);
 
         if (isFailure(existing)) {
-            return ResultFactory.failure(
-                new InventoryItemNotFoundError({
-                    uid,
-                })
-            );
+            return ResultFactory.failure(new PersistenceError());
         }
 
         if (existing.data === null) {

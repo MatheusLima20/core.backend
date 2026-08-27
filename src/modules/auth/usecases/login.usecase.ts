@@ -1,3 +1,5 @@
+import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
+import { IMembershipRepository } from "@/modules/membership/repositories/membership-repository.interface";
 import { IUserRepository } from "@/modules/user/repositories/user-repository-interface";
 import { PersistenceError } from "@/shared/errors/persistence.error";
 import { Result } from "@/shared/result";
@@ -12,11 +14,16 @@ import { ITokenProvider } from "../providers/token-provider.interface";
 export class LoginUsecase {
     constructor(
         private readonly userRepository: IUserRepository,
+        private readonly membershipRepository: IMembershipRepository,
         private readonly hashProvider: IHashProvider,
         private readonly tokenProvider: ITokenProvider
     ) {}
 
-    async execute(email: string, password: string): Promise<Result<LoginResponseDTO>> {
+    async execute(
+        email: string,
+        password: string,
+        platformUID: string
+    ): Promise<Result<LoginResponseDTO>> {
         const result = await this.userRepository.findByEmail(email);
 
         if (isFailure(result)) {
@@ -35,7 +42,27 @@ export class LoginUsecase {
             return ResultFactory.failure(new InvalidCredentialsError());
         }
 
-        const tokenResult = await this.tokenProvider.generate(user.uid, user.platformUID);
+        const resultMembership = await this.membershipRepository.findByUserAndPlatform(
+            user.uid,
+            platformUID
+        );
+
+        if (isFailure(resultMembership)) {
+            return resultMembership;
+        }
+
+        if (!resultMembership) {
+            return ResultFactory.failure(new InvalidCredentialsError());
+        }
+
+        const membership = resultMembership.data;
+
+        const tokenResult = await this.tokenProvider.generate({
+            uid: user.uid,
+            platformUID: membership?.platformUID ?? "",
+            membershipUID: membership?.uid ?? "",
+            role: membership?.role ?? MembershipRole.ADMIN,
+        });
 
         if (isFailure(tokenResult)) {
             return ResultFactory.failure(

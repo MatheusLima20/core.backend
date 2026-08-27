@@ -1,6 +1,5 @@
 import { CreateUserDTO } from "../../../dtos/create-user.dto";
 import { Gender } from "../../../enum/gender.enum";
-import { UserType } from "../../../enum/user-type.enum";
 
 export const user1: CreateUserDTO = {
     name: "John Doe",
@@ -9,7 +8,6 @@ export const user1: CreateUserDTO = {
     docNumberBusiness: null,
     docNumberPerson: 123456789,
     gender: Gender.MALE,
-    userType: UserType.OWNER,
 };
 
 export const user2: CreateUserDTO = {
@@ -19,7 +17,6 @@ export const user2: CreateUserDTO = {
     docNumberBusiness: null,
     docNumberPerson: 987654321,
     gender: Gender.FEMALE,
-    userType: UserType.MANAGER,
 };
 
 export function makeUser(data?: Partial<CreateUserDTO>): CreateUserDTO {

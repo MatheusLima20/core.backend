@@ -11,7 +11,7 @@ export class AuthController {
     async login(request: Request, response: Response): Promise<Response> {
         const data: LoginDTO = request.body;
 
-        const result = await this.usecase.execute(data.email, data.password);
+        const result = await this.usecase.execute(data.email, data.password, data.platformUID);
 
         return resultResponse(result, response);
     }

@@ -1,7 +1,6 @@
 import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 
 import { Gender } from "../../enum/gender.enum";
-import { UserType } from "../../enum/user-type.enum";
 import { UserAlreadyExistsError } from "../../errors/user-already-exists.error";
 import { UserNotFoundError } from "../../errors/user-not-found.error";
 import { UserUseCase } from "../user.usecase";
@@ -23,7 +22,6 @@ describe("UserUseCase", () => {
 
         expect(result.name).toBe(user1.name);
         expect(result.email).toBe(user1.email);
-        expect(result.userType).toBe(user1.userType);
         expect(result.uid).not.toBeNull();
     });
 
@@ -45,7 +43,6 @@ describe("UserUseCase", () => {
                 docNumberBusiness: null,
                 docNumberPerson: 54879854,
                 gender: Gender.MALE,
-                userType: UserType.ADMINISTRATOR,
             })
         );
 
@@ -67,7 +64,6 @@ describe("UserUseCase", () => {
             docNumberBusiness: user1.docNumberBusiness,
             docNumberPerson: user1.docNumberPerson,
             gender: user1.gender,
-            userType: user.userType,
         });
 
         const error = expectFailure(result, UserAlreadyExistsError);
@@ -84,7 +80,6 @@ describe("UserUseCase", () => {
             docNumberBusiness: null,
             docNumberPerson: 123456789,
             gender: Gender.MALE,
-            userType: UserType.ADMINISTRATOR,
         });
 
         const error = expectFailure(result, UserNotFoundError);
@@ -124,42 +119,6 @@ describe("UserUseCase", () => {
         expect(result).toBeNull();
     });
 
-    test("Should find users by type", async () => {
-        await setupUsers(
-            userUsecase,
-            user1,
-            user2,
-            makeUser({
-                name: "Customer",
-                email: "customer@example.com",
-                userType: UserType.CUSTOMER,
-            })
-        );
-
-        const result = expectSuccess(await userUsecase.findByType(UserType.ADMINISTRATOR));
-
-        expect(result).toHaveLength(3);
-        expect(result.every((user) => user.userType === UserType.ADMINISTRATOR)).toBe(true);
-    });
-
-    test("Should find all users", async () => {
-        await setupUsers(
-            userUsecase,
-            user1,
-            user2,
-            makeUser({
-                name: "Customer",
-                email: "customer@example.com",
-                userType: UserType.CUSTOMER,
-            })
-        );
-
-        const result = expectSuccess(await userUsecase.find());
-
-        expect(result).toHaveLength(5);
-        expect(result.every((user) => user.uid)).toBe(true);
-    });
-
     test("Should delete an user", async () => {
         const user = await setupUser(userUsecase, user1);
 
@@ -169,7 +128,6 @@ describe("UserUseCase", () => {
             makeUser({
                 name: "Customer",
                 email: "customer@example.com",
-                userType: UserType.CUSTOMER,
             })
         );
 
@@ -177,9 +135,9 @@ describe("UserUseCase", () => {
 
         expect(result).toBe(true);
 
-        const users = expectSuccess(await userUsecase.find());
+        const deletedUser = expectSuccess(await userUsecase.findByUID(user.uid));
 
-        expect(users.every((item) => item.uid !== user.uid)).toBe(true);
+        expect(deletedUser).toBe(null);
     });
 
     test("Should not delete a non-existent user", async () => {

@@ -10,7 +10,11 @@ export class TestBuilder {
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {
-            const user = await makeLoggedUser(this.testContext.userRepository, uid);
+            const user = await makeLoggedUser(
+                this.testContext.userRepository,
+                this.testContext.membershipRepository,
+                uid
+            );
 
             this.testContext.users.push(user);
         }
@@ -53,6 +57,8 @@ export class TestBuilder {
 
             repositories: {
                 user: this.testContext.userRepository,
+
+                membership: this.testContext.membershipRepository,
 
                 flock: this.testContext.flockRepository,
 

@@ -31,22 +31,16 @@ router.get("/find/email/:email", async (request, response) => {
     await controller.findByEmail(request, response);
 });
 
-router.get("/find/type/:type", async (request, response) => {
+router.get("/find/", async (request, response) => {
     const controller = makeUserController(request.auth);
 
-    await controller.findByType(request, response);
+    await controller.find(request, response);
 });
 
 router.get("/find/:uid", async (request, response) => {
     const controller = makeUserController(request.auth);
 
     await controller.findByUID(request, response);
-});
-
-router.get("/find", async (request, response) => {
-    const controller = makeUserController(request.auth);
-
-    await controller.find(request, response);
 });
 
 router.delete("/delete/:uid", async (request, response) => {

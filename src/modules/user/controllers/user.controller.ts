@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { Request, Response, response } from "express";
 
 import { resultResponse } from "@/shared/http/result-response";
 import { isFailure } from "@/shared/result/result.guard";
 
 import { CreateUserDTO } from "../dtos/create-user.dto";
+import { FindUsersDTO } from "../dtos/find-users.dto";
 import { UpdateUserDTO } from "../dtos/update-user.dto";
-import { UserType } from "../enum/user-type.enum";
 import { UserUseCase } from "../usecases/user.usecase";
 
 export class UserController {
@@ -30,10 +30,24 @@ export class UserController {
         return resultResponse(result, response);
     }
 
-    async find(request: Request, response: Response): Promise<Response> {
-        const result = await this.usecase.find();
+    async find(req: Request, res: Response): Promise<Response> {
+        const result = await this.usecase.find({
+            name: req.query.name as string | undefined,
+            email: req.query.email as string | undefined,
+            userType: req.query.userType as string | undefined,
+            isActivated:
+                req.query.isActivated !== undefined ? req.query.isActivated === "true" : undefined,
+            page: req.query.page ? Number(req.query.page) : undefined,
+            limit: req.query.limit ? Number(req.query.limit) : undefined,
+            orderBy: req.query.orderBy as FindUsersDTO["orderBy"],
+            order: req.query.order as FindUsersDTO["order"],
+        });
 
-        return resultResponse(result, response);
+        if (isFailure(result)) {
+            return resultResponse(result, response);
+        }
+
+        return res.status(200).json(result.data);
     }
 
     async findByUID(request: Request, response: Response): Promise<Response> {
@@ -44,12 +58,6 @@ export class UserController {
 
     async findByEmail(request: Request, response: Response): Promise<Response> {
         const result = await this.usecase.findByEmail(request.params.email);
-
-        return resultResponse(result, response);
-    }
-
-    async findByType(request: Request, response: Response): Promise<Response> {
-        const result = await this.usecase.findByType(request.params.type as UserType);
 
         return resultResponse(result, response);
     }

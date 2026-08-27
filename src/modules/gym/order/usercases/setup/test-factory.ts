@@ -10,18 +10,19 @@ export class TestBuilder {
         for (const uid of uids) {
             const user = await makeLoggedUser(
                 this.testContext.userRepository,
-                uid,
+                this.testContext.membershipRepository,
+                uid
             );
+
             this.testContext.users.push(user);
         }
+
         return this;
     }
 
     createUsecases() {
         this.testContext.usecases = this.testContext.users.map(
-            (user) =>
-                makeOrderUsecase(user, this.testContext.orderRepository)
-                    .usecase,
+            (user) => makeOrderUsecase(user, this.testContext.orderRepository).usecase
         );
         return this;
     }

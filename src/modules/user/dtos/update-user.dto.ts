@@ -1,19 +1,19 @@
+import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
+
 import { UserProps } from "../entities/user.props";
 
+export type UpdateUserDTO = Partial<
+    Pick<
+        UserProps,
+        | "name"
+        | "email"
+        | "isActivated"
+        | "password"
+        | "docNumberBusiness"
+        | "docNumberPerson"
+        | "gender"
+    >
+> &
+    Pick<UserProps, "uid"> & { role?: MembershipRole };
 
-export type UpdateUserDTO = Pick<
-    UserProps,
-    | "uid"
-    | "name"
-    | "email"
-    | "password"
-    | "docNumberBusiness"
-    | "docNumberPerson"
-    | "gender"
-    | "userType"
->;
-
-export type UpdateUserResponseDTO = Pick<
-    UserProps,
-    "uid" | "name" | "email" | "userType" | "updatedAt"
->;
+export type UpdateUserResponseDTO = Pick<UserProps, "uid" | "name" | "email" | "updatedAt">;

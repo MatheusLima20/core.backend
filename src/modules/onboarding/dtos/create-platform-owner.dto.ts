@@ -13,5 +13,5 @@ export type CreatePlatformOwnerDTO = {
 export type CreatePlatformOwnerResponseDTO = {
     platform: Pick<PlatformProps, "uid" | "name" | "category">;
 
-    owner: Pick<UserProps, "uid" | "name" | "email" | "userType" | "platformUID">;
+    owner: Pick<UserProps, "uid" | "name" | "email">;
 };

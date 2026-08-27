@@ -1,21 +1,31 @@
+import { InMemoryMembershipRepository } from "@/modules/membership/repositories/implementations/in-memory-membership.repository";
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { AuthUser } from "@/shared/context/auth.user";
 import { isFailure } from "@/shared/result/result.guard";
 
 export async function makeLoggedUser(
-    repository: InMemoryUserRepository,
-    uid = "1"
+    userRepository: InMemoryUserRepository,
+    membershipRepository: InMemoryMembershipRepository,
+    userUID = "1"
 ): Promise<AuthUser> {
-    const user = await repository.findByUID(uid);
+    const userResult = await userRepository.findByUID(userUID);
 
-    if (isFailure(user)) {
+    if (isFailure(userResult) || !userResult.data) {
         throw new Error("User not found.");
     }
 
-    const data = user.data;
+    const membershipsResult = await membershipRepository.listByUser(userUID);
+
+    if (isFailure(membershipsResult) || membershipsResult.data.length === 0) {
+        throw new Error("Membership not found.");
+    }
+
+    const membership = membershipsResult.data[0];
 
     return {
-        uid: data?.uid ?? "",
-        platformUID: data?.platformUID ?? "",
+        uid: userResult.data.uid,
+        platformUID: membership.platformUID,
+        membershipUID: membership.uid,
+        role: membership.role,
     };
 }

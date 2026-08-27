@@ -1,11 +1,9 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn, Unique, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
 import { Gender } from "../enum/gender.enum";
-import { UserType } from "../enum/user-type.enum";
 import { UserProps } from "./user.props";
 
 @Entity("users")
-@Unique(["platformUID", "email"])
 export class UserEntity implements UserProps {
     @PrimaryColumn()
     uid!: string;
@@ -21,24 +19,18 @@ export class UserEntity implements UserProps {
 
     @Column({
         type: "enum",
-        enum: UserType,
-    })
-    userType!: UserType;
-
-    @Column({
-        type: "enum",
         enum: Gender,
     })
     gender!: Gender;
 
-    @Column()
+    @Column({ unique: true })
     email!: string;
 
     @Column()
     password!: string;
 
-    @Column()
-    platformUID!: string;
+    @Column({ default: true })
+    isActivated!: boolean;
 
     @CreateDateColumn()
     createdAt!: Date;

@@ -9,13 +9,13 @@ import { MembershipUseCase } from "../membership.usecase";
 
 describe("MembershipUseCase", () => {
     const membership1: CreateMembershipDTO = {
-        userUID: "1",
+        userUID: "4",
         platformUID: "1",
         role: MembershipRole.OWNER,
     };
 
     const membership2: CreateMembershipDTO = {
-        userUID: "2",
+        userUID: "5",
         platformUID: "1",
         role: MembershipRole.ADMIN,
     };
@@ -29,32 +29,27 @@ describe("MembershipUseCase", () => {
     });
 
     test("should create a membership", async () => {
-        const membership = expectSuccess(
-            await useCase.create(membership1),
-        );
+        const membership = expectSuccess(await useCase.create(membership1));
 
         expect(membership).toHaveProperty("uid");
-        expect(membership.uid).not.toEqual("");
+        expect(membership.userUID).toBe("4");
+        expect(membership.platformUID).toBe("1");
+        expect(membership.role).toBe(MembershipRole.OWNER);
     });
 
     test("should not allow duplicate membership", async () => {
         await useCase.create(membership1);
 
-        expectFailure(await useCase.create({
-            userUID: "1",
-            platformUID: "1",
-            role: MembershipRole.ADMIN,
-        }), MembershipAlreadyExistsError);
+        expectFailure(await useCase.create(membership1), MembershipAlreadyExistsError);
     });
 
     test("should list memberships by platform", async () => {
         await useCase.create(membership1);
-
         await useCase.create(membership2);
 
         const memberships = expectSuccess(await useCase.listByPlatform(membership1.platformUID));
 
-        expect(memberships.length).toBe(2);
+        expect(memberships.length).toBe(4);
     });
 
     test("should remove a membership", async () => {
@@ -62,10 +57,12 @@ describe("MembershipUseCase", () => {
 
         expectSuccess(await useCase.delete(created.uid));
 
+        const deleted = expectSuccess(await repository.findByUid(created.uid));
+
+        expect(deleted).toBeNull();
     });
 
     test("should return not found when removing missing membership", async () => {
         expectFailure(await useCase.delete("invalid-id"), MembershipNotFoundError);
-        
     });
 });

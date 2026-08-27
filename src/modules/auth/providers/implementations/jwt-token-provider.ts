@@ -1,6 +1,7 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 import { env } from "@/config/env";
+import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
 import { AuthUser } from "@/shared/context/auth.user";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
@@ -9,11 +10,13 @@ import { InvalidTokenError } from "../../errors/invalid-token.error";
 import { ITokenProvider } from "../token-provider.interface";
 
 export class JWTTokenProvider implements ITokenProvider {
-    async generate(userUID: string, platformUID: string): Promise<Result<string>> {
+    async generate(auth: AuthUser): Promise<Result<string>> {
         const token = jwt.sign(
             {
-                userUID,
-                platformUID,
+                uid: auth.uid,
+                platformUID: auth.platformUID,
+                membershipUID: auth.membershipUID,
+                role: auth.role,
             },
             env.jwt.secret,
             {
@@ -33,8 +36,10 @@ export class JWTTokenProvider implements ITokenProvider {
             }
 
             return ResultFactory.success({
-                uid: decoded.userUID,
+                uid: decoded.uid,
                 platformUID: decoded.platformUID,
+                membershipUID: decoded.membershipUID,
+                role: decoded.role,
             });
         } catch {
             return ResultFactory.failure(new InvalidTokenError());
@@ -42,13 +47,18 @@ export class JWTTokenProvider implements ITokenProvider {
     }
 
     private isValidPayload(payload: string | JwtPayload): payload is JwtPayload & {
-        userUID: string;
+        uid: string;
         platformUID: string;
+        membershipUID: string;
+        role: MembershipRole;
     } {
         return (
             typeof payload === "object" &&
-            typeof payload.userUID === "string" &&
-            typeof payload.platformUID === "string"
+            typeof payload.uid === "string" &&
+            typeof payload.platformUID === "string" &&
+            typeof payload.membershipUID === "string" &&
+            typeof payload.role === "string" &&
+            Object.values(MembershipRole).includes(payload.role as MembershipRole)
         );
     }
 }

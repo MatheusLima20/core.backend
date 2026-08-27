@@ -1,3 +1,4 @@
+import { InMemoryMembershipRepository } from "@/modules/membership/repositories/implementations/in-memory-membership.repository";
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { AuthUser } from "@/shared/context/auth.user";
 
@@ -8,6 +9,8 @@ export class TestTransactionContext {
     userRepository = new InMemoryUserRepository();
 
     transactionRepository = new InMemoryTransactionRepository();
+
+    membershipRepository = new InMemoryMembershipRepository();
 
     users: AuthUser[] = [];
 

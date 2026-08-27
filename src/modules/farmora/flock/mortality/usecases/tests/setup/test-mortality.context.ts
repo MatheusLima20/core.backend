@@ -1,5 +1,6 @@
 import { InMemoryFlockRepository } from "@/modules/farmora/flock/flock/repositories/implementations/in-memory-flock.repository";
 import { FlockUsecase } from "@/modules/farmora/flock/flock/usecases/flock.usecase";
+import { InMemoryMembershipRepository } from "@/modules/membership/repositories/implementations/in-memory-membership.repository";
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { AuthUser } from "@/shared/context/auth.user";
 
@@ -12,6 +13,8 @@ export class TestMortalityContext {
     flockRepository = new InMemoryFlockRepository();
 
     mortalityRepository = new InMemoryMortalityRepository();
+
+    membershipRepository = new InMemoryMembershipRepository();
 
     users: AuthUser[] = [];
 

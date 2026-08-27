@@ -1,9 +1,10 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
+import { FindUsersDTO } from "../../dtos/find-users.dto";
 import { UserProps } from "../../entities/user.props";
 import { Gender } from "../../enum/gender.enum";
-import { UserType } from "../../enum/user-type.enum";
 import { IUserRepository } from "../user-repository-interface";
 
 export class InMemoryUserRepository implements IUserRepository {
@@ -16,8 +17,7 @@ export class InMemoryUserRepository implements IUserRepository {
             docNumberBusiness: null,
             docNumberPerson: null,
             gender: Gender.MALE,
-            userType: UserType.ADMINISTRATOR,
-            platformUID: "1",
+            isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
         },
@@ -29,8 +29,7 @@ export class InMemoryUserRepository implements IUserRepository {
             docNumberBusiness: null,
             docNumberPerson: null,
             gender: Gender.MALE,
-            userType: UserType.ADMINISTRATOR,
-            platformUID: "2",
+            isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
         },
@@ -42,12 +41,66 @@ export class InMemoryUserRepository implements IUserRepository {
             docNumberBusiness: null,
             docNumberPerson: null,
             gender: Gender.FEMALE,
-            userType: UserType.ADMINISTRATOR,
-            platformUID: "1",
+            isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
         },
     ];
+
+    async findByUIDs(
+        uids: string[],
+        data: FindUsersDTO = {}
+    ): Promise<Result<PaginationResult<UserProps>>> {
+        let users = this.users.filter((user) => uids.includes(user.uid));
+
+        if (data.name) {
+            const name = data.name.toLowerCase();
+
+            users = users.filter((user) => user.name.toLowerCase().includes(name));
+        }
+
+        if (data.email) {
+            const email = data.email.toLowerCase();
+
+            users = users.filter((user) => user.email.toLowerCase().includes(email));
+        }
+
+        if (data.isActivated !== undefined) {
+            users = users.filter((user) => user.isActivated === data.isActivated);
+        }
+
+        if (data.orderBy) {
+            const order = data.order === "desc" ? -1 : 1;
+
+            users.sort((a, b) => {
+                const first = a[data.orderBy!];
+                const second = b[data.orderBy!];
+
+                if (first === second) {
+                    return 0;
+                }
+
+                return first! > second! ? order : -order;
+            });
+        }
+
+        const page = data.page ?? 1;
+        const limit = data.limit ?? 10;
+
+        const total = users.length;
+        const totalPages = Math.ceil(total / limit);
+
+        const start = (page - 1) * limit;
+        const paginatedUsers = users.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data: paginatedUsers,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
+    }
 
     async findByUID(uid: string): Promise<Result<UserProps | null>> {
         const user = this.users.find((users) => users.uid === uid);
@@ -69,33 +122,6 @@ export class InMemoryUserRepository implements IUserRepository {
         return ResultFactory.success(user);
     }
 
-    async findByPlatformUIDAndEmail(
-        platformUID: string,
-        email: string
-    ): Promise<Result<UserProps | null>> {
-        const users = this.users.filter((users) => users.platformUID === platformUID);
-
-        const user = users.find((users) => users.email === email);
-
-        if (!user) {
-            return ResultFactory.success(null);
-        }
-
-        return ResultFactory.success(user);
-    }
-
-    async findByType(platformUID: string, type: UserType): Promise<Result<UserProps[]>> {
-        const allUsers = this.users.filter((users) => users.platformUID === platformUID);
-
-        const users = allUsers.filter((users) => users.userType === type);
-
-        return ResultFactory.success(users);
-    }
-    async find(platform: string): Promise<Result<UserProps[]>> {
-        const users = this.users.filter((users) => users.platformUID === platform);
-
-        return ResultFactory.success(users);
-    }
     async register(user: UserProps): Promise<Result<UserProps>> {
         this.users.push(user);
 

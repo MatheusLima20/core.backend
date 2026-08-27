@@ -8,7 +8,11 @@ export class TestBuilder {
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {
-            const user = await makeLoggedUser(this.testContext.userRepository, uid);
+            const user = await makeLoggedUser(
+                this.testContext.userRepository,
+                this.testContext.membershipRepository,
+                uid
+            );
 
             this.testContext.users.push(user);
         }
