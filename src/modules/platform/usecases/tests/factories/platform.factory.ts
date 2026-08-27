@@ -4,13 +4,11 @@ import { PlatformCategory } from "../../../enum/platform.category-enum";
 export const platform1: CreatePlatformDTO = {
     name: "Beautiful Lag.",
     category: PlatformCategory.GYM,
-    createdBy: "1",
 };
 
 export const platform2: CreatePlatformDTO = {
     name: "Beautiful Arm.",
     category: PlatformCategory.ONBOARDLY,
-    createdBy: "1",
 };
 
 export function makePlatform(data?: Partial<CreatePlatformDTO>): CreatePlatformDTO {

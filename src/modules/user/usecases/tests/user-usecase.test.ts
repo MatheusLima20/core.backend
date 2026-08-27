@@ -97,6 +97,12 @@ describe("UserUseCase", () => {
         expect(result?.name).toBe(user.name);
     });
 
+    test("Should find all users", async () => {
+        const result = expectSuccess(await userUsecase.find({}));
+
+        expect(result.data.length).toBe(2);
+    });
+
     test("Should return null when user uid does not exist", async () => {
         const result = expectSuccess(await userUsecase.findByUID("not-found"));
 

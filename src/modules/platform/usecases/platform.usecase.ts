@@ -1,6 +1,13 @@
 import { randomUUID } from "crypto";
 
+import { MembershipProps } from "@/modules/membership/entities/membership.props";
+import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
+import { IMembershipRepository } from "@/modules/membership/repositories/membership-repository.interface";
+import { RequestContext } from "@/shared/context/request-context";
+import { ITransactionManager } from "@/shared/database/transaction/transaction-manager.interface";
+import { AccessDeniedError } from "@/shared/errors/access-denied.error";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -8,6 +15,7 @@ import { ResultMapper } from "@/shared/result/result.mapper";
 import { Slug } from "@/shared/utils/slug/slug";
 
 import { CreatePlatformDTO, CreatePlatformResponseDTO } from "../dto/create-platform.dto";
+import { FindPlatformsDTO } from "../dto/find-platform.dto";
 import { PlatformResponseDTO } from "../dto/platform-response.dto";
 import { UpdatePlatformDTO, UpdatePlatformResponseDTO } from "../dto/update-platform.dto";
 import { PlatformEntity } from "../entities/platform.entities";
@@ -17,38 +25,64 @@ import { PlatformMapper } from "../mappers/platform.mapper";
 import { IPlatformRepository } from "../repositories/platform-repository.interface";
 
 export class PlatformUsecase {
-    constructor(private readonly platformRepository: IPlatformRepository) {}
+    constructor(
+        private readonly context: RequestContext,
+        private readonly transactionManager: ITransactionManager,
+        private readonly platformRepository: IPlatformRepository,
+        private readonly membershipRepository: IMembershipRepository
+    ) {}
 
     async create(data: CreatePlatformDTO): Promise<Result<CreatePlatformResponseDTO>> {
-        const existingPlatform = await this.platformRepository.findByName(data.name);
+        return this.transactionManager.execute(async (transaction) => {
+            const existingPlatform = await transaction.platformRepository.findByName(data.name);
 
-        if (isFailure(existingPlatform)) {
-            return ResultFactory.failure(new PersistenceError("Failed to validate platform."));
-        }
+            if (isFailure(existingPlatform)) {
+                return ResultFactory.failure(new PersistenceError("Failed to validate platform."));
+            }
 
-        if (existingPlatform.data) {
-            return ResultFactory.failure(
-                new PlatformAlreadyExistsError({ name: existingPlatform.data.name })
-            );
-        }
+            if (existingPlatform.data) {
+                return ResultFactory.failure(
+                    new PlatformAlreadyExistsError({
+                        name: existingPlatform.data.name,
+                    })
+                );
+            }
 
-        const platform = new PlatformEntity({
-            uid: randomUUID(),
-            slug: Slug.from(data.name),
-            isActivated: true,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            updatedBy: null,
-            ...data,
+            const platform = new PlatformEntity({
+                uid: randomUUID(),
+                slug: Slug.from(data.name),
+                isActivated: true,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                createdBy: this.context.user.uid,
+                updatedBy: null,
+                ...data,
+            });
+
+            const platformResult = await transaction.platformRepository.register(platform);
+
+            if (isFailure(platformResult)) {
+                return ResultFactory.failure(new PersistenceError("Failed to register platform."));
+            }
+
+            const membership: MembershipProps = {
+                uid: randomUUID(),
+                userUID: this.context.user.uid,
+                platformUID: platform.uid,
+                role: MembershipRole.OWNER,
+                createdAt: new Date(),
+            };
+
+            const membershipResult = await transaction.membershipRepository.create(membership);
+
+            if (isFailure(membershipResult)) {
+                return ResultFactory.failure(
+                    new PersistenceError("Failed to create platform owner membership.")
+                );
+            }
+
+            return ResultMapper.map(platformResult, PlatformMapper.toCreateResponse);
         });
-
-        const result = await this.platformRepository.register(platform);
-
-        if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to register platform."));
-        }
-
-        return ResultMapper.map(result, PlatformMapper.toCreateResponse);
     }
 
     async findByUID(uid: string): Promise<Result<PlatformResponseDTO | null>> {
@@ -71,8 +105,16 @@ export class PlatformUsecase {
         return ResultFactory.success(result.data);
     }
 
-    async find(): Promise<Result<PlatformResponseDTO[]>> {
-        const result = await this.platformRepository.find();
+    async find(data?: FindPlatformsDTO): Promise<Result<PaginationResult<PlatformResponseDTO>>> {
+        const membershipsResult = await this.membershipRepository.listByUser(this.context.user.uid);
+
+        if (isFailure(membershipsResult)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch user memberships."));
+        }
+
+        const platformUIDs = membershipsResult.data.map((membership) => membership.platformUID);
+
+        const result = await this.platformRepository.find(platformUIDs, data);
 
         if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch platforms."));
@@ -93,6 +135,10 @@ export class PlatformUsecase {
         }
 
         const oldPlatform = await this.findByUID(data.uid);
+
+        if (data.uid !== this.context.user.platformUID) {
+            return ResultFactory.failure(new AccessDeniedError());
+        }
 
         if (isFailure(oldPlatform)) {
             return oldPlatform;
@@ -116,7 +162,7 @@ export class PlatformUsecase {
         const mergedPlatform = new PlatformEntity({
             ...requiredPlatform.data,
             ...data,
-            updatedBy: data.updatedBy,
+            updatedBy: this.context.user.uid,
             updatedAt: new Date(),
         });
 

@@ -9,8 +9,8 @@ import { scenario } from "./setup/platform.test-builder";
 describe("PlatformUsecase", () => {
     let platformUsecase: PlatformUsecase;
 
-    beforeEach(() => {
-        const context = scenario().createUsecases().build();
+    beforeEach(async () => {
+        const context = (await scenario().loadUsers(["1"])).createUsecases().build();
 
         platformUsecase = context.platformUsecases[0];
     });
@@ -30,21 +30,16 @@ describe("PlatformUsecase", () => {
     });
 
     test("Should update a platform", async () => {
-        const platform = await setupPlatform(platformUsecase, platform1);
-
-        await setupPlatform(platformUsecase, platform2);
-
         const result = expectSuccess(
             await platformUsecase.update({
-                uid: platform.uid,
+                uid: "1",
                 isActivated: true,
                 name: "Beautiful Calf.",
-                updatedBy: "1",
             })
         );
 
         expect(result.name).toBe("Beautiful Calf.");
-        expect(result.uid).toBe(platform.uid);
+        expect(result.uid).toBe("1");
     });
 
     test("Should not update platform with duplicated name", async () => {
@@ -56,7 +51,6 @@ describe("PlatformUsecase", () => {
             uid: platform.uid,
             isActivated: true,
             name: platform1.name,
-            updatedBy: "1",
         });
 
         const error = expectFailure(result, PlatformAlreadyExistsError);
@@ -96,19 +90,10 @@ describe("PlatformUsecase", () => {
     });
 
     test("Should find all platforms", async () => {
-        await setupPlatforms(
-            platformUsecase,
-            platform1,
-            platform2,
-            makePlatform({
-                name: "Beautiful Lag",
-            })
-        );
-
         const result = expectSuccess(await platformUsecase.find());
 
-        expect(result).toHaveLength(5);
-        expect(result.every((platform) => platform.uid)).toBe(true);
+        expect(result.data).toHaveLength(1);
+        expect(result.data.every((platform) => platform.uid)).toBe(true);
     });
 
     test("Should delete a platform", async () => {
@@ -128,6 +113,6 @@ describe("PlatformUsecase", () => {
 
         const platforms = expectSuccess(await platformUsecase.find());
 
-        expect(platforms.every((item) => item.uid !== platform.uid)).toBe(true);
+        expect(platforms.data.every((item) => item.uid !== platform.uid)).toBe(true);
     });
 });
