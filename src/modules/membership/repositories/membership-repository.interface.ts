@@ -1,22 +1,22 @@
 import { Result } from "@/shared/result";
 
-import { MembershipProps } from "../entities/membership.props";
+import { MembershipEntity } from "../entities/membership.entity";
 
 export interface IMembershipRepository {
-    create(membership: MembershipProps): Promise<Result<MembershipProps>>;
+    create(membership: MembershipEntity): Promise<Result<MembershipEntity>>;
 
-    update(membership: MembershipProps): Promise<Result<MembershipProps>>;
+    update(membership: MembershipEntity): Promise<Result<MembershipEntity>>;
 
-    findByUid(uid: string): Promise<Result<MembershipProps | null>>;
+    findByUid(uid: string): Promise<Result<MembershipEntity | null>>;
 
     findByUserAndPlatform(
         userUID: string,
         platformUID: string
-    ): Promise<Result<MembershipProps | null>>;
+    ): Promise<Result<MembershipEntity | null>>;
 
-    listByUser(userUID: string): Promise<Result<MembershipProps[]>>;
+    listByUser(userUID: string): Promise<Result<MembershipEntity[]>>;
 
-    listByPlatform(platformUID: string): Promise<Result<MembershipProps[]>>;
+    listByPlatform(platformUID: string): Promise<Result<MembershipEntity[]>>;
 
     delete(uid: string): Promise<Result<void>>;
 }

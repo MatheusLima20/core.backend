@@ -1,8 +1,8 @@
 import { IHashProvider } from "@/modules/auth/providers/hash-provider.interface";
-import { MembershipProps } from "@/modules/membership/entities/membership.props";
+import { MembershipEntity } from "@/modules/membership/entities/membership.entity";
 import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
-import { PlatformProps } from "@/modules/platform/entities/platform.props";
-import { UserProps } from "@/modules/user/entities/user.props";
+import { PlatformEntity } from "@/modules/platform/entities/platform.entity";
+import { UserEntity } from "@/modules/user/entities/user.entity";
 import { ITransactionManager } from "@/shared/database/transaction/transaction-manager.interface";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
@@ -25,8 +25,7 @@ export class CreatePlatformOwnerUseCase {
 
         return this.transactionManager.execute(
             async ({ platformRepository, userRepository, membershipRepository }) => {
-                const platform: PlatformProps = {
-                    uid: crypto.randomUUID(),
+                const platform: PlatformEntity = new PlatformEntity({
                     name: data.platform.name,
                     category: data.platform.category,
                     slug: Slug.from(data.platform.name),
@@ -35,7 +34,7 @@ export class CreatePlatformOwnerUseCase {
                     updatedAt: new Date(),
                     createdBy: null,
                     updatedBy: null,
-                };
+                });
 
                 const platformResult = await platformRepository.register(platform);
 
@@ -43,8 +42,7 @@ export class CreatePlatformOwnerUseCase {
                     return ResultFactory.failure(platformResult.error);
                 }
 
-                const owner: UserProps = {
-                    uid: crypto.randomUUID(),
+                const owner: UserEntity = new UserEntity({
                     name: data.owner.name,
                     email: data.owner.email,
                     password,
@@ -54,7 +52,7 @@ export class CreatePlatformOwnerUseCase {
                     gender: data.owner.gender,
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                };
+                });
 
                 const userResult = await userRepository.register(owner);
 
@@ -62,13 +60,12 @@ export class CreatePlatformOwnerUseCase {
                     return ResultFactory.failure(userResult.error);
                 }
 
-                const membership: MembershipProps = {
-                    uid: crypto.randomUUID(),
-                    userUID: owner.uid,
-                    platformUID: platform.uid,
+                const membership: MembershipEntity = new MembershipEntity({
+                    userUID: userResult.data.uid,
+                    platformUID: platformResult.data.uid,
                     role: MembershipRole.OWNER,
                     createdAt: new Date(),
-                };
+                });
 
                 const membershipResult = await membershipRepository.create(membership);
 

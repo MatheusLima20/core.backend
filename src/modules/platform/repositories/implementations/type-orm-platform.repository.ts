@@ -5,8 +5,7 @@ import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindPlatformsDTO } from "../../dto/find-platform.dto";
-import { PlatformEntity } from "../../entities/platform.entities";
-import { PlatformProps } from "../../entities/platform.props";
+import { PlatformEntity } from "../../entities/platform.entity";
 import { IPlatformRepository } from "../platform-repository.interface";
 
 export class TypeORMPlatformRepository implements IPlatformRepository {
@@ -15,7 +14,7 @@ export class TypeORMPlatformRepository implements IPlatformRepository {
     async find(
         platformUIDs: string[],
         data: FindPlatformsDTO = {}
-    ): Promise<Result<PaginationResult<PlatformProps>>> {
+    ): Promise<Result<PaginationResult<PlatformEntity>>> {
         const page = data.page ?? 1;
         const limit = data.limit ?? 10;
 
@@ -71,7 +70,7 @@ export class TypeORMPlatformRepository implements IPlatformRepository {
         });
     }
 
-    async findByUID(uid: string): Promise<Result<PlatformProps | null>> {
+    async findByUID(uid: string): Promise<Result<PlatformEntity | null>> {
         const platform = await this.repository.findOne({
             where: {
                 uid,
@@ -81,7 +80,7 @@ export class TypeORMPlatformRepository implements IPlatformRepository {
         return ResultFactory.success(platform ? platform : null);
     }
 
-    async findByName(name: string): Promise<Result<PlatformProps | null>> {
+    async findByName(name: string): Promise<Result<PlatformEntity | null>> {
         const platform = await this.repository.findOne({
             where: {
                 name,
@@ -91,13 +90,13 @@ export class TypeORMPlatformRepository implements IPlatformRepository {
         return ResultFactory.success(platform ? platform : null);
     }
 
-    async register(platform: PlatformProps): Promise<Result<PlatformProps>> {
+    async register(platform: PlatformEntity): Promise<Result<PlatformEntity>> {
         const savedPlatform = await this.repository.save(platform);
 
         return ResultFactory.success(savedPlatform);
     }
 
-    async update(platform: PlatformProps): Promise<Result<PlatformProps>> {
+    async update(platform: PlatformEntity): Promise<Result<PlatformEntity>> {
         const updatedPlatform = await this.repository.save(platform);
 
         return ResultFactory.success(updatedPlatform);

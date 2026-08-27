@@ -1,6 +1,4 @@
-import { randomUUID } from "crypto";
-
-import { MembershipProps } from "@/modules/membership/entities/membership.props";
+import { MembershipEntity } from "@/modules/membership/entities/membership.entity";
 import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
 import { IMembershipRepository } from "@/modules/membership/repositories/membership-repository.interface";
 import { RequestContext } from "@/shared/context/request-context";
@@ -18,7 +16,7 @@ import { CreatePlatformDTO, CreatePlatformResponseDTO } from "../dto/create-plat
 import { FindPlatformsDTO } from "../dto/find-platform.dto";
 import { PlatformResponseDTO } from "../dto/platform-response.dto";
 import { UpdatePlatformDTO, UpdatePlatformResponseDTO } from "../dto/update-platform.dto";
-import { PlatformEntity } from "../entities/platform.entities";
+import { PlatformEntity } from "../entities/platform.entity";
 import { PlatformAlreadyExistsError } from "../errors/platform-already-exists.error";
 import { PlatformNotFoundError } from "../errors/platform-not-found.error";
 import { PlatformMapper } from "../mappers/platform.mapper";
@@ -49,7 +47,6 @@ export class PlatformUsecase {
             }
 
             const platform = new PlatformEntity({
-                uid: randomUUID(),
                 slug: Slug.from(data.name),
                 isActivated: true,
                 createdAt: new Date(),
@@ -65,13 +62,12 @@ export class PlatformUsecase {
                 return ResultFactory.failure(new PersistenceError("Failed to register platform."));
             }
 
-            const membership: MembershipProps = {
-                uid: randomUUID(),
+            const membership: MembershipEntity = new MembershipEntity({
                 userUID: this.context.user.uid,
                 platformUID: platform.uid,
                 role: MembershipRole.OWNER,
                 createdAt: new Date(),
-            };
+            });
 
             const membershipResult = await transaction.membershipRepository.create(membership);
 
@@ -134,7 +130,7 @@ export class PlatformUsecase {
             return ResultFactory.failure(new PlatformAlreadyExistsError({ name: data.name }));
         }
 
-        const oldPlatform = await this.findByUID(data.uid);
+        const oldPlatform = await this.findByUID(data.uid ?? "");
 
         if (data.uid !== this.context.user.platformUID) {
             return ResultFactory.failure(new AccessDeniedError());

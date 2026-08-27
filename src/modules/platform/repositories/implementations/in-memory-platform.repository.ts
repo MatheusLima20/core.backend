@@ -3,14 +3,13 @@ import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindPlatformsDTO } from "../../dto/find-platform.dto";
-import { PlatformProps } from "../../entities/platform.props";
+import { PlatformEntity } from "../../entities/platform.entity";
 import { PlatformCategory } from "../../enum/platform.category-enum";
-import { PlatformMapper } from "../../mappers/platform.mapper";
 import { IPlatformRepository } from "../platform-repository.interface";
 
 export class InMemoryPlatformRepository implements IPlatformRepository {
-    platforms: PlatformProps[] = [
-        {
+    platforms: PlatformEntity[] = [
+        new PlatformEntity({
             uid: "1",
             name: "Fitness up.",
             isActivated: true,
@@ -20,8 +19,8 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
             updatedBy: null,
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
-        {
+        }),
+        new PlatformEntity({
             uid: "2",
             name: "Ultimate Body Builder.",
             createdBy: null,
@@ -31,13 +30,13 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
             isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
+        }),
     ];
 
     async find(
         platformUIDs: string[],
         data: FindPlatformsDTO = {}
-    ): Promise<Result<PaginationResult<PlatformProps>>> {
+    ): Promise<Result<PaginationResult<PlatformEntity>>> {
         let platforms = this.platforms.filter((platform) => platformUIDs.includes(platform.uid));
 
         if (data.name) {
@@ -78,7 +77,7 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
         const start = (page - 1) * limit;
 
         return ResultFactory.success({
-            data: PlatformMapper.toPlatformResponseList(platforms.slice(start, start + limit)),
+            data: platforms.slice(start, start + limit),
             page,
             limit,
             total,
@@ -86,25 +85,25 @@ export class InMemoryPlatformRepository implements IPlatformRepository {
         });
     }
 
-    async findByUID(uid: string): Promise<Result<PlatformProps | null>> {
+    async findByUID(uid: string): Promise<Result<PlatformEntity | null>> {
         const platform = this.platforms.find((platform) => platform.uid === uid);
 
-        return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
+        return ResultFactory.success(platform ? platform : null);
     }
 
-    async findByName(name: string): Promise<Result<PlatformProps | null>> {
+    async findByName(name: string): Promise<Result<PlatformEntity | null>> {
         const platform = this.platforms.find((platform) => platform.name === name);
 
-        return ResultFactory.success(platform ? PlatformMapper.toPlatformResponse(platform) : null);
+        return ResultFactory.success(platform ? platform : null);
     }
 
-    async register(platform: PlatformProps): Promise<Result<PlatformProps>> {
+    async register(platform: PlatformEntity): Promise<Result<PlatformEntity>> {
         this.platforms.push(platform);
 
         return ResultFactory.success(platform);
     }
 
-    async update(platform: PlatformProps): Promise<Result<PlatformProps>> {
+    async update(platform: PlatformEntity): Promise<Result<PlatformEntity>> {
         const index = this.platforms.findIndex((oldPlatform) => oldPlatform.uid === platform.uid);
 
         this.platforms[index] = platform;

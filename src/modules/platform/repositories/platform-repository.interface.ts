@@ -2,21 +2,21 @@ import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result/result";
 
 import { FindPlatformsDTO } from "../dto/find-platform.dto";
-import { PlatformProps } from "../entities/platform.props";
+import { PlatformEntity } from "../entities/platform.entity";
 
 export interface IPlatformRepository {
-    findByUID(uid: string): Promise<Result<PlatformProps | null>>;
+    findByUID(uid: string): Promise<Result<PlatformEntity | null>>;
 
-    findByName(name: string): Promise<Result<PlatformProps | null>>;
+    findByName(name: string): Promise<Result<PlatformEntity | null>>;
 
     find(
         platformUIDs: string[],
         data?: FindPlatformsDTO
-    ): Promise<Result<PaginationResult<PlatformProps>>>;
+    ): Promise<Result<PaginationResult<PlatformEntity>>>;
 
-    register(platform: PlatformProps): Promise<Result<PlatformProps>>;
+    register(platform: PlatformEntity): Promise<Result<PlatformEntity>>;
 
-    update(platform: PlatformProps): Promise<Result<PlatformProps>>;
+    update(platform: PlatformEntity): Promise<Result<PlatformEntity>>;
 
     delete(uid: string): Promise<Result<boolean>>;
 }

@@ -6,7 +6,6 @@ import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindUsersDTO } from "../../dtos/find-users.dto";
 import { UserEntity } from "../../entities/user.entity";
-import { UserProps } from "../../entities/user.props";
 import { IUserRepository } from "../user-repository-interface";
 
 export class TypeORMUserRepository implements IUserRepository {
@@ -15,7 +14,7 @@ export class TypeORMUserRepository implements IUserRepository {
     async findByUIDs(
         uids: string[],
         data: FindUsersDTO = {}
-    ): Promise<Result<PaginationResult<UserProps>>> {
+    ): Promise<Result<PaginationResult<UserEntity>>> {
         if (uids.length === 0) {
             return ResultFactory.success({
                 data: [],
@@ -69,7 +68,7 @@ export class TypeORMUserRepository implements IUserRepository {
         });
     }
 
-    async findByUID(uid: string): Promise<Result<UserProps | null>> {
+    async findByUID(uid: string): Promise<Result<UserEntity | null>> {
         const user = await this.repository.findOne({
             where: {
                 uid,
@@ -79,7 +78,7 @@ export class TypeORMUserRepository implements IUserRepository {
         return ResultFactory.success(user ? user : null);
     }
 
-    async findByEmail(email: string): Promise<Result<UserProps | null>> {
+    async findByEmail(email: string): Promise<Result<UserEntity | null>> {
         const user = await this.repository.findOne({
             where: {
                 email,
@@ -89,13 +88,13 @@ export class TypeORMUserRepository implements IUserRepository {
         return ResultFactory.success(user ? user : null);
     }
 
-    async register(user: UserProps): Promise<Result<UserProps>> {
+    async register(user: UserEntity): Promise<Result<UserEntity>> {
         const savedUser = await this.repository.save(user);
 
         return ResultFactory.success(savedUser);
     }
 
-    async update(user: UserProps): Promise<Result<UserProps>> {
+    async update(user: UserEntity): Promise<Result<UserEntity>> {
         const updatedUser = await this.repository.save(user);
 
         return ResultFactory.success(updatedUser);

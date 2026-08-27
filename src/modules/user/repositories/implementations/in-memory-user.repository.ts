@@ -3,13 +3,13 @@ import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindUsersDTO } from "../../dtos/find-users.dto";
-import { UserProps } from "../../entities/user.props";
+import { UserEntity } from "../../entities/user.entity";
 import { Gender } from "../../enum/gender.enum";
 import { IUserRepository } from "../user-repository-interface";
 
 export class InMemoryUserRepository implements IUserRepository {
-    private users: UserProps[] = [
-        {
+    private users: UserEntity[] = [
+        new UserEntity({
             uid: "1",
             name: "Matheus",
             email: "matheus@email.com",
@@ -20,8 +20,9 @@ export class InMemoryUserRepository implements IUserRepository {
             isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
-        {
+        }),
+
+        new UserEntity({
             uid: "2",
             name: "Joan",
             email: "joan@email.com",
@@ -32,8 +33,9 @@ export class InMemoryUserRepository implements IUserRepository {
             isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
-        {
+        }),
+
+        new UserEntity({
             uid: "3",
             name: "Nara",
             email: "nara@email.com",
@@ -44,14 +46,14 @@ export class InMemoryUserRepository implements IUserRepository {
             isActivated: true,
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
+        }),
     ];
 
     async findByUIDs(
         uids: string[],
         data: FindUsersDTO = {}
-    ): Promise<Result<PaginationResult<UserProps>>> {
-        let users = this.users.filter((user) => uids.includes(user.uid));
+    ): Promise<Result<PaginationResult<UserEntity>>> {
+        let users = this.users.filter((user) => uids.includes(user.uid ?? ""));
 
         if (data.name) {
             const name = data.name.toLowerCase();
@@ -102,7 +104,7 @@ export class InMemoryUserRepository implements IUserRepository {
         });
     }
 
-    async findByUID(uid: string): Promise<Result<UserProps | null>> {
+    async findByUID(uid: string): Promise<Result<UserEntity | null>> {
         const user = this.users.find((users) => users.uid === uid);
 
         if (!user) {
@@ -112,7 +114,7 @@ export class InMemoryUserRepository implements IUserRepository {
         return ResultFactory.success(user);
     }
 
-    async findByEmail(email: string): Promise<Result<UserProps | null>> {
+    async findByEmail(email: string): Promise<Result<UserEntity | null>> {
         const user = this.users.find((users) => users.email === email);
 
         if (!user) {
@@ -122,12 +124,12 @@ export class InMemoryUserRepository implements IUserRepository {
         return ResultFactory.success(user);
     }
 
-    async register(user: UserProps): Promise<Result<UserProps>> {
+    async register(user: UserEntity): Promise<Result<UserEntity>> {
         this.users.push(user);
 
         return ResultFactory.success(user);
     }
-    async update(user: UserProps): Promise<Result<UserProps>> {
+    async update(user: UserEntity): Promise<Result<UserEntity>> {
         const index = this.users.findIndex((oldUser) => oldUser.uid === user.uid);
 
         this.users[index] = user;

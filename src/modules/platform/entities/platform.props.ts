@@ -1,7 +1,7 @@
 import { PlatformCategory } from "../enum/platform.category-enum";
 
 export interface PlatformProps {
-    uid: string;
+    uid?: string;
     name: string;
     slug: string;
     category: PlatformCategory;

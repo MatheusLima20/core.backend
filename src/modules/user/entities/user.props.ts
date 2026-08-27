@@ -1,7 +1,7 @@
 import { Gender } from "../enum/gender.enum";
 
 export interface UserProps {
-    uid: string;
+    uid?: string;
     name: string;
     docNumberPerson: number | null;
     docNumberBusiness: number | null;

@@ -5,6 +5,7 @@ import { isFailure } from "@/shared/result/result.guard";
 
 import { CreateMembershipDTO } from "../dto/create-membership.dto";
 import { MembershipResponseDTO } from "../dto/membership-response.dto";
+import { MembershipEntity } from "../entities/membership.entity";
 import { MembershipProps } from "../entities/membership.props";
 import { MembershipRole } from "../enums/membership-role.enum";
 import { MembershipAlreadyExistsError } from "../errors/membership-already-exists.error";
@@ -28,13 +29,12 @@ export class MembershipUseCase {
             return ResultFactory.failure(new MembershipAlreadyExistsError(existing.data.userUID));
         }
 
-        const membership: MembershipProps = {
-            uid: crypto.randomUUID(),
+        const membership: MembershipEntity = new MembershipEntity({
             userUID: data.userUID,
             platformUID: data.platformUID,
             role: data.role ?? MembershipRole.MEMBER,
             createdAt: new Date(),
-        };
+        });
 
         const created = await this.membershipRepository.create(membership);
 

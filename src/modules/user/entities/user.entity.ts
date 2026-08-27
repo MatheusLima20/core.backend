@@ -1,10 +1,14 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 
+import { BaseEntity } from "@/shared/entities/base.entity";
+
 import { Gender } from "../enum/gender.enum";
 import { UserProps } from "./user.props";
 
 @Entity("users")
-export class UserEntity implements UserProps {
+export class UserEntity extends BaseEntity implements UserProps {
+    static prefix = "usr";
+
     @PrimaryColumn()
     uid!: string;
 
@@ -44,7 +48,14 @@ export class UserEntity implements UserProps {
     @Column({ nullable: true })
     updatedBy?: string | null;
 
-    constructor(props: UserEntity) {
-        Object.assign(this, props);
+    constructor(props?: UserProps) {
+        super({
+            uid: props?.uid,
+            prefix: UserEntity.prefix,
+        });
+
+        if (props) {
+            Object.assign(this, props);
+        }
     }
 }

@@ -1,7 +1,5 @@
-import { randomUUID } from "crypto";
-
 import { IHashProvider } from "@/modules/auth/providers/hash-provider.interface";
-import { MembershipProps } from "@/modules/membership/entities/membership.props";
+import { MembershipEntity } from "@/modules/membership/entities/membership.entity";
 import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
 import { MembershipNotFoundError } from "@/modules/membership/errors/membership-not-found.error";
 import { IMembershipRepository } from "@/modules/membership/repositories/membership-repository.interface";
@@ -114,7 +112,6 @@ export class UserUseCase {
                 const password = await this.hashProvider.hash(data.password);
 
                 user = new UserEntity({
-                    uid: randomUUID(),
                     ...data,
                     isActivated: true,
                     password,
@@ -133,13 +130,12 @@ export class UserUseCase {
                 user = userResult.data;
             }
 
-            const membership: MembershipProps = {
-                uid: randomUUID(),
+            const membership: MembershipEntity = new MembershipEntity({
                 userUID: user.uid,
                 platformUID: this.context.user.platformUID,
                 role: data.role ?? MembershipRole.MEMBER,
                 createdAt: new Date(),
-            };
+            });
 
             const membershipResult = await transaction.membershipRepository.create(membership);
 
@@ -228,10 +224,10 @@ export class UserUseCase {
                     return membership;
                 }
 
-                const updatedMembership: MembershipProps = {
+                const updatedMembership: MembershipEntity = new MembershipEntity({
                     ...membership.data,
                     role: data.role,
-                };
+                });
 
                 const membershipUpdateResult =
                     await transaction.membershipRepository.update(updatedMembership);

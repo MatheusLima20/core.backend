@@ -2,7 +2,7 @@ import { DataSource } from "typeorm";
 
 import { MembershipEntity } from "@/modules/membership/entities/membership.entity";
 import { TypeORMMembershipRepository } from "@/modules/membership/repositories/implementations/type-orm-membership.repository";
-import { PlatformEntity } from "@/modules/platform/entities/platform.entities";
+import { PlatformEntity } from "@/modules/platform/entities/platform.entity";
 import { TypeORMPlatformRepository } from "@/modules/platform/repositories/implementations/type-orm-platform.repository";
 import { UserEntity } from "@/modules/user/entities/user.entity";
 import { TypeORMUserRepository } from "@/modules/user/repositories/implementations/type-orm-user.repository";

@@ -5,7 +5,7 @@ import { RequestContext } from "@/shared/context/request-context";
 import { TypeORMTransactionManager } from "@/shared/database/transaction/implementations/typeorm-transaction-manager";
 
 import { PlatformController } from "../controllers/platform.controller";
-import { PlatformEntity } from "../entities/platform.entities";
+import { PlatformEntity } from "../entities/platform.entity";
 import { TypeORMPlatformRepository } from "../repositories/implementations/type-orm-platform.repository";
 import { PlatformUsecase } from "../usecases/platform.usecase";
 

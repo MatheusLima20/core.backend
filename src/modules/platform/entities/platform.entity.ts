@@ -1,17 +1,19 @@
-import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, UpdateDateColumn } from "typeorm";
+
+import { BaseEntity } from "@/shared/entities/base.entity";
 
 import { PlatformCategory } from "../enum/platform.category-enum";
 import { PlatformProps } from "./platform.props";
 
 @Entity("platforms")
-export class PlatformEntity implements PlatformProps {
-    @PrimaryGeneratedColumn("uuid")
+export class PlatformEntity extends BaseEntity implements PlatformProps {
+    static prefix = "plt";
+
+    @Column({
+        type: "varchar",
+        length: 255,
+        primary: true,
+    })
     uid!: string;
 
     @Column({
@@ -59,7 +61,14 @@ export class PlatformEntity implements PlatformProps {
     @UpdateDateColumn()
     updatedAt!: Date;
 
-    constructor(props: PlatformEntity) {
-        Object.assign(this, props);
+    constructor(props?: PlatformProps) {
+        super({
+            uid: props?.uid,
+            prefix: PlatformEntity.prefix,
+        });
+
+        if (props) {
+            Object.assign(this, props);
+        }
     }
 }

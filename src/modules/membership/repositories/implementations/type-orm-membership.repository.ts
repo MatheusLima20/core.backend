@@ -4,25 +4,24 @@ import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { MembershipEntity } from "../../entities/membership.entity";
-import { MembershipProps } from "../../entities/membership.props";
 import { IMembershipRepository } from "../membership-repository.interface";
 
 export class TypeORMMembershipRepository implements IMembershipRepository {
     constructor(private readonly repository: Repository<MembershipEntity>) {}
 
-    async create(membership: MembershipProps): Promise<Result<MembershipProps>> {
+    async create(membership: MembershipEntity): Promise<Result<MembershipEntity>> {
         const savedMembership = await this.repository.save(membership);
 
         return ResultFactory.success(savedMembership);
     }
 
-    async update(membership: MembershipProps): Promise<Result<MembershipProps>> {
+    async update(membership: MembershipEntity): Promise<Result<MembershipEntity>> {
         const updatedMembership = await this.repository.save(membership);
 
         return ResultFactory.success(updatedMembership);
     }
 
-    async findByUid(uid: string): Promise<Result<MembershipProps | null>> {
+    async findByUid(uid: string): Promise<Result<MembershipEntity | null>> {
         const membership = await this.repository.findOne({
             where: {
                 uid,
@@ -35,7 +34,7 @@ export class TypeORMMembershipRepository implements IMembershipRepository {
     async findByUserAndPlatform(
         userUID: string,
         platformUID: string
-    ): Promise<Result<MembershipProps | null>> {
+    ): Promise<Result<MembershipEntity | null>> {
         const membership = await this.repository.findOne({
             where: {
                 userUID,
@@ -46,7 +45,7 @@ export class TypeORMMembershipRepository implements IMembershipRepository {
         return ResultFactory.success(membership ? membership : null);
     }
 
-    async listByUser(userUID: string): Promise<Result<MembershipProps[]>> {
+    async listByUser(userUID: string): Promise<Result<MembershipEntity[]>> {
         const memberships = await this.repository.find({
             where: {
                 userUID,
@@ -56,7 +55,7 @@ export class TypeORMMembershipRepository implements IMembershipRepository {
         return ResultFactory.success(memberships);
     }
 
-    async listByPlatform(platformUID: string): Promise<Result<MembershipProps[]>> {
+    async listByPlatform(platformUID: string): Promise<Result<MembershipEntity[]>> {
         const memberships = await this.repository.find({
             where: {
                 platformUID,

@@ -1,10 +1,10 @@
 import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
 
-import { UserProps } from "../entities/user.props";
+import { UserEntity } from "../entities/user.entity";
 
 export type UpdateUserDTO = Partial<
     Pick<
-        UserProps,
+        UserEntity,
         | "name"
         | "email"
         | "isActivated"
@@ -14,6 +14,6 @@ export type UpdateUserDTO = Partial<
         | "gender"
     >
 > &
-    Pick<UserProps, "uid"> & { role?: MembershipRole };
+    Pick<UserEntity, "uid"> & { role?: MembershipRole };
 
-export type UpdateUserResponseDTO = Pick<UserProps, "uid" | "name" | "email" | "updatedAt">;
+export type UpdateUserResponseDTO = Pick<UserEntity, "uid" | "name" | "email" | "updatedAt">;
