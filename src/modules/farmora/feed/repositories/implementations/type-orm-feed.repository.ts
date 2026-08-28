@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
@@ -129,15 +129,22 @@ export class TypeORMFeedRepository implements IFeedRepository {
         });
     }
 
+    async deleteItems(feedUID: string, itemUIDs: string[]): Promise<Result<void>> {
+        await this.feedItemRepository.delete({
+            feedUID,
+            uid: In(itemUIDs),
+        });
+
+        return ResultFactory.ok();
+    }
+
     async delete(uid: string): Promise<Result<void>> {
         await this.feedItemRepository.delete({
             feedUID: uid,
         });
 
-        await this.feedRepository.delete({
-            uid,
-        });
+        await this.feedRepository.delete(uid);
 
-        return ResultFactory.success(undefined);
+        return ResultFactory.ok();
     }
 }

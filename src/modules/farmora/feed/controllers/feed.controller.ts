@@ -59,4 +59,14 @@ export class FeedController {
 
         return response.status(204).send();
     }
+
+    async deleteItems(request: Request, response: Response): Promise<Response> {
+        const result = await this.usecase.deleteItems(request.params.uid, request.body.itemUIDs);
+
+        if (isFailure(result)) {
+            return resultResponse(result, response);
+        }
+
+        return response.status(204).send();
+    }
 }

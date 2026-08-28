@@ -1,4 +1,5 @@
 import { IFeedRepository } from "@/modules/farmora/feed/repositories/feed-repository.interface";
+import { IInventoryItemRepository } from "@/modules/farmora/inventory/repositories/inventory-item-repository.interface";
 import { IMembershipRepository } from "@/modules/membership/repositories/membership-repository.interface";
 import { IPlatformRepository } from "@/modules/platform/repositories/platform-repository.interface";
 import { IUserRepository } from "@/modules/user/repositories/user-repository-interface";
@@ -8,4 +9,6 @@ export interface ITransactionContext {
     userRepository: IUserRepository;
     membershipRepository: IMembershipRepository;
     feedRepository: IFeedRepository;
+
+    inventoryItemRepository: IInventoryItemRepository;
 }

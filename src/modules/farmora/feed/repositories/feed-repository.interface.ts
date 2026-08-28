@@ -36,4 +36,6 @@ export interface IFeedRepository {
     >;
 
     delete(uid: string): Promise<Result<void>>;
+
+    deleteItems(feedUID: string, itemUIDs: string[]): Promise<Result<void>>;
 }

@@ -1,4 +1,4 @@
-import { PlatformProps } from "../entities/platform.props";
+import { PlatformEntity } from "../entities/platform.entity";
 
 export interface FindPlatformsDTO {
     name?: string;
@@ -10,7 +10,7 @@ export interface FindPlatformsDTO {
     page?: number;
     limit?: number;
 
-    orderBy?: keyof Pick<PlatformProps, "name" | "category" | "createdAt" | "updatedAt">;
+    orderBy?: keyof Pick<PlatformEntity, "name" | "category" | "createdAt" | "updatedAt">;
 
     order?: "asc" | "desc";
 }

@@ -25,7 +25,7 @@ router.put("/update/:uid", async (request, response) => {
     await controller.update(request, response);
 });
 
-router.get("/find", async (request, response) => {
+router.get("/find/:uid", async (request, response) => {
     const controller = makeInventoryItemController(request.auth);
 
     await controller.findByUID(request, response);

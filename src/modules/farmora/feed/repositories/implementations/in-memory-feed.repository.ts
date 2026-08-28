@@ -124,4 +124,12 @@ export class InMemoryFeedRepository implements IFeedRepository {
 
         return ResultFactory.success(undefined);
     }
+
+    async deleteItems(feedUID: string, itemUIDs: string[]): Promise<Result<void>> {
+        this.feedItems = this.feedItems.filter(
+            (item) => item.feedUID !== feedUID || !itemUIDs.includes(item.uid)
+        );
+
+        return ResultFactory.ok();
+    }
 }

@@ -1,7 +1,7 @@
-import { PlatformProps } from "../entities/platform.props";
+import { PlatformEntity } from "../entities/platform.entity";
 
 export type PlatformResponseDTO = Pick<
-    PlatformProps,
+    PlatformEntity,
     | "uid"
     | "name"
     | "isActivated"

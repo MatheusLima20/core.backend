@@ -13,34 +13,40 @@ const authMiddleware = new AuthMiddleware(tokenProvider);
 
 router.use(authMiddleware.handle.bind(authMiddleware));
 
-router.post("/:platformUID/create", async (request, response) => {
+router.post("/create", async (request, response) => {
     const controller = makeFeedController(request.auth);
 
     await controller.create(request, response);
 });
 
-router.put("/:platformUID/update/:uid", async (request, response) => {
+router.put("/update/:uid", async (request, response) => {
     const controller = makeFeedController(request.auth);
 
     await controller.update(request, response);
 });
 
-router.get("/:platformUID/find/:uid", async (request, response) => {
+router.get("/find/:uid", async (request, response) => {
     const controller = makeFeedController(request.auth);
 
     await controller.findByUID(request, response);
 });
 
-router.get("/:platformUID/find", async (request, response) => {
+router.get("/find", async (request, response) => {
     const controller = makeFeedController(request.auth);
 
     await controller.find(request, response);
 });
 
-router.delete("/:platformUID/delete/:uid", async (request, response) => {
+router.delete("/delete/:uid", async (request, response) => {
     const controller = makeFeedController(request.auth);
 
     await controller.delete(request, response);
+});
+
+router.delete("/delete/items/:uid", async (request, response) => {
+    const controller = makeFeedController(request.auth);
+
+    await controller.deleteItems(request, response);
 });
 
 export default {
