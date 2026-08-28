@@ -1,9 +1,9 @@
-import { InventoryItemProps } from "../entities/inventory-item.props";
+import { InventoryItemEntity } from "../entities/inventory-item.entity";
 
-export type UpdateInventoryItemDTO = Pick<InventoryItemProps, "uid"> &
+export type UpdateInventoryItemDTO = Pick<InventoryItemEntity, "uid"> &
     Partial<
         Pick<
-            InventoryItemProps,
+            InventoryItemEntity,
             | "name"
             | "category"
             | "unit"
@@ -18,7 +18,7 @@ export type UpdateInventoryItemDTO = Pick<InventoryItemProps, "uid"> &
     >;
 
 export type UpdateInventoryItemResponseDTO = Pick<
-    InventoryItemProps,
+    InventoryItemEntity,
     | "uid"
     | "name"
     | "category"

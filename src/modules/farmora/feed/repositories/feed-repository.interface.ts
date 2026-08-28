@@ -1,37 +1,37 @@
 import { Result } from "@/shared/result";
 
 import { FindFeedsDTO } from "../dtos/find-feeds.dto";
-import { FeedProps } from "../entities/feed.props";
-import { FeedItemProps } from "../entities/feed-item.props";
+import { FeedEntity } from "../entities/feed.entity";
+import { FeedItemEntity } from "../entities/feed-item.entity";
 
 export interface IFeedRepository {
     findByUID(
         platformUID: string,
         uid: string
-    ): Promise<Result<{ feed: FeedProps; items: FeedItemProps[] } | null>>;
+    ): Promise<Result<{ feed: FeedEntity; items: FeedItemEntity[] } | null>>;
 
     find(
         platformUID: string,
         filters?: FindFeedsDTO
-    ): Promise<Result<{ feed: FeedProps; items: FeedItemProps[] }[]>>;
+    ): Promise<Result<{ feed: FeedEntity; items: FeedItemEntity[] }[]>>;
 
     register(
-        feed: FeedProps,
-        items: FeedItemProps[]
+        feed: FeedEntity,
+        items: FeedItemEntity[]
     ): Promise<
         Result<{
-            feed: FeedProps;
-            items: FeedItemProps[];
+            feed: FeedEntity;
+            items: FeedItemEntity[];
         }>
     >;
 
     update(
-        feed: FeedProps,
-        items: FeedItemProps[]
+        feed: FeedEntity,
+        items: FeedItemEntity[]
     ): Promise<
         Result<{
-            feed: FeedProps;
-            items: FeedItemProps[];
+            feed: FeedEntity;
+            items: FeedItemEntity[];
         }>
     >;
 

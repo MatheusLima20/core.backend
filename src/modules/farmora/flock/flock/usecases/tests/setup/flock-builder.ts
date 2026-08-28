@@ -1,10 +1,14 @@
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
+import { BaseTestTransactionContext } from "@/shared/tests/base-test.interface";
 
+import { InMemoryFlockRepository } from "../../../repositories/implementations/in-memory-flock.repository";
+import { FlockUsecase } from "../../flock.usecase";
 import { makeFlockUsecase } from "../factories/flock-usecase.factory";
-import { TestFlockContext } from "./test-flock.context";
 
 export class TestBuilder {
-    private testContext = new TestFlockContext();
+    private testContext = new BaseTestTransactionContext();
+    private usecases: FlockUsecase[] = [];
+    private flockRepository: InMemoryFlockRepository = new InMemoryFlockRepository();
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {
@@ -21,8 +25,8 @@ export class TestBuilder {
     }
 
     createUsecases() {
-        this.testContext.usecases = this.testContext.users.map(
-            (user) => makeFlockUsecase(user, this.testContext.flockRepository).usecase
+        this.usecases = this.testContext.users.map(
+            (user) => makeFlockUsecase(user, this.flockRepository).usecase
         );
 
         return this;
@@ -32,12 +36,12 @@ export class TestBuilder {
         return {
             users: this.testContext.users,
 
-            usecases: this.testContext.usecases,
+            usecases: this.usecases,
 
             repositories: {
                 user: this.testContext.userRepository,
 
-                flock: this.testContext.flockRepository,
+                flock: this.flockRepository,
             },
         };
     }

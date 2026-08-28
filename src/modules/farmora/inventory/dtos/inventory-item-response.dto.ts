@@ -1,7 +1,7 @@
-import { InventoryItemProps } from "../entities/inventory-item.props";
+import { InventoryItemEntity } from "../entities/inventory-item.entity";
 
 export type ResponseInventoryItemDTO = Pick<
-    InventoryItemProps,
+    InventoryItemEntity,
     | "uid"
     | "platformUID"
     | "name"

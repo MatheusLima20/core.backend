@@ -1,13 +1,13 @@
-import { FeedProps } from "../entities/feed.props";
-import { FeedItemProps } from "../entities/feed-item.props";
+import { FeedEntity } from "../entities/feed.entity";
+import { FeedItemEntity } from "../entities/feed-item.entity";
 
 export type ResponseFeedItemDTO = Pick<
-    FeedItemProps,
+    FeedItemEntity,
     "uid" | "inventoryItemUID" | "inclusionPercentage"
 >;
 
 export type ResponseFeedDTO = Pick<
-    FeedProps,
+    FeedEntity,
     | "uid"
     | "platformUID"
     | "name"

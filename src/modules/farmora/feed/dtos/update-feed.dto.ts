@@ -1,4 +1,4 @@
-import { FeedProps } from "../entities/feed.props";
+import { FeedEntity } from "../entities/feed.entity";
 import { ResponseFeedItemDTO } from "./response-feed.dto";
 
 export type UpdateFeedItemDTO = {
@@ -9,13 +9,13 @@ export type UpdateFeedItemDTO = {
     inclusionPercentage: number;
 };
 
-export type UpdateFeedDTO = Pick<FeedProps, "uid"> &
-    Partial<Pick<FeedProps, "name" | "description">> & {
+export type UpdateFeedDTO = Pick<FeedEntity, "uid"> &
+    Partial<Pick<FeedEntity, "name" | "description">> & {
         items?: UpdateFeedItemDTO[];
     };
 
 export type UpdateFeedResponseDTO = Pick<
-    FeedProps,
+    FeedEntity,
     "uid" | "name" | "platformUID" | "description" | "updatedBy" | "updatedAt"
 > & {
     items: ResponseFeedItemDTO[];

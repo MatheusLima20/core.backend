@@ -1,7 +1,7 @@
-import { InventoryItemProps } from "../entities/inventory-item.props";
+import { InventoryItemEntity } from "../entities/inventory-item.entity";
 
 export type CreateInventoryItemDTO = Pick<
-    InventoryItemProps,
+    InventoryItemEntity,
     | "name"
     | "category"
     | "unit"
@@ -13,10 +13,10 @@ export type CreateInventoryItemDTO = Pick<
     | "minimumStock"
     | "description"
 > &
-    Partial<Pick<InventoryItemProps, "createdAt">>;
+    Partial<Pick<InventoryItemEntity, "createdAt">>;
 
 export type CreateInventoryItemResponseDTO = Pick<
-    InventoryItemProps,
+    InventoryItemEntity,
     | "uid"
     | "platformUID"
     | "name"

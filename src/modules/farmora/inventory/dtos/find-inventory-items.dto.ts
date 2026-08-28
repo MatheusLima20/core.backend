@@ -1,4 +1,4 @@
-import { InventoryItemProps } from "../entities/inventory-item.props";
+import { InventoryItemEntity } from "../entities/inventory-item.entity";
 
 export interface FindInventoryItemsDTO {
     name?: string;
@@ -13,7 +13,7 @@ export interface FindInventoryItemsDTO {
     limit?: number;
 
     orderBy?: keyof Pick<
-        InventoryItemProps,
+        InventoryItemEntity,
         "name" | "category" | "unit" | "createdAt" | "updatedAt"
     >;
 

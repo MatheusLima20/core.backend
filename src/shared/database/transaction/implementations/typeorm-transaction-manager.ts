@@ -1,5 +1,8 @@
 import { DataSource } from "typeorm";
 
+import { FeedEntity } from "@/modules/farmora/feed/entities/feed.entity";
+import { FeedItemEntity } from "@/modules/farmora/feed/entities/feed-item.entity";
+import { TypeORMFeedRepository } from "@/modules/farmora/feed/repositories/implementations/type-orm-feed.repository";
 import { MembershipEntity } from "@/modules/membership/entities/membership.entity";
 import { TypeORMMembershipRepository } from "@/modules/membership/repositories/implementations/type-orm-membership.repository";
 import { PlatformEntity } from "@/modules/platform/entities/platform.entity";
@@ -37,6 +40,10 @@ export class TypeORMTransactionManager implements ITransactionManager {
 
                 membershipRepository: new TypeORMMembershipRepository(
                     queryRunner.manager.getRepository(MembershipEntity)
+                ),
+                feedRepository: new TypeORMFeedRepository(
+                    queryRunner.manager.getRepository(FeedEntity),
+                    queryRunner.manager.getRepository(FeedItemEntity)
                 ),
             };
 

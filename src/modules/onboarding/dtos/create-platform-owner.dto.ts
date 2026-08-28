@@ -1,17 +1,17 @@
-import { PlatformProps } from "@/modules/platform/entities/platform.props";
-import { UserProps } from "@/modules/user/entities/user.props";
+import { PlatformEntity } from "@/modules/platform/entities/platform.entity";
+import { UserEntity } from "@/modules/user/entities/user.entity";
 
 export type CreatePlatformOwnerDTO = {
-    platform: Pick<PlatformProps, "name" | "category">;
+    platform: Pick<PlatformEntity, "name" | "category">;
 
     owner: Pick<
-        UserProps,
+        UserEntity,
         "name" | "email" | "password" | "docNumberBusiness" | "docNumberPerson" | "gender"
     >;
 };
 
 export type CreatePlatformOwnerResponseDTO = {
-    platform: Pick<PlatformProps, "uid" | "name" | "category">;
+    platform: Pick<PlatformEntity, "uid" | "name" | "category">;
 
-    owner: Pick<UserProps, "uid" | "name" | "email">;
+    owner: Pick<UserEntity, "uid" | "name" | "email">;
 };

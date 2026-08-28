@@ -1,4 +1,5 @@
 import { FakeHashProvider } from "@/modules/auth/providers/implementations/fake-hash.provider";
+import { InMemoryFeedRepository } from "@/modules/farmora/feed/repositories/implementations/in-memory-feed.repository";
 import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
 import { InMemoryMembershipRepository } from "@/modules/membership/repositories/implementations/in-memory-membership.repository";
 import { PlatformCategory } from "@/modules/platform/enum/platform.category-enum";
@@ -20,6 +21,8 @@ describe("CreatePlatformOwnerUseCase", () => {
 
     let usecase: CreatePlatformOwnerUseCase;
 
+    let feedRepository: InMemoryFeedRepository;
+
     beforeEach(() => {
         platformRepository = new InMemoryPlatformRepository();
 
@@ -27,8 +30,11 @@ describe("CreatePlatformOwnerUseCase", () => {
 
         membershipRepository = new InMemoryMembershipRepository();
 
+        feedRepository = new InMemoryFeedRepository();
+
         transactionManager = new FakeTransactionManager({
             platformRepository,
+            feedRepository,
             userRepository,
             membershipRepository,
         });

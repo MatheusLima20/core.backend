@@ -1,22 +1,18 @@
-import { AuthUser } from "@/shared/context/auth.user";
 import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 
 import { FeedNotFoundError } from "../../errors/feed-not-found.error";
-import { InMemoryFeedRepository } from "../../repositories/implementations/in-memory-feed.repository";
 import { FeedUsecase } from "../feed.usecase";
 import { makeFeed } from "./factories/feed.factory";
 import { setupFeed, setupFeeds } from "./setup/feed.setup";
+import { scenario } from "./setup/test-builder";
 
 describe("FeedUsecase - delete", () => {
     let usecase!: FeedUsecase;
 
-    beforeEach(() => {
-        const user = {
-            uid: "user-1",
-            platformUID: "platform-1",
-        } as AuthUser;
-
-        usecase = new FeedUsecase({ user }, new InMemoryFeedRepository());
+    beforeEach(async () => {
+        ({
+            feedUsecases: [usecase],
+        } = (await scenario().loadUsers(["1"])).createUsecases().build());
     });
 
     test("Should delete a feed", async () => {

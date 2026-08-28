@@ -1,5 +1,5 @@
 export interface FeedProps {
-    uid: string;
+    uid?: string;
 
     platformUID: string;
 

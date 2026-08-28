@@ -1,6 +1,5 @@
-import { randomUUID } from "crypto";
-
 import { RequestContext } from "@/shared/context/request-context";
+import { ITransactionManager } from "@/shared/database/transaction/transaction-manager.interface";
 import { PersistenceError } from "@/shared/errors/persistence.error";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
@@ -20,13 +19,12 @@ import { IFeedRepository } from "../repositories/feed-repository.interface";
 export class FeedUsecase {
     constructor(
         private readonly context: RequestContext,
+        private readonly transactionManager: ITransactionManager,
         private readonly feedRepository: IFeedRepository
     ) {}
 
     async create(data: CreateFeedDTO): Promise<Result<CreateFeedResponseDTO>> {
         const feed = new FeedEntity({
-            uid: randomUUID(),
-
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -42,17 +40,15 @@ export class FeedUsecase {
         const items = data.items.map(
             (item) =>
                 new FeedItemEntity({
-                    uid: randomUUID(),
-
                     feedUID: feed.uid,
-
                     inventoryItemUID: item.inventoryItemUID,
-
                     inclusionPercentage: item.inclusionPercentage,
                 })
         );
 
-        const created = await this.feedRepository.register(feed, items);
+        const created = await this.transactionManager.execute(async (transaction) => {
+            return transaction.feedRepository.register(feed, items);
+        });
 
         if (isFailure(created)) {
             return ResultFactory.failure(new PersistenceError("Failed to create feed."));
@@ -109,9 +105,7 @@ export class FeedUsecase {
 
         const feed = new FeedEntity({
             ...requiredFeed.data,
-
             ...data,
-
             updatedBy: this.context.user.uid,
             updatedAt: new Date(),
         });
@@ -120,12 +114,9 @@ export class FeedUsecase {
             data.items?.map(
                 (item) =>
                     new FeedItemEntity({
-                        uid: item.uid ?? randomUUID(),
-
+                        uid: item.uid,
                         feedUID: feed.uid,
-
                         inventoryItemUID: item.inventoryItemUID,
-
                         inclusionPercentage: item.inclusionPercentage,
                     })
             ) ??
@@ -137,7 +128,9 @@ export class FeedUsecase {
                     })
             );
 
-        const updated = await this.feedRepository.update(feed, items);
+        const updated = await this.transactionManager.execute(async (transaction) => {
+            return transaction.feedRepository.update(feed, items);
+        });
 
         if (isFailure(updated)) {
             return ResultFactory.failure(new PersistenceError("Failed to update feed."));
@@ -167,7 +160,9 @@ export class FeedUsecase {
             );
         }
 
-        const deleted = await this.feedRepository.delete(uid);
+        const deleted = await this.transactionManager.execute(async (transaction) => {
+            return transaction.feedRepository.delete(uid);
+        });
 
         if (isFailure(deleted)) {
             return ResultFactory.failure(new PersistenceError("Failed to delete feed."));

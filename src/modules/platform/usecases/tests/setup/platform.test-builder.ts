@@ -1,10 +1,12 @@
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
+import { BaseTestTransactionContext } from "@/shared/tests/base-test.interface";
 
+import { PlatformUsecase } from "../../platform.usecase";
 import { makePlatformUsecase } from "../factories/platform-usecase.factory";
-import { TestPlatformContext } from "./test-platform.context";
 
 export class TestBuilder {
-    private testContext = new TestPlatformContext();
+    private testContext = new BaseTestTransactionContext();
+    private platformUsecases: PlatformUsecase[] = [];
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {
@@ -21,7 +23,7 @@ export class TestBuilder {
     }
 
     createUsecases() {
-        this.testContext.platformUsecases = this.testContext.users.map(
+        this.platformUsecases = this.testContext.users.map(
             (user) =>
                 makePlatformUsecase(
                     user,
@@ -36,7 +38,7 @@ export class TestBuilder {
 
     build() {
         return {
-            platformUsecases: this.testContext.platformUsecases,
+            platformUsecases: this.platformUsecases,
 
             repositories: {
                 platform: this.testContext.platformRepository,

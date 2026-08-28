@@ -1,10 +1,13 @@
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
+import { BaseTestTransactionContext } from "@/shared/tests/base-test.interface";
 
+import { FeedUsecase } from "../../feed.usecase";
 import { makeFeedUsecase } from "../factories/feed-usecase.factory";
-import { TestFeedContext } from "./test-feed.context";
 
 export class TestBuilder {
-    private testContext = new TestFeedContext();
+    private testContext = new BaseTestTransactionContext();
+
+    feedUsecases: FeedUsecase[] = [];
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {
@@ -21,8 +24,13 @@ export class TestBuilder {
     }
 
     createUsecases() {
-        this.testContext.feedUsecases = this.testContext.users.map(
-            (user) => makeFeedUsecase(user, this.testContext.feedRepository).usecase
+        this.feedUsecases = this.testContext.users.map(
+            (user) =>
+                makeFeedUsecase(
+                    user,
+                    this.testContext.transactionManager,
+                    this.testContext.feedRepository
+                ).usecase
         );
 
         return this;
@@ -32,7 +40,7 @@ export class TestBuilder {
         return {
             users: this.testContext.users,
 
-            feedUsecases: this.testContext.feedUsecases,
+            feedUsecases: this.feedUsecases,
 
             repositories: {
                 feed: this.testContext.feedRepository,

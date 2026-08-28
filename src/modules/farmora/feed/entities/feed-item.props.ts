@@ -1,5 +1,5 @@
 export interface FeedItemProps {
-    uid: string;
+    uid?: string;
 
     feedUID: string;
 

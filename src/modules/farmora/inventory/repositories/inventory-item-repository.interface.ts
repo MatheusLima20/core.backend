@@ -1,15 +1,16 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindInventoryItemsDTO } from "../dtos/find-inventory-items.dto";
-import { InventoryItemProps } from "../entities/inventory-item.props";
+import { InventoryItemEntity } from "../entities/inventory-item.entity";
 
 export interface IInventoryItemRepository {
-    findByUID(platformUID: string, uid: string): Promise<Result<InventoryItemProps | null>>;
+    findByUID(platformUID: string, uid: string): Promise<Result<InventoryItemEntity | null>>;
 
     find(
         platformUID: string,
         filters?: FindInventoryItemsDTO
-    ): Promise<Result<InventoryItemProps[]>>;
+    ): Promise<Result<PaginationResult<InventoryItemEntity>>>;
 
     exists(
         platformUID: string,
@@ -21,9 +22,9 @@ export interface IInventoryItemRepository {
         }
     ): Promise<Result<boolean>>;
 
-    register(inventoryItem: InventoryItemProps): Promise<Result<InventoryItemProps>>;
+    register(inventoryItem: InventoryItemEntity): Promise<Result<InventoryItemEntity>>;
 
-    update(inventoryItem: InventoryItemProps): Promise<Result<InventoryItemProps>>;
+    update(inventoryItem: InventoryItemEntity): Promise<Result<InventoryItemEntity>>;
 
     delete(uid: string): Promise<Result<void>>;
 }

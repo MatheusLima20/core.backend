@@ -5,19 +5,19 @@ import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FindFeedsDTO } from "../../dtos/find-feeds.dto";
-import { FeedProps } from "../../entities/feed.props";
-import { FeedItemProps } from "../../entities/feed-item.props";
+import { FeedEntity } from "../../entities/feed.entity";
+import { FeedItemEntity } from "../../entities/feed-item.entity";
 import { IFeedRepository } from "../feed-repository.interface";
 
 export class InMemoryFeedRepository implements IFeedRepository {
-    private feeds: FeedProps[] = [];
+    private feeds: FeedEntity[] = [];
 
-    private feedItems: FeedItemProps[] = [];
+    private feedItems: FeedItemEntity[] = [];
 
     async findByUID(
         platformUID: string,
         uid: string
-    ): Promise<Result<{ feed: FeedProps; items: FeedItemProps[] } | null>> {
+    ): Promise<Result<{ feed: FeedEntity; items: FeedItemEntity[] } | null>> {
         const feed =
             this.feeds.find(
                 (item) =>
@@ -40,7 +40,7 @@ export class InMemoryFeedRepository implements IFeedRepository {
     async find(
         platformUID: string,
         filters?: FindFeedsDTO
-    ): Promise<Result<{ feed: FeedProps; items: FeedItemProps[] }[]>> {
+    ): Promise<Result<{ feed: FeedEntity; items: FeedItemEntity[] }[]>> {
         let feeds = this.feeds.filter((item) => StringUtil.equals(item.platformUID, platformUID));
 
         if (filters?.name) {
@@ -68,12 +68,12 @@ export class InMemoryFeedRepository implements IFeedRepository {
     }
 
     async register(
-        feed: FeedProps,
-        items: FeedItemProps[]
+        feed: FeedEntity,
+        items: FeedItemEntity[]
     ): Promise<
         Result<{
-            feed: FeedProps;
-            items: FeedItemProps[];
+            feed: FeedEntity;
+            items: FeedItemEntity[];
         }>
     > {
         this.feeds.push(feed);
@@ -87,12 +87,12 @@ export class InMemoryFeedRepository implements IFeedRepository {
     }
 
     async update(
-        feed: FeedProps,
-        items: FeedItemProps[]
+        feed: FeedEntity,
+        items: FeedItemEntity[]
     ): Promise<
         Result<{
-            feed: FeedProps;
-            items: FeedItemProps[];
+            feed: FeedEntity;
+            items: FeedItemEntity[];
         }>
     > {
         const index = this.feeds.findIndex((item) => StringUtil.equals(item.uid, feed.uid));

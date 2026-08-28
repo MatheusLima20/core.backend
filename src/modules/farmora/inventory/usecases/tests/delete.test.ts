@@ -30,9 +30,9 @@ describe("InventoryItemUsecase - delete", () => {
 
         const after = expectSuccess(await usecaseUser1.find());
 
-        expect(before).toHaveLength(1);
+        expect(before.data.length).toBe(1);
 
-        expect(after).toHaveLength(0);
+        expect(after.data.length).toBe(0);
 
         const found = expectSuccess(await usecaseUser1.findByUID(inventoryItem.uid));
 
@@ -83,15 +83,15 @@ describe("InventoryItemUsecase - delete", () => {
 
         const user2Items = expectSuccess(await usecaseUser2.find());
 
-        expect(user2Items).toHaveLength(0);
+        expect(user2Items.data).toHaveLength(0);
 
         expectFailure(await usecaseUser2.delete(inventoryItem.uid), InventoryItemNotFoundError);
 
         const user1Items = expectSuccess(await usecaseUser1.find());
 
-        expect(user1Items).toHaveLength(1);
+        expect(user1Items.data).toHaveLength(1);
 
-        expect(user1Items[0].uid).toBe(inventoryItem.uid);
+        expect(user1Items.data[0].uid).toBe(inventoryItem.uid);
     });
 
     test("Should delete one inventory item keeping remaining items", async () => {
@@ -115,9 +115,9 @@ describe("InventoryItemUsecase - delete", () => {
 
         const items = expectSuccess(await usecaseUser1.find());
 
-        expect(items).toHaveLength(2);
+        expect(items.data).toHaveLength(2);
 
-        expect(items.map((item) => item.uid)).toEqual(
+        expect(items.data.map((item) => item.uid)).toEqual(
             expect.arrayContaining([itemA.uid, itemC.uid])
         );
 

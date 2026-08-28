@@ -1,22 +1,20 @@
 import { AuthUser } from "@/shared/context/auth.user";
 import { expectSuccess } from "@/shared/tests/result.helper";
 
-import { InMemoryFeedRepository } from "../../repositories/implementations/in-memory-feed.repository";
 import { FeedUsecase } from "../feed.usecase";
 import { makeFeed } from "./factories/feed.factory";
+import { scenario } from "./setup/test-builder";
 
 describe("FeedUsecase - create", () => {
     let usecase!: FeedUsecase;
 
     let user!: AuthUser;
 
-    beforeEach(() => {
-        user = {
-            uid: "user-1",
-            platformUID: "platform-1",
-        } as AuthUser;
-
-        usecase = new FeedUsecase({ user }, new InMemoryFeedRepository());
+    beforeEach(async () => {
+        ({
+            feedUsecases: [usecase],
+            users: [user],
+        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
     test("Should register feed", async () => {

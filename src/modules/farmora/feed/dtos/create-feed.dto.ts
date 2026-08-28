@@ -1,15 +1,15 @@
-import { FeedProps } from "../entities/feed.props";
-import { FeedItemProps } from "../entities/feed-item.props";
+import { FeedEntity } from "../entities/feed.entity";
+import { FeedItemEntity } from "../entities/feed-item.entity";
 import { ResponseFeedItemDTO } from "./response-feed.dto";
 
-export type CreateFeedItemDTO = Pick<FeedItemProps, "inventoryItemUID" | "inclusionPercentage">;
+export type CreateFeedItemDTO = Pick<FeedItemEntity, "inventoryItemUID" | "inclusionPercentage">;
 
-export type CreateFeedDTO = Pick<FeedProps, "name" | "description"> & {
+export type CreateFeedDTO = Pick<FeedEntity, "name" | "description"> & {
     items: CreateFeedItemDTO[];
-} & Partial<Pick<FeedProps, "createdAt">>;
+} & Partial<Pick<FeedEntity, "createdAt">>;
 
 export type CreateFeedResponseDTO = Pick<
-    FeedProps,
+    FeedEntity,
     "uid" | "platformUID" | "name" | "description" | "createdBy" | "createdAt"
 > & {
     items: ResponseFeedItemDTO[];

@@ -1,7 +1,6 @@
-import { randomUUID } from "crypto";
-
 import { RequestContext } from "@/shared/context/request-context";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -54,8 +53,6 @@ export class InventoryItemUsecase {
         }
 
         const inventoryItem = new InventoryItemEntity({
-            uid: randomUUID(),
-
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -96,7 +93,9 @@ export class InventoryItemUsecase {
         );
     }
 
-    async find(filters?: FindInventoryItemsDTO): Promise<Result<ResponseInventoryItemDTO[]>> {
+    async find(
+        filters?: FindInventoryItemsDTO
+    ): Promise<Result<PaginationResult<InventoryItemEntity>>> {
         const result = await this.inventoryItemRepository.find(
             this.context.user.platformUID,
             filters
@@ -106,7 +105,7 @@ export class InventoryItemUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch inventory items."));
         }
 
-        return ResultMapper.map(result, InventoryItemMapper.toResponseDTOList);
+        return ResultFactory.success(result.data);
     }
 
     async update(data: UpdateInventoryItemDTO): Promise<Result<UpdateInventoryItemResponseDTO>> {

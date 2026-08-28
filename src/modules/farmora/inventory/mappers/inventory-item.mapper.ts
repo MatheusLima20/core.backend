@@ -1,10 +1,10 @@
 import { CreateInventoryItemResponseDTO } from "../dtos/create-inventory-item.dto";
 import { ResponseInventoryItemDTO } from "../dtos/inventory-item-response.dto";
 import { UpdateInventoryItemResponseDTO } from "../dtos/update-inventory-item.dto";
-import { InventoryItemProps } from "../entities/inventory-item.props";
+import { InventoryItemEntity } from "../entities/inventory-item.entity";
 
 export const InventoryItemMapper = {
-    toResponseDTO: (inventoryItem: InventoryItemProps): ResponseInventoryItemDTO => {
+    toResponseDTO: (inventoryItem: InventoryItemEntity): ResponseInventoryItemDTO => {
         return {
             uid: inventoryItem.uid,
             platformUID: inventoryItem.platformUID,
@@ -25,11 +25,11 @@ export const InventoryItemMapper = {
         };
     },
 
-    toResponseDTOList: (inventoryItems: InventoryItemProps[]): ResponseInventoryItemDTO[] => {
+    toResponseDTOList: (inventoryItems: InventoryItemEntity[]): ResponseInventoryItemDTO[] => {
         return inventoryItems.map(InventoryItemMapper.toResponseDTO);
     },
 
-    toCreateResponseDTO: (inventoryItem: InventoryItemProps): CreateInventoryItemResponseDTO => {
+    toCreateResponseDTO: (inventoryItem: InventoryItemEntity): CreateInventoryItemResponseDTO => {
         return {
             uid: inventoryItem.uid,
             platformUID: inventoryItem.platformUID,
@@ -44,7 +44,7 @@ export const InventoryItemMapper = {
         };
     },
 
-    toUpdatedResponseDTO: (inventoryItem: InventoryItemProps): UpdateInventoryItemResponseDTO => {
+    toUpdatedResponseDTO: (inventoryItem: InventoryItemEntity): UpdateInventoryItemResponseDTO => {
         return {
             uid: inventoryItem.uid,
             name: inventoryItem.name,

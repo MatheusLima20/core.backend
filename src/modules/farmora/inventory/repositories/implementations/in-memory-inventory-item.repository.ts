@@ -1,3 +1,4 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { PaginationUtil } from "@/shared/utils/pagination/pagination.util";
@@ -5,13 +6,13 @@ import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FindInventoryItemsDTO } from "../../dtos/find-inventory-items.dto";
-import { InventoryItemProps } from "../../entities/inventory-item.props";
+import { InventoryItemEntity } from "../../entities/inventory-item.entity";
 import { IInventoryItemRepository } from "../inventory-item-repository.interface";
 
 export class InMemoryInventoryItemRepository implements IInventoryItemRepository {
-    private inventoryItems: InventoryItemProps[] = [];
+    private inventoryItems: InventoryItemEntity[] = [];
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<InventoryItemProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<InventoryItemEntity | null>> {
         const inventoryItem =
             this.inventoryItems.find(
                 (item) =>
@@ -25,7 +26,7 @@ export class InMemoryInventoryItemRepository implements IInventoryItemRepository
     async find(
         platformUID: string,
         filters?: FindInventoryItemsDTO
-    ): Promise<Result<InventoryItemProps[]>> {
+    ): Promise<Result<PaginationResult<InventoryItemEntity>>> {
         let inventoryItems = this.inventoryItems.filter((item) =>
             StringUtil.equals(item.platformUID!, platformUID)
         );
@@ -62,7 +63,21 @@ export class InMemoryInventoryItemRepository implements IInventoryItemRepository
             inventoryItems = PaginationUtil.paginate(inventoryItems, filters.page, filters.limit);
         }
 
-        return ResultFactory.success(inventoryItems);
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
+
+        const total = inventoryItems.length;
+        const totalPages = Math.ceil(total / limit);
+
+        const start = (page - 1) * limit;
+
+        return ResultFactory.success({
+            data: inventoryItems.slice(start, start + limit),
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
     async exists(
@@ -86,13 +101,13 @@ export class InMemoryInventoryItemRepository implements IInventoryItemRepository
         return ResultFactory.success(exists);
     }
 
-    async register(inventoryItem: InventoryItemProps): Promise<Result<InventoryItemProps>> {
+    async register(inventoryItem: InventoryItemEntity): Promise<Result<InventoryItemEntity>> {
         this.inventoryItems.push(inventoryItem);
 
         return ResultFactory.success(inventoryItem);
     }
 
-    async update(inventoryItem: InventoryItemProps): Promise<Result<InventoryItemProps>> {
+    async update(inventoryItem: InventoryItemEntity): Promise<Result<InventoryItemEntity>> {
         const index = this.inventoryItems.findIndex((item) =>
             StringUtil.equals(item.uid, inventoryItem.uid)
         );

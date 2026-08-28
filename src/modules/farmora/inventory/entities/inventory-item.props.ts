@@ -2,7 +2,7 @@ import { InventoryCategory } from "../enums/inventory-category.enum";
 import { InventoryUnit } from "../enums/inventory-unit.enum";
 
 export interface InventoryItemProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 

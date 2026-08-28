@@ -1,8 +1,8 @@
 import { ResponseFeedItemDTO } from "../dtos/response-feed.dto";
-import { FeedItemProps } from "../entities/feed-item.props";
+import { FeedItemEntity } from "../entities/feed-item.entity";
 
 export const FeedItemMapper = {
-    toResponseDTO: (feedItem: FeedItemProps): ResponseFeedItemDTO => {
+    toResponseDTO: (feedItem: FeedItemEntity): ResponseFeedItemDTO => {
         return {
             uid: feedItem.uid,
             inventoryItemUID: feedItem.inventoryItemUID,
@@ -10,7 +10,7 @@ export const FeedItemMapper = {
         };
     },
 
-    toResponseDTOList: (feedItems: FeedItemProps[]): ResponseFeedItemDTO[] => {
+    toResponseDTOList: (feedItems: FeedItemEntity[]): ResponseFeedItemDTO[] => {
         return feedItems.map(FeedItemMapper.toResponseDTO);
     },
 };

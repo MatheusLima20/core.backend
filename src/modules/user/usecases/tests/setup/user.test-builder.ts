@@ -1,10 +1,15 @@
+import { FakeHashProvider } from "@/modules/auth/providers/implementations/fake-hash.provider";
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
+import { BaseTestTransactionContext } from "@/shared/tests/base-test.interface";
 
+import { UserUseCase } from "../../user.usecase";
 import { makeUserUsecase } from "../factories/user-usecase.factory";
-import { TestUserContext } from "./test-user.context";
 
 export class TestBuilder {
-    private testContext = new TestUserContext();
+    private testContext = new BaseTestTransactionContext();
+
+    private userUsecases: UserUseCase[] = [];
+    private fakeHashProvider = new FakeHashProvider();
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {
@@ -21,14 +26,14 @@ export class TestBuilder {
     }
 
     createUsecases() {
-        this.testContext.userUsecases = this.testContext.users.map(
+        this.userUsecases = this.testContext.users.map(
             (user) =>
                 makeUserUsecase(
                     user,
                     this.testContext.userRepository,
                     this.testContext.transactionManager,
                     this.testContext.membershipRepository,
-                    this.testContext.fakeHashProvider
+                    this.fakeHashProvider
                 ).usecase
         );
 
@@ -39,7 +44,7 @@ export class TestBuilder {
         return {
             users: this.testContext.users,
 
-            userUsecases: this.testContext.userUsecases,
+            userUsecases: this.userUsecases,
 
             repositories: {
                 user: this.testContext.userRepository,

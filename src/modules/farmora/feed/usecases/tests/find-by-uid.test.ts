@@ -1,10 +1,10 @@
 import { AuthUser } from "@/shared/context/auth.user";
 import { expectSuccess } from "@/shared/tests/result.helper";
 
-import { InMemoryFeedRepository } from "../../repositories/implementations/in-memory-feed.repository";
 import { FeedUsecase } from "../feed.usecase";
 import { makeFeed } from "./factories/feed.factory";
 import { setupFeed } from "./setup/feed.setup";
+import { scenario } from "./setup/test-builder";
 
 describe("FeedUsecase - findByUID", () => {
     let usecaseUser1!: FeedUsecase;
@@ -13,22 +13,11 @@ describe("FeedUsecase - findByUID", () => {
     let user1!: AuthUser;
     let user2!: AuthUser;
 
-    beforeEach(() => {
-        user1 = {
-            uid: "user-1",
-            platformUID: "platform-1",
-        } as AuthUser;
-
-        user2 = {
-            uid: "user-2",
-            platformUID: "platform-2",
-        } as AuthUser;
-
-        const repository = new InMemoryFeedRepository();
-
-        usecaseUser1 = new FeedUsecase({ user: user1 }, repository);
-
-        usecaseUser2 = new FeedUsecase({ user: user2 }, repository);
+    beforeEach(async () => {
+        ({
+            feedUsecases: [usecaseUser1, usecaseUser2],
+            users: [user1, user2],
+        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
     test("Should find a feed by uid", async () => {

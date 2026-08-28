@@ -32,15 +32,15 @@ describe("InventoryUsecase - find", () => {
 
         const inventories = expectSuccess(await usecaseUser1.find());
 
-        expect(inventories.every((inventory) => inventory.platformUID === user1.platformUID)).toBe(
-            true
-        );
+        expect(
+            inventories.data.every((inventory) => inventory.platformUID === user1.platformUID)
+        ).toBe(true);
     });
 
     test("Should return empty list when platform has no inventories", async () => {
         const inventories = expectSuccess(await usecaseUser2.find());
 
-        expect(inventories).toEqual([]);
+        expect(inventories.data).toEqual([]);
     });
 
     test("Should filter inventories by category", async () => {
@@ -61,9 +61,9 @@ describe("InventoryUsecase - find", () => {
             })
         );
 
-        expect(inventories).toHaveLength(1);
+        expect(inventories.data).toHaveLength(1);
 
-        expect(inventories[0].category).toBe(InventoryCategory.FEED);
+        expect(inventories.data[0].category).toBe(InventoryCategory.FEED);
     });
 
     test("Should filter inventories by unit", async () => {
@@ -84,9 +84,9 @@ describe("InventoryUsecase - find", () => {
             })
         );
 
-        expect(inventories).toHaveLength(1);
+        expect(inventories.data).toHaveLength(1);
 
-        expect(inventories[0].unit).toBe(InventoryUnit.KG);
+        expect(inventories.data[0].unit).toBe(InventoryUnit.KG);
     });
 
     test("Should filter inventories by stock tracking", async () => {
@@ -107,9 +107,9 @@ describe("InventoryUsecase - find", () => {
             })
         );
 
-        expect(inventories).toHaveLength(1);
+        expect(inventories.data).toHaveLength(1);
 
-        expect(inventories[0].trackStock).toBe(true);
+        expect(inventories.data[0].trackStock).toBe(true);
     });
 
     test("Should filter inventories by name", async () => {
@@ -129,9 +129,9 @@ describe("InventoryUsecase - find", () => {
             })
         );
 
-        expect(inventories).toHaveLength(1);
+        expect(inventories.data).toHaveLength(1);
 
-        expect(inventories[0].name).toBe("Corn");
+        expect(inventories.data[0].name).toBe("Corn");
     });
 
     test("Should order inventories by name descending", async () => {
@@ -156,7 +156,7 @@ describe("InventoryUsecase - find", () => {
             })
         );
 
-        expect(inventories.map((item) => item.uid)).toEqual([soybean.uid, corn.uid]);
+        expect(inventories.data.map((item) => item.uid)).toEqual([soybean.uid, corn.uid]);
     });
 
     test("Should return first page", async () => {
@@ -180,9 +180,9 @@ describe("InventoryUsecase - find", () => {
             })
         );
 
-        expect(inventories).toHaveLength(2);
+        expect(inventories.data).toHaveLength(2);
 
-        expect(inventories.map((item) => item.uid)).toEqual([itemA.uid, itemB.uid]);
+        expect(inventories.data.map((item) => item.uid)).toEqual([itemA.uid, itemB.uid]);
     });
 
     test("Should filter, order and paginate inventories", async () => {
@@ -220,6 +220,6 @@ describe("InventoryUsecase - find", () => {
             })
         );
 
-        expect(inventories.map((item) => item.uid)).toEqual([itemA.uid, itemB.uid]);
+        expect(inventories.data.map((item) => item.uid)).toEqual([itemA.uid, itemB.uid]);
     });
 });

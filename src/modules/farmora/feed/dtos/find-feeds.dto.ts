@@ -1,4 +1,4 @@
-import { FeedProps } from "../entities/feed.props";
+import { FeedEntity } from "../entities/feed.entity";
 
 export interface FindFeedsDTO {
     name?: string;
@@ -6,7 +6,7 @@ export interface FindFeedsDTO {
     page?: number;
     limit?: number;
 
-    orderBy?: keyof Pick<FeedProps, "name" | "createdAt" | "updatedAt">;
+    orderBy?: keyof Pick<FeedEntity, "name" | "createdAt" | "updatedAt">;
 
     order?: "asc" | "desc";
 }

@@ -1,8 +1,8 @@
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
 
-import { BaseTestContext } from "./base-test.interface";
+import { BaseTestTransactionContext } from "./base-test.interface";
 
-export abstract class BaseTestBuilder<TContext extends BaseTestContext> {
+export abstract class BaseTestBuilder<TContext extends BaseTestTransactionContext> {
     protected abstract testContext: TContext;
 
     async loadUsers(uids: string[]) {
