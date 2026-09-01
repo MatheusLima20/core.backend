@@ -1,4 +1,4 @@
-import { BreedProps } from "../entities/breed.props";
+import { BreedEntity } from "../entities/breed.entity";
 import { BreedPurpose } from "../enums/breed-origin.enum";
 import { EggColor } from "../enums/egg-color.enum";
 
@@ -15,7 +15,7 @@ export interface FindBreedsDTO {
     limit?: number;
 
     orderBy?: keyof Pick<
-        BreedProps,
+        BreedEntity,
         "name" | "eggColor" | "breedPurpose" | "createdAt" | "updatedAt"
     >;
 

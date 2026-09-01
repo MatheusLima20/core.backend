@@ -16,10 +16,14 @@ describe("FeedUsecase - update", () => {
     let user2!: AuthUser;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadInventoryItems();
+
         ({
             feedUsecases: [usecaseUser1, usecaseUser2],
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
     });
 
     test("Should update a feed", async () => {
@@ -41,13 +45,9 @@ describe("FeedUsecase - update", () => {
 
         expect(updated).toMatchObject({
             uid: feed.uid,
-
             name: data.name,
-
             description: data.description,
-
             platformUID: user1.platformUID,
-
             updatedBy: user1.uid,
         });
 
@@ -105,14 +105,14 @@ describe("FeedUsecase - update", () => {
         const updated = expectSuccess(
             await usecaseUser1.update({
                 uid: feed.uid,
-                description: undefined,
+                description: "",
             })
         );
 
-        expect(updated.description).toBeUndefined();
+        expect(updated.description).toBe("");
     });
 
-    test("Should update feed items", async () => {
+    test("Should update an existing feed item and add a new feed item", async () => {
         const feed = await setupFeed(
             usecaseUser1,
             makeFeed({
@@ -129,9 +129,10 @@ describe("FeedUsecase - update", () => {
             })
         );
 
-        const existing = expectSuccess(await usecaseUser1.findByUID(feed.uid));
+        const before = expectSuccess(await usecaseUser1.findByUID(feed.uid));
 
-        const existingItemUID = existing!.items[0].uid;
+        const existingItemUID = before!.items[0].uid;
+        const existingSecondItemUID = before!.items[1].uid;
 
         const updated = expectSuccess(
             await usecaseUser1.update({
@@ -140,7 +141,7 @@ describe("FeedUsecase - update", () => {
                     {
                         uid: existingItemUID,
                         inventoryItemUID: "inventory-item-1",
-                        inclusionPercentage: 70,
+                        inclusionPercentage: 30,
                     },
                     {
                         inventoryItemUID: "inventory-item-3",
@@ -150,18 +151,98 @@ describe("FeedUsecase - update", () => {
             })
         );
 
-        expect(updated.items).toHaveLength(2);
+        /*
+         * O segundo item existente permanece no Feed.
+         *
+         * Composição final:
+         * 30 + 40 + 30 = 100
+         */
+        expect(updated.items).toHaveLength(3);
 
         expect(updated.items).toEqual([
             {
                 uid: existingItemUID,
                 inventoryItemUID: "inventory-item-1",
-                inclusionPercentage: 70,
+                inclusionPercentage: 30,
+            },
+            {
+                uid: existingSecondItemUID,
+                inventoryItemUID: "inventory-item-2",
+                inclusionPercentage: 40,
             },
             {
                 uid: expect.any(String),
                 inventoryItemUID: "inventory-item-3",
                 inclusionPercentage: 30,
+            },
+        ]);
+    });
+
+    test("Should preserve feed items that were not sent", async () => {
+        const feed = await setupFeed(
+            usecaseUser1,
+            makeFeed({
+                items: [
+                    {
+                        inventoryItemUID: "inventory-item-1",
+                        inclusionPercentage: 50,
+                    },
+                    {
+                        inventoryItemUID: "inventory-item-2",
+                        inclusionPercentage: 30,
+                    },
+                    {
+                        inventoryItemUID: "inventory-item-3",
+                        inclusionPercentage: 20,
+                    },
+                ],
+            })
+        );
+
+        const before = expectSuccess(await usecaseUser1.findByUID(feed.uid));
+
+        const firstItem = before!.items[0];
+        const secondItem = before!.items[1];
+        const thirdItem = before!.items[2];
+
+        const updated = expectSuccess(
+            await usecaseUser1.update({
+                uid: feed.uid,
+                items: [
+                    {
+                        uid: firstItem.uid,
+                        inventoryItemUID: firstItem.inventoryItemUID,
+                        inclusionPercentage: 50,
+                    },
+                ],
+            })
+        );
+
+        /*
+         * Somente o primeiro item foi enviado.
+         *
+         * Os itens 2 e 3 não foram enviados e devem permanecer.
+         *
+         * Composição final:
+         * 50 + 30 + 20 = 100
+         */
+        expect(updated.items).toHaveLength(3);
+
+        expect(updated.items).toEqual([
+            {
+                uid: firstItem.uid,
+                inventoryItemUID: firstItem.inventoryItemUID,
+                inclusionPercentage: 50,
+            },
+            {
+                uid: secondItem.uid,
+                inventoryItemUID: secondItem.inventoryItemUID,
+                inclusionPercentage: secondItem.inclusionPercentage,
+            },
+            {
+                uid: thirdItem.uid,
+                inventoryItemUID: thirdItem.inventoryItemUID,
+                inclusionPercentage: thirdItem.inclusionPercentage,
             },
         ]);
     });
@@ -188,29 +269,57 @@ describe("FeedUsecase - update", () => {
                         inventoryItemUID: "inventory-item-1",
                         inclusionPercentage: 60,
                     },
+                    {
+                        inventoryItemUID: "inventory-item-2",
+                        inclusionPercentage: 40,
+                    },
                 ],
             })
         );
 
         const before = expectSuccess(await usecaseUser1.findByUID(feed.uid));
 
-        const itemUID = before!.items[0].uid;
+        const item = before!.items[0];
+        const secondItem = before!.items[1];
 
         const updated = expectSuccess(
             await usecaseUser1.update({
                 uid: feed.uid,
                 items: [
                     {
-                        uid: itemUID,
-                        inventoryItemUID: "inventory-item-1",
+                        uid: item.uid,
+                        inventoryItemUID: item.inventoryItemUID,
                         inclusionPercentage: 70,
+                    },
+                    {
+                        uid: secondItem.uid,
+                        inventoryItemUID: secondItem.inventoryItemUID,
+                        inclusionPercentage: 30,
                     },
                 ],
             })
         );
 
-        expect(updated.items[0].uid).toBe(itemUID);
-        expect(updated.items[0].inclusionPercentage).toBe(70);
+        /*
+         * O UID do item existente deve ser preservado.
+         *
+         * Composição final:
+         * 70 + 30 = 100
+         */
+        expect(updated.items).toHaveLength(2);
+
+        expect(updated.items).toEqual([
+            {
+                uid: item.uid,
+                inventoryItemUID: item.inventoryItemUID,
+                inclusionPercentage: 70,
+            },
+            {
+                uid: secondItem.uid,
+                inventoryItemUID: secondItem.inventoryItemUID,
+                inclusionPercentage: 30,
+            },
+        ]);
     });
 
     test("Should not update an inexistent feed", async () => {

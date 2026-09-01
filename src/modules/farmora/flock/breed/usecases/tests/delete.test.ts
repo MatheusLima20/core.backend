@@ -25,8 +25,8 @@ describe("BreedUsecase - delete", () => {
 
         const after = expectSuccess(await usecaseUser1.find());
 
-        expect(before).toHaveLength(1);
-        expect(after).toHaveLength(0);
+        expect(before.data).toHaveLength(1);
+        expect(after.data).toHaveLength(0);
 
         const find = expectSuccess(await usecaseUser1.findByUID(breed.uid));
 
@@ -73,9 +73,9 @@ describe("BreedUsecase - delete", () => {
 
         const breeds = expectSuccess(await usecaseUser1.find());
 
-        expect(breeds).toHaveLength(2);
+        expect(breeds.data).toHaveLength(2);
 
-        expect(breeds.map((breed) => breed.uid)).toEqual(
+        expect(breeds.data.map((breed) => breed.uid)).toEqual(
             expect.arrayContaining([breedA.uid, breedC.uid])
         );
 

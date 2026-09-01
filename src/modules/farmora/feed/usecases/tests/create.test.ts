@@ -11,10 +11,12 @@ describe("FeedUsecase - create", () => {
     let user!: AuthUser;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
         ({
             feedUsecases: [usecase],
             users: [user],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = (await testScenario.loadInventoryItems()).createUsecases().build());
     });
 
     test("Should register feed", async () => {
@@ -60,9 +62,7 @@ describe("FeedUsecase - create", () => {
 
         expect(found).toMatchObject({
             uid: created.uid,
-
             name: feed.name,
-
             description: feed.description,
 
             items: [

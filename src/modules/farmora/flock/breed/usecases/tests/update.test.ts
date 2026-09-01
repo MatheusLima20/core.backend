@@ -53,7 +53,7 @@ describe("BreedUsecase - update", () => {
 
         expect(found).toMatchObject(updated);
 
-        expect(found.updatedBy).not.toBe(user2.uid);
+        expect(found?.updatedBy).not.toBe(user2.uid);
     });
 
     test("Should update only description", async () => {

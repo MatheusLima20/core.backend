@@ -25,13 +25,13 @@ describe("BreedUsecase - find", () => {
 
         const breeds = expectSuccess(await usecaseUser1.find());
 
-        expect(breeds.every((breed) => breed.platformUID === user1.platformUID)).toBe(true);
+        expect(breeds.data.every((breed) => breed.platformUID === user1.platformUID)).toBe(true);
     });
 
     test("Should return empty list when platform has no breeds", async () => {
         const breeds = expectSuccess(await usecaseUser2.find());
 
-        expect(breeds).toEqual([]);
+        expect(breeds.data).toEqual([]);
     });
 
     test("Should filter breeds by name", async () => {
@@ -43,9 +43,9 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds).toHaveLength(1);
+        expect(breeds.data).toHaveLength(1);
 
-        expect(breeds[0].name).toBe(dataBreed1.name);
+        expect(breeds.data[0].name).toBe(dataBreed1.name);
     });
 
     test("Should filter breeds by egg color", async () => {
@@ -57,9 +57,9 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds).toHaveLength(1);
+        expect(breeds.data).toHaveLength(1);
 
-        expect(breeds[0].eggColor).toBe(dataBreed2.eggColor);
+        expect(breeds.data[0].eggColor).toBe(dataBreed2.eggColor);
     });
 
     test("Should filter breeds by purpose", async () => {
@@ -71,9 +71,9 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds).toHaveLength(1);
+        expect(breeds.data).toHaveLength(1);
 
-        expect(breeds[0].breedPurpose).toBe(dataBreed1.breedPurpose);
+        expect(breeds.data[0].breedPurpose).toBe(dataBreed1.breedPurpose);
     });
 
     test("Should search breeds by name and purpose", async () => {
@@ -86,9 +86,9 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds).toHaveLength(1);
+        expect(breeds.data).toHaveLength(1);
 
-        expect(breeds[0]).toMatchObject({
+        expect(breeds.data[0]).toMatchObject({
             name: dataBreed1.name,
             breedPurpose: dataBreed1.breedPurpose,
         });
@@ -103,7 +103,7 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds).toEqual([]);
+        expect(breeds.data).toEqual([]);
     });
 
     test("Should order breeds by name ascending", async () => {
@@ -124,7 +124,7 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
+        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
     });
 
     test("Should order breeds by name descending", async () => {
@@ -145,7 +145,7 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds.map((breed) => breed.uid)).toEqual([breedB.uid, breedA.uid]);
+        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedB.uid, breedA.uid]);
     });
 
     test("Should return first page", async () => {
@@ -170,9 +170,9 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds).toHaveLength(2);
+        expect(breeds.data).toHaveLength(2);
 
-        expect(breeds.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
+        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
     });
 
     test("Should return second page", async () => {
@@ -197,7 +197,7 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds.map((breed) => breed.uid)).toEqual([breedC.uid, breedD.uid]);
+        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedC.uid, breedD.uid]);
     });
 
     test("Should return remaining breeds on last page", async () => {
@@ -226,7 +226,7 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds.map((breed) => breed.uid)).toEqual([breedE.uid]);
+        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedE.uid]);
     });
 
     test("Should return empty list when page does not exist", async () => {
@@ -239,7 +239,7 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds).toEqual([]);
+        expect(breeds.data).toEqual([]);
     });
 
     test("Should filter and order breeds", async () => {
@@ -268,7 +268,7 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
+        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
     });
 
     test("Should order before paginate", async () => {
@@ -301,7 +301,7 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds.map((breed) => breed.uid)).toEqual([breedC.uid, breedD.uid]);
+        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedC.uid, breedD.uid]);
     });
 
     test("Should filter, order and paginate breeds", async () => {
@@ -333,6 +333,6 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
+        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
     });
 });

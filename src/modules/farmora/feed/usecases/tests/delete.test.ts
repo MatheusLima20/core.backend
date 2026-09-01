@@ -10,9 +10,13 @@ describe("FeedUsecase - delete", () => {
     let usecase!: FeedUsecase;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1"]);
+
+        await testScenario.loadInventoryItems();
+
         ({
             feedUsecases: [usecase],
-        } = (await scenario().loadUsers(["1"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
     });
 
     test("Should delete a feed", async () => {
@@ -38,9 +42,11 @@ describe("FeedUsecase - delete", () => {
 
         const after = expectSuccess(await usecase.find());
 
-        expect(before).toHaveLength(1);
+        expect(before.total).toBe(1);
+        expect(before.data).toHaveLength(1);
 
-        expect(after).toHaveLength(0);
+        expect(after.total).toBe(0);
+        expect(after.data).toHaveLength(0);
 
         const found = expectSuccess(await usecase.findByUID(feed.uid));
 
@@ -115,9 +121,10 @@ describe("FeedUsecase - delete", () => {
 
         const feeds = expectSuccess(await usecase.find());
 
-        expect(feeds).toHaveLength(2);
+        expect(feeds.total).toBe(2);
+        expect(feeds.data).toHaveLength(2);
 
-        expect(feeds.map((feed) => feed.uid)).toEqual(
+        expect(feeds.data.map((feed) => feed.uid)).toEqual(
             expect.arrayContaining([feedA.uid, feedC.uid])
         );
 

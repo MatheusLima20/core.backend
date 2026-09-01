@@ -59,20 +59,17 @@ export class InMemoryInventoryItemRepository implements IInventoryItemRepository
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            inventoryItems = PaginationUtil.paginate(inventoryItems, filters.page, filters.limit);
-        }
+        const total = inventoryItems.length;
 
         const page = filters?.page ?? 1;
         const limit = filters?.limit ?? 10;
 
-        const total = inventoryItems.length;
         const totalPages = Math.ceil(total / limit);
 
-        const start = (page - 1) * limit;
+        const data = PaginationUtil.paginate(inventoryItems, page, limit);
 
         return ResultFactory.success({
-            data: inventoryItems.slice(start, start + limit),
+            data,
             page,
             limit,
             total,

@@ -1,7 +1,6 @@
-import { randomUUID } from "crypto";
-
 import { RequestContext } from "@/shared/context/request-context";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -31,7 +30,6 @@ export class BreedUsecase {
         }
 
         const breed = new BreedEntity({
-            uid: randomUUID(),
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -80,10 +78,17 @@ export class BreedUsecase {
         return ResultMapper.map(ResultFactory.success(breed), BreedMapper.toResponseDTO);
     }
 
-    async find(filters?: FindBreedsDTO): Promise<Result<ResponseBreedDTO[]>> {
+    async find(filters?: FindBreedsDTO): Promise<Result<PaginationResult<ResponseBreedDTO>>> {
         const result = await this.breedRepository.find(this.context.user.platformUID, filters);
 
-        return ResultMapper.map(result, BreedMapper.toResponseDTOList);
+        if (isFailure(result)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch platforms."));
+        }
+
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: BreedMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async update(data: UpdateBreedDTO): Promise<Result<UpdateBreedResponseDTO>> {

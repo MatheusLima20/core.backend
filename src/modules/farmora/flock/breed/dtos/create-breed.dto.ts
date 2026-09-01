@@ -1,12 +1,12 @@
-import { BreedProps } from "../entities/breed.props";
+import { BreedEntity } from "../entities/breed.entity";
 
 export type CreateBreedDTO = Pick<
-    BreedProps,
+    BreedEntity,
     "name" | "scientificName" | "eggColor" | "breedPurpose" | "description"
 >;
 
 export type CreateBreedResponseDTO = Pick<
-    BreedProps,
+    BreedEntity,
     | "uid"
     | "platformUID"
     | "name"

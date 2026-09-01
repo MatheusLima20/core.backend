@@ -13,10 +13,14 @@ describe("FeedUsecase - find", () => {
     let user1!: AuthUser;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadInventoryItems();
+
         ({
             feedUsecases: [usecaseUser1, usecaseUser2],
             users: [user1],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
     });
 
     test("Should find all platform feeds", async () => {
@@ -32,13 +36,16 @@ describe("FeedUsecase - find", () => {
 
         const feeds = expectSuccess(await usecaseUser1.find());
 
-        expect(feeds.every((feed) => feed.platformUID === user1.platformUID)).toBe(true);
+        expect(feeds.data.every((feed) => feed.platformUID === user1.platformUID)).toBe(true);
+        expect(feeds.total).toBe(2);
+        expect(feeds.data).toHaveLength(2);
     });
 
     test("Should return empty list when platform has no feeds", async () => {
         const feeds = expectSuccess(await usecaseUser2.find());
 
-        expect(feeds).toEqual([]);
+        expect(feeds.total).toBe(0);
+        expect(feeds.data).toEqual([]);
     });
 
     test("Should filter feeds by name", async () => {
@@ -58,9 +65,9 @@ describe("FeedUsecase - find", () => {
             })
         );
 
-        expect(feeds).toHaveLength(1);
-
-        expect(feeds[0].name).toBe("Posture Feed");
+        expect(feeds.total).toBe(1);
+        expect(feeds.data).toHaveLength(1);
+        expect(feeds.data[0].name).toBe("Posture Feed");
     });
 
     test("Should return feeds with their items", async () => {
@@ -83,13 +90,14 @@ describe("FeedUsecase - find", () => {
 
         const feeds = expectSuccess(await usecaseUser1.find());
 
-        expect(feeds).toHaveLength(1);
+        expect(feeds.total).toBe(1);
+        expect(feeds.data).toHaveLength(1);
 
-        expect(feeds[0].uid).toBe(feed.uid);
+        expect(feeds.data[0].uid).toBe(feed.uid);
 
-        expect(feeds[0].items).toHaveLength(2);
+        expect(feeds.data[0].items).toHaveLength(2);
 
-        expect(feeds[0].items).toEqual([
+        expect(feeds.data[0].items).toEqual([
             {
                 uid: expect.any(String),
                 inventoryItemUID: "inventory-item-1",
@@ -125,7 +133,7 @@ describe("FeedUsecase - find", () => {
             })
         );
 
-        expect(feeds.map((feed) => feed.uid)).toEqual([soybean.uid, corn.uid]);
+        expect(feeds.data.map((feed) => feed.uid)).toEqual([soybean.uid, corn.uid]);
     });
 
     test("Should return first page", async () => {
@@ -149,9 +157,13 @@ describe("FeedUsecase - find", () => {
             })
         );
 
-        expect(feeds).toHaveLength(2);
+        expect(feeds.total).toBe(3);
+        expect(feeds.totalPages).toBe(2);
+        expect(feeds.page).toBe(1);
+        expect(feeds.limit).toBe(2);
 
-        expect(feeds.map((feed) => feed.uid)).toEqual([feedA.uid, feedB.uid]);
+        expect(feeds.data).toHaveLength(2);
+        expect(feeds.data.map((feed) => feed.uid)).toEqual([feedA.uid, feedB.uid]);
     });
 
     test("Should filter, order and paginate feeds", async () => {
@@ -185,6 +197,13 @@ describe("FeedUsecase - find", () => {
             })
         );
 
-        expect(feeds.map((feed) => feed.uid)).toEqual([feedA.uid, feedB.uid]);
+        expect(feeds.total).toBe(3);
+        expect(feeds.totalPages).toBe(2);
+        expect(feeds.page).toBe(1);
+        expect(feeds.limit).toBe(2);
+
+        expect(feeds.data).toHaveLength(2);
+
+        expect(feeds.data.map((feed) => feed.uid)).toEqual([feedA.uid, feedB.uid]);
     });
 });

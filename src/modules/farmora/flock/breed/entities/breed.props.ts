@@ -2,7 +2,7 @@ import { BreedPurpose } from "../enums/breed-origin.enum";
 import { EggColor } from "../enums/egg-color.enum";
 
 export interface BreedProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 

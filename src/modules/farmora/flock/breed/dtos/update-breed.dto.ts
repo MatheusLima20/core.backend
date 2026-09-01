@@ -1,12 +1,12 @@
-import { BreedProps } from "../entities/breed.props";
+import { BreedEntity } from "../entities/breed.entity";
 
-export type UpdateBreedDTO = Pick<BreedProps, "uid"> &
+export type UpdateBreedDTO = Pick<BreedEntity, "uid"> &
     Partial<
-        Pick<BreedProps, "name" | "scientificName" | "eggColor" | "breedPurpose" | "description">
+        Pick<BreedEntity, "name" | "scientificName" | "eggColor" | "breedPurpose" | "description">
     >;
 
 export type UpdateBreedResponseDTO = Pick<
-    BreedProps,
+    BreedEntity,
     | "uid"
     | "name"
     | "scientificName"

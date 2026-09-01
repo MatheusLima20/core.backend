@@ -1,14 +1,15 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindBreedsDTO } from "../../dtos/find-breed.dto";
-import { BreedProps } from "../../entities/breed.props";
+import { BreedEntity } from "../../entities/breed.entity";
 import { IBreedRepository } from "../breed-repository.interface";
 
 export class InMemoryBreedRepository implements IBreedRepository {
-    private breeds: BreedProps[] = [];
+    private breeds: BreedEntity[] = [];
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<BreedProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<BreedEntity | null>> {
         const breed =
             this.breeds.find((breed) => breed.platformUID === platformUID && breed.uid === uid) ??
             null;
@@ -16,7 +17,7 @@ export class InMemoryBreedRepository implements IBreedRepository {
         return ResultFactory.success(breed);
     }
 
-    async findByName(platformUID: string, name: string): Promise<Result<BreedProps | null>> {
+    async findByName(platformUID: string, name: string): Promise<Result<BreedEntity | null>> {
         const breed =
             this.breeds.find(
                 (breed) =>
@@ -27,7 +28,10 @@ export class InMemoryBreedRepository implements IBreedRepository {
         return ResultFactory.success(breed);
     }
 
-    async find(platformUID: string, filters?: FindBreedsDTO): Promise<Result<BreedProps[]>> {
+    async find(
+        platformUID: string,
+        filters?: FindBreedsDTO
+    ): Promise<Result<PaginationResult<BreedEntity>>> {
         let breeds = this.breeds.filter((breed) => breed.platformUID === platformUID);
 
         if (filters?.name) {
@@ -55,31 +59,44 @@ export class InMemoryBreedRepository implements IBreedRepository {
                 const valueA = a[filters.orderBy!] ?? "";
                 const valueB = b[filters.orderBy!] ?? "";
 
-                if (valueA < valueB) return filters.order === "desc" ? 1 : -1;
+                if (valueA < valueB) {
+                    return filters.order === "desc" ? 1 : -1;
+                }
 
-                if (valueA > valueB) return filters.order === "desc" ? -1 : 1;
+                if (valueA > valueB) {
+                    return filters.order === "desc" ? -1 : 1;
+                }
 
                 return 0;
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            const start = (filters.page - 1) * filters.limit;
-            const end = start + filters.limit;
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-            breeds = breeds.slice(start, end);
-        }
+        const total = breeds.length;
+        const totalPages = Math.ceil(total / limit);
 
-        return ResultFactory.success(breeds);
+        const start = (page - 1) * limit;
+
+        const data = breeds.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
-    async register(breed: BreedProps): Promise<Result<BreedProps>> {
+    async register(breed: BreedEntity): Promise<Result<BreedEntity>> {
         this.breeds.push(breed);
 
         return ResultFactory.success(breed);
     }
 
-    async update(breed: BreedProps): Promise<Result<BreedProps>> {
+    async update(breed: BreedEntity): Promise<Result<BreedEntity>> {
         const index = this.breeds.findIndex((b) => b.uid === breed.uid);
 
         this.breeds[index] = breed;

@@ -1,5 +1,6 @@
 import { FakeHashProvider } from "@/modules/auth/providers/implementations/fake-hash.provider";
 import { InMemoryFeedRepository } from "@/modules/farmora/feed/repositories/implementations/in-memory-feed.repository";
+import { InMemoryInventoryItemRepository } from "@/modules/farmora/inventory/repositories/implementations/in-memory-inventory-item.repository";
 import { MembershipRole } from "@/modules/membership/enums/membership-role.enum";
 import { InMemoryMembershipRepository } from "@/modules/membership/repositories/implementations/in-memory-membership.repository";
 import { PlatformCategory } from "@/modules/platform/enum/platform.category-enum";
@@ -23,6 +24,8 @@ describe("CreatePlatformOwnerUseCase", () => {
 
     let feedRepository: InMemoryFeedRepository;
 
+    let inventoryItemRepository: InMemoryInventoryItemRepository;
+
     beforeEach(() => {
         platformRepository = new InMemoryPlatformRepository();
 
@@ -32,11 +35,14 @@ describe("CreatePlatformOwnerUseCase", () => {
 
         feedRepository = new InMemoryFeedRepository();
 
+        inventoryItemRepository = new InMemoryInventoryItemRepository();
+
         transactionManager = new FakeTransactionManager({
             platformRepository,
             feedRepository,
             userRepository,
             membershipRepository,
+            inventoryItemRepository,
         });
 
         hashProvider = new FakeHashProvider();

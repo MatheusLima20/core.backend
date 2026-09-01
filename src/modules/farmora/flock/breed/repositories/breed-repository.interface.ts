@@ -1,18 +1,22 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindBreedsDTO } from "../dtos/find-breed.dto";
-import { BreedProps } from "../entities/breed.props";
+import { BreedEntity } from "../entities/breed.entity";
 
 export interface IBreedRepository {
-    findByUID(platformUID: string, uid: string): Promise<Result<BreedProps | null>>;
+    findByUID(platformUID: string, uid: string): Promise<Result<BreedEntity | null>>;
 
-    findByName(platformUID: string, name: string): Promise<Result<BreedProps | null>>;
+    findByName(platformUID: string, name: string): Promise<Result<BreedEntity | null>>;
 
-    find(platformUID: string, filters?: FindBreedsDTO): Promise<Result<BreedProps[]>>;
+    find(
+        platformUID: string,
+        filters?: FindBreedsDTO
+    ): Promise<Result<PaginationResult<BreedEntity>>>;
 
-    register(breed: BreedProps): Promise<Result<BreedProps>>;
+    register(breed: BreedEntity): Promise<Result<BreedEntity>>;
 
-    update(breed: BreedProps): Promise<Result<BreedProps>>;
+    update(breed: BreedEntity): Promise<Result<BreedEntity>>;
 
     delete(uid: string): Promise<Result<void>>;
 }
