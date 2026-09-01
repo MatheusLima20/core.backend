@@ -1,3 +1,4 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { PaginationUtil } from "@/shared/utils/pagination/pagination.util";
@@ -40,7 +41,14 @@ export class InMemoryFeedRepository implements IFeedRepository {
     async find(
         platformUID: string,
         filters?: FindFeedsDTO
-    ): Promise<Result<{ feed: FeedEntity; items: FeedItemEntity[] }[]>> {
+    ): Promise<
+        Result<
+            PaginationResult<{
+                feed: FeedEntity;
+                items: FeedItemEntity[];
+            }>
+        >
+    > {
         let feeds = this.feeds.filter((item) => StringUtil.equals(item.platformUID, platformUID));
 
         if (filters?.name) {
@@ -55,16 +63,27 @@ export class InMemoryFeedRepository implements IFeedRepository {
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            feeds = PaginationUtil.paginate(feeds, filters.page, filters.limit);
-        }
+        const total = feeds.length;
 
-        const result = feeds.map((feed) => ({
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
+
+        const totalPages = Math.ceil(total / limit);
+
+        const paginatedFeeds = PaginationUtil.paginate(feeds, page, limit);
+
+        const data = paginatedFeeds.map((feed) => ({
             feed,
             items: this.feedItems.filter((item) => StringUtil.equals(item.feedUID, feed.uid)),
         }));
 
-        return ResultFactory.success(result);
+        return ResultFactory.success({
+            data,
+            total,
+            page,
+            limit,
+            totalPages,
+        });
     }
 
     async register(

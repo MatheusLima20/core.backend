@@ -2,6 +2,7 @@ import { RequestContext } from "@/shared/context/request-context";
 import { ITransactionContext } from "@/shared/database/transaction/transaction-context.interface";
 import { ITransactionManager } from "@/shared/database/transaction/transaction-manager.interface";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -154,12 +155,13 @@ export class FeedUsecase {
                         items[index] = feedItem;
                     }
                 }
+            }
 
-                const compositionValidation = this.validateComposition(items);
+            // Valida sempre a composição final do Feed.
+            const compositionValidation = this.validateComposition(items);
 
-                if (isFailure(compositionValidation)) {
-                    return compositionValidation;
-                }
+            if (isFailure(compositionValidation)) {
+                return compositionValidation;
             }
 
             return transaction.feedRepository.update(feed, items);
@@ -188,16 +190,17 @@ export class FeedUsecase {
         return ResultFactory.success(FeedMapper.toResponseDTO(result.data.feed, result.data.items));
     }
 
-    async find(filters?: FindFeedsDTO): Promise<Result<ResponseFeedDTO[]>> {
+    async find(filters?: FindFeedsDTO): Promise<Result<PaginationResult<ResponseFeedDTO>>> {
         const result = await this.feedRepository.find(this.context.user.platformUID, filters);
 
         if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch feeds."));
         }
 
-        return ResultFactory.success(
-            result.data.map(({ feed, items }) => FeedMapper.toResponseDTO(feed, items))
-        );
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: FeedMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async delete(uid: string): Promise<Result<void>> {

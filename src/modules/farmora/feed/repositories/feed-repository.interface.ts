@@ -1,3 +1,4 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindFeedsDTO } from "../dtos/find-feeds.dto";
@@ -13,7 +14,14 @@ export interface IFeedRepository {
     find(
         platformUID: string,
         filters?: FindFeedsDTO
-    ): Promise<Result<{ feed: FeedEntity; items: FeedItemEntity[] }[]>>;
+    ): Promise<
+        Result<
+            PaginationResult<{
+                feed: FeedEntity;
+                items: FeedItemEntity[];
+            }>
+        >
+    >;
 
     register(
         feed: FeedEntity,

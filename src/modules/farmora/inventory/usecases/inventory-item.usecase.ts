@@ -95,7 +95,7 @@ export class InventoryItemUsecase {
 
     async find(
         filters?: FindInventoryItemsDTO
-    ): Promise<Result<PaginationResult<InventoryItemEntity>>> {
+    ): Promise<Result<PaginationResult<ResponseInventoryItemDTO>>> {
         const result = await this.inventoryItemRepository.find(
             this.context.user.platformUID,
             filters
@@ -105,7 +105,10 @@ export class InventoryItemUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch inventory items."));
         }
 
-        return ResultFactory.success(result.data);
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: InventoryItemMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async update(data: UpdateInventoryItemDTO): Promise<Result<UpdateInventoryItemResponseDTO>> {

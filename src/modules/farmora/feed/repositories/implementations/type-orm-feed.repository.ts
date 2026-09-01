@@ -1,5 +1,6 @@
 import { In, Repository } from "typeorm";
 
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
@@ -44,10 +45,22 @@ export class TypeORMFeedRepository implements IFeedRepository {
     async find(
         platformUID: string,
         filters?: FindFeedsDTO
-    ): Promise<Result<{ feed: FeedEntity; items: FeedItemEntity[] }[]>> {
+    ): Promise<
+        Result<
+            PaginationResult<{
+                feed: FeedEntity;
+                items: FeedItemEntity[];
+            }>
+        >
+    > {
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
+
         const query = this.feedRepository
             .createQueryBuilder("feed")
-            .where("feed.platformUID = :platformUID", { platformUID });
+            .where("feed.platformUID = :platformUID", {
+                platformUID,
+            });
 
         if (filters?.name) {
             query.andWhere("LOWER(feed.name) = LOWER(:name)", {
@@ -62,14 +75,13 @@ export class TypeORMFeedRepository implements IFeedRepository {
             );
         }
 
-        if (filters?.page && filters?.limit) {
-            query.skip((filters.page - 1) * filters.limit);
-            query.take(filters.limit);
-        }
+        const total = await query.getCount();
+
+        query.skip((page - 1) * limit).take(limit);
 
         const feeds = await query.getMany();
 
-        const result = await Promise.all(
+        const data = await Promise.all(
             feeds.map(async (feed) => {
                 const items = await this.feedItemRepository.find({
                     where: {
@@ -84,7 +96,13 @@ export class TypeORMFeedRepository implements IFeedRepository {
             })
         );
 
-        return ResultFactory.success(result);
+        return ResultFactory.success({
+            data,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        });
     }
 
     async register(
