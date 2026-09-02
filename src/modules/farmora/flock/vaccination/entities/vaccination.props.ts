@@ -1,5 +1,5 @@
 export interface VaccinationProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 

@@ -1,10 +1,10 @@
 import { CreateMortalityResponseDTO } from "../dtos/create-mortality.dto";
 import { ResponseMortalityDTO } from "../dtos/mortality-response-dto";
 import { UpdateMortalityResponseDTO } from "../dtos/update-mortality.dto";
-import { MortalityProps } from "../entities/mortality.props";
+import { MortalityEntity } from "../entities/mortality.entity";
 
 export const MortalityMapper = {
-    toResponseDTO: (mortality: MortalityProps): ResponseMortalityDTO => {
+    toResponseDTO: (mortality: MortalityEntity): ResponseMortalityDTO => {
         return {
             uid: mortality.uid,
             platformUID: mortality.platformUID,
@@ -20,11 +20,11 @@ export const MortalityMapper = {
         };
     },
 
-    toResponseDTOList: (mortalities: MortalityProps[]): ResponseMortalityDTO[] => {
+    toResponseDTOList: (mortalities: MortalityEntity[]): ResponseMortalityDTO[] => {
         return mortalities.map(MortalityMapper.toResponseDTO);
     },
 
-    toCreateResponseDTO: (mortality: MortalityProps): CreateMortalityResponseDTO => {
+    toCreateResponseDTO: (mortality: MortalityEntity): CreateMortalityResponseDTO => {
         return {
             uid: mortality.uid,
             platformUID: mortality.platformUID,
@@ -38,7 +38,7 @@ export const MortalityMapper = {
         };
     },
 
-    toUpdatedResponseDTO: (mortality: MortalityProps): UpdateMortalityResponseDTO => {
+    toUpdatedResponseDTO: (mortality: MortalityEntity): UpdateMortalityResponseDTO => {
         return {
             uid: mortality.uid,
             flockUID: mortality.flockUID,

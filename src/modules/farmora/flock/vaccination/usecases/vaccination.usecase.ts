@@ -1,11 +1,10 @@
-import { randomUUID } from "crypto";
-
 import { InventoryCategory } from "@/modules/farmora/inventory/enums/inventory-category.enum";
 import { InventoryItemNotFoundError } from "@/modules/farmora/inventory/errors/inventory-item-not-found.error";
 import { IInventoryItemRepository } from "@/modules/farmora/inventory/repositories/inventory-item-repository.interface";
 import { RequestContext } from "@/shared/context/request-context";
 import { FlockClosedError } from "@/shared/errors/flock-closed.error";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -46,8 +45,6 @@ export class VaccinationUsecase {
         }
 
         const vaccination = new VaccinationEntity({
-            uid: randomUUID(),
-
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -84,7 +81,9 @@ export class VaccinationUsecase {
         );
     }
 
-    async find(filters?: FindVaccinationsDTO): Promise<Result<ResponseVaccinationDTO[]>> {
+    async find(
+        filters?: FindVaccinationsDTO
+    ): Promise<Result<PaginationResult<ResponseVaccinationDTO>>> {
         const result = await this.vaccinationRepository.find(
             this.context.user.platformUID,
             filters
@@ -94,7 +93,10 @@ export class VaccinationUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch vaccinations."));
         }
 
-        return ResultMapper.map(result, VaccinationMapper.toResponseDTOList);
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: VaccinationMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async update(data: UpdateVaccinationDTO): Promise<Result<UpdateVaccinationResponseDTO>> {

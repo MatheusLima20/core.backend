@@ -1,4 +1,4 @@
-import { VaccinationProps } from "../entities/vaccination.props";
+import { VaccinationEntity } from "../entities/vaccination.entity";
 
 export interface FindVaccinationsDTO {
     flockUID?: string;
@@ -18,7 +18,7 @@ export interface FindVaccinationsDTO {
     limit?: number;
 
     orderBy?: keyof Pick<
-        VaccinationProps,
+        VaccinationEntity,
         "applicationDate" | "itemUID" | "batch" | "createdAt" | "updatedAt"
     >;
 

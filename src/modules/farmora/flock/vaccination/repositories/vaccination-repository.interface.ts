@@ -1,12 +1,16 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindVaccinationsDTO } from "../dtos/find-vaccination.dto";
-import { VaccinationProps } from "../entities/vaccination.props";
+import { VaccinationEntity } from "../entities/vaccination.entity";
 
 export interface IVaccinationRepository {
-    findByUID(platformUID: string, uid: string): Promise<Result<VaccinationProps | null>>;
+    findByUID(platformUID: string, uid: string): Promise<Result<VaccinationEntity | null>>;
 
-    find(platformUID: string, filters?: FindVaccinationsDTO): Promise<Result<VaccinationProps[]>>;
+    find(
+        platformUID: string,
+        filters?: FindVaccinationsDTO
+    ): Promise<Result<PaginationResult<VaccinationEntity>>>;
 
     exists(
         platformUID: string,
@@ -18,9 +22,9 @@ export interface IVaccinationRepository {
         }
     ): Promise<Result<boolean>>;
 
-    register(vaccination: VaccinationProps): Promise<Result<VaccinationProps>>;
+    register(vaccination: VaccinationEntity): Promise<Result<VaccinationEntity>>;
 
-    update(vaccination: VaccinationProps): Promise<Result<VaccinationProps>>;
+    update(vaccination: VaccinationEntity): Promise<Result<VaccinationEntity>>;
 
     delete(uid: string): Promise<Result<void>>;
 }

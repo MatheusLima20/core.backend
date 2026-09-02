@@ -59,9 +59,9 @@ describe("VaccinationUsecase - delete", () => {
 
         const after = expectSuccess(await usecaseUser1.find());
 
-        expect(before).toHaveLength(1);
+        expect(before.data).toHaveLength(1);
 
-        expect(after).toHaveLength(0);
+        expect(after.data).toHaveLength(0);
 
         const found = expectSuccess(await usecaseUser1.findByUID(vaccination.uid));
 
@@ -108,15 +108,15 @@ describe("VaccinationUsecase - delete", () => {
 
         const user2Vaccinations = expectSuccess(await usecaseUser2.find());
 
-        expect(user2Vaccinations).toHaveLength(0);
+        expect(user2Vaccinations.data).toHaveLength(0);
 
         expectFailure(await usecaseUser2.delete(vaccination.uid), VaccinationNotFoundError);
 
         const user1Vaccinations = expectSuccess(await usecaseUser1.find());
 
-        expect(user1Vaccinations).toHaveLength(1);
+        expect(user1Vaccinations.data).toHaveLength(1);
 
-        expect(user1Vaccinations[0].uid).toBe(vaccination.uid);
+        expect(user1Vaccinations.data[0].uid).toBe(vaccination.uid);
     });
 
     test("Should delete one vaccination keeping remaining vaccinations", async () => {
@@ -144,9 +144,9 @@ describe("VaccinationUsecase - delete", () => {
 
         const vaccinations = expectSuccess(await usecaseUser1.find());
 
-        expect(vaccinations).toHaveLength(2);
+        expect(vaccinations.data).toHaveLength(2);
 
-        expect(vaccinations.map((vaccination) => vaccination.uid)).toEqual(
+        expect(vaccinations.data.map((vaccination) => vaccination.uid)).toEqual(
             expect.arrayContaining([vaccinationA.uid, vaccinationC.uid])
         );
 

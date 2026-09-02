@@ -1,15 +1,15 @@
-import { VaccinationProps } from "../entities/vaccination.props";
+import { VaccinationEntity } from "../entities/vaccination.entity";
 
-export type UpdateVaccinationDTO = Pick<VaccinationProps, "uid"> &
+export type UpdateVaccinationDTO = Pick<VaccinationEntity, "uid"> &
     Partial<
         Pick<
-            VaccinationProps,
+            VaccinationEntity,
             "flockUID" | "itemUID" | "applicationDate" | "dose" | "batch" | "nextDoseDate" | "notes"
         >
     >;
 
 export type UpdateVaccinationResponseDTO = Pick<
-    VaccinationProps,
+    VaccinationEntity,
     | "uid"
     | "flockUID"
     | "itemUID"

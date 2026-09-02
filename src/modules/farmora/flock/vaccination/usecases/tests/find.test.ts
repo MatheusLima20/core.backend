@@ -62,14 +62,14 @@ describe("VaccinationUsecase - find", () => {
         const vaccinations = expectSuccess(await usecaseUser1.find());
 
         expect(
-            vaccinations.every((vaccination) => vaccination.platformUID === user1.platformUID)
+            vaccinations.data.every((vaccination) => vaccination.platformUID === user1.platformUID)
         ).toBe(true);
     });
 
     test("Should return empty list when platform has no vaccinations", async () => {
         const vaccinations = expectSuccess(await usecaseUser2.find());
 
-        expect(vaccinations).toEqual([]);
+        expect(vaccinations.data).toEqual([]);
     });
 
     test("Should filter vaccinations by item", async () => {
@@ -97,9 +97,9 @@ describe("VaccinationUsecase - find", () => {
             })
         );
 
-        expect(vaccinations).toHaveLength(1);
+        expect(vaccinations.data).toHaveLength(1);
 
-        expect(vaccinations[0].itemUID).toBe(item1.uid);
+        expect(vaccinations.data[0].itemUID).toBe(item1.uid);
     });
 
     test("Should filter vaccinations by flock", async () => {
@@ -125,9 +125,9 @@ describe("VaccinationUsecase - find", () => {
             })
         );
 
-        expect(vaccinations).toHaveLength(1);
+        expect(vaccinations.data).toHaveLength(1);
 
-        expect(vaccinations[0].flockUID).toBe(flock1.uid);
+        expect(vaccinations.data[0].flockUID).toBe(flock1.uid);
     });
 
     test("Should filter vaccinations by batch", async () => {
@@ -152,9 +152,9 @@ describe("VaccinationUsecase - find", () => {
             })
         );
 
-        expect(vaccinations).toHaveLength(1);
+        expect(vaccinations.data).toHaveLength(1);
 
-        expect(vaccinations[0].batch).toBe("A");
+        expect(vaccinations.data[0].batch).toBe("A");
     });
 
     test("Should order vaccinations by application date descending", async () => {
@@ -183,7 +183,10 @@ describe("VaccinationUsecase - find", () => {
             })
         );
 
-        expect(vaccinations.map((vaccination) => vaccination.uid)).toEqual([second.uid, first.uid]);
+        expect(vaccinations.data.map((vaccination) => vaccination.uid)).toEqual([
+            second.uid,
+            first.uid,
+        ]);
     });
 
     test("Should return first page", async () => {
@@ -220,9 +223,9 @@ describe("VaccinationUsecase - find", () => {
             })
         );
 
-        expect(vaccinations).toHaveLength(2);
+        expect(vaccinations.data).toHaveLength(2);
 
-        expect(vaccinations.map((vaccination) => vaccination.uid)).toEqual([
+        expect(vaccinations.data.map((vaccination) => vaccination.uid)).toEqual([
             vaccinationA.uid,
             vaccinationB.uid,
         ]);
@@ -269,7 +272,7 @@ describe("VaccinationUsecase - find", () => {
             })
         );
 
-        expect(vaccinations.map((vaccination) => vaccination.uid)).toEqual([
+        expect(vaccinations.data.map((vaccination) => vaccination.uid)).toEqual([
             vaccinationA.uid,
             vaccinationB.uid,
         ]);

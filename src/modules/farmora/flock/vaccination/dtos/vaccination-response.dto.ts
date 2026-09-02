@@ -1,7 +1,7 @@
-import { VaccinationProps } from "../entities/vaccination.props";
+import { VaccinationEntity } from "../entities/vaccination.entity";
 
 export type ResponseVaccinationDTO = Pick<
-    VaccinationProps,
+    VaccinationEntity,
     | "uid"
     | "platformUID"
     | "flockUID"

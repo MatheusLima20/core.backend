@@ -1,18 +1,18 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { DateUtil } from "@/shared/utils/date/date.util";
-import { PaginationUtil } from "@/shared/utils/pagination/pagination.util";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FindVaccinationsDTO } from "../../dtos/find-vaccination.dto";
-import { VaccinationProps } from "../../entities/vaccination.props";
+import { VaccinationEntity } from "../../entities/vaccination.entity";
 import { IVaccinationRepository } from "../vaccination-repository.interface";
 
 export class InMemoryVaccinationRepository implements IVaccinationRepository {
-    private vaccinations: VaccinationProps[] = [];
+    private vaccinations: VaccinationEntity[] = [];
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<VaccinationProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<VaccinationEntity | null>> {
         const vaccination =
             this.vaccinations.find(
                 (vaccination) =>
@@ -26,7 +26,7 @@ export class InMemoryVaccinationRepository implements IVaccinationRepository {
     async find(
         platformUID: string,
         filters?: FindVaccinationsDTO
-    ): Promise<Result<VaccinationProps[]>> {
+    ): Promise<Result<PaginationResult<VaccinationEntity>>> {
         let vaccinations = this.vaccinations.filter((vaccination) =>
             StringUtil.equals(vaccination.platformUID!, platformUID)
         );
@@ -81,11 +81,23 @@ export class InMemoryVaccinationRepository implements IVaccinationRepository {
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            vaccinations = PaginationUtil.paginate(vaccinations, filters.page, filters.limit);
-        }
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-        return ResultFactory.success(vaccinations);
+        const total = vaccinations.length;
+        const totalPages = Math.ceil(total / limit);
+
+        const start = (page - 1) * limit;
+
+        const data = vaccinations.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
     async exists(
@@ -109,13 +121,13 @@ export class InMemoryVaccinationRepository implements IVaccinationRepository {
         return ResultFactory.success(exists);
     }
 
-    async register(vaccination: VaccinationProps): Promise<Result<VaccinationProps>> {
+    async register(vaccination: VaccinationEntity): Promise<Result<VaccinationEntity>> {
         this.vaccinations.push(vaccination);
 
         return ResultFactory.success(vaccination);
     }
 
-    async update(vaccination: VaccinationProps): Promise<Result<VaccinationProps>> {
+    async update(vaccination: VaccinationEntity): Promise<Result<VaccinationEntity>> {
         const index = this.vaccinations.findIndex((item) =>
             StringUtil.equals(item.uid, vaccination.uid)
         );

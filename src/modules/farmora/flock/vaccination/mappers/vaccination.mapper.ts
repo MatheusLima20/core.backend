@@ -1,10 +1,10 @@
 import { CreateVaccinationResponseDTO } from "../dtos/create-vaccination.dto";
 import { UpdateVaccinationResponseDTO } from "../dtos/update-vaccination.dto";
 import { ResponseVaccinationDTO } from "../dtos/vaccination-response.dto";
-import { VaccinationProps } from "../entities/vaccination.props";
+import { VaccinationEntity } from "../entities/vaccination.entity";
 
 export const VaccinationMapper = {
-    toResponseDTO: (vaccination: VaccinationProps): ResponseVaccinationDTO => {
+    toResponseDTO: (vaccination: VaccinationEntity): ResponseVaccinationDTO => {
         return {
             uid: vaccination.uid,
             platformUID: vaccination.platformUID,
@@ -22,11 +22,11 @@ export const VaccinationMapper = {
         };
     },
 
-    toResponseDTOList: (vaccinations: VaccinationProps[]): ResponseVaccinationDTO[] => {
+    toResponseDTOList: (vaccinations: VaccinationEntity[]): ResponseVaccinationDTO[] => {
         return vaccinations.map(VaccinationMapper.toResponseDTO);
     },
 
-    toCreateResponseDTO: (vaccination: VaccinationProps): CreateVaccinationResponseDTO => {
+    toCreateResponseDTO: (vaccination: VaccinationEntity): CreateVaccinationResponseDTO => {
         return {
             uid: vaccination.uid,
             platformUID: vaccination.platformUID,
@@ -42,7 +42,7 @@ export const VaccinationMapper = {
         };
     },
 
-    toUpdatedResponseDTO: (vaccination: VaccinationProps): UpdateVaccinationResponseDTO => {
+    toUpdatedResponseDTO: (vaccination: VaccinationEntity): UpdateVaccinationResponseDTO => {
         return {
             uid: vaccination.uid,
             flockUID: vaccination.flockUID,
