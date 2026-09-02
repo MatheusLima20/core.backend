@@ -1,10 +1,10 @@
-import { MortalityProps } from "../entities/mortality.props";
+import { MortalityEntity } from "../entities/mortality.entity";
 
-export type UpdateMortalityDTO = Pick<MortalityProps, "uid"> &
-    Partial<Pick<MortalityProps, "flockUID" | "mortalityDate" | "quantity" | "cause" | "notes">>;
+export type UpdateMortalityDTO = Pick<MortalityEntity, "uid"> &
+    Partial<Pick<MortalityEntity, "flockUID" | "mortalityDate" | "quantity" | "cause" | "notes">>;
 
 export type UpdateMortalityResponseDTO = Pick<
-    MortalityProps,
+    MortalityEntity,
     | "uid"
     | "flockUID"
     | "mortalityDate"

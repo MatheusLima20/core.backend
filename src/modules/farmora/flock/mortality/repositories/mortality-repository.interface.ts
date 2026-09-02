@@ -1,16 +1,20 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindMortalitiesDTO } from "../dtos/find-mortality.dto";
-import { MortalityProps } from "../entities/mortality.props";
+import { MortalityEntity } from "../entities/mortality.entity";
 
 export interface IMortalityRepository {
-    findByUID(platformUID: string, uid: string): Promise<Result<MortalityProps | null>>;
+    findByUID(platformUID: string, uid: string): Promise<Result<MortalityEntity | null>>;
 
-    find(platformUID: string, filters?: FindMortalitiesDTO): Promise<Result<MortalityProps[]>>;
+    find(
+        platformUID: string,
+        filters?: FindMortalitiesDTO
+    ): Promise<Result<PaginationResult<MortalityEntity>>>;
 
-    register(mortality: MortalityProps): Promise<Result<MortalityProps>>;
+    register(mortality: MortalityEntity): Promise<Result<MortalityEntity>>;
 
-    update(mortality: MortalityProps): Promise<Result<MortalityProps>>;
+    update(mortality: MortalityEntity): Promise<Result<MortalityEntity>>;
 
     delete(uid: string): Promise<Result<void>>;
 }

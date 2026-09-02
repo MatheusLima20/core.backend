@@ -40,9 +40,9 @@ describe("MortalityUsecase - delete", () => {
 
         const after = expectSuccess(await usecaseUser1.find());
 
-        expect(before).toHaveLength(1);
+        expect(before.data).toHaveLength(1);
 
-        expect(after).toHaveLength(0);
+        expect(after.data).toHaveLength(0);
 
         const find = expectSuccess(await usecaseUser1.findByUID(mortality.uid));
 
@@ -100,15 +100,15 @@ describe("MortalityUsecase - delete", () => {
 
         const user2Mortalities = expectSuccess(await usecaseUser2.find());
 
-        expect(user2Mortalities).toHaveLength(0);
+        expect(user2Mortalities.data).toHaveLength(0);
 
         expectFailure(await usecaseUser2.delete(mortality.uid), MortalityNotFoundError);
 
         const user1Mortalities = expectSuccess(await usecaseUser1.find());
 
-        expect(user1Mortalities).toHaveLength(1);
+        expect(user1Mortalities.data).toHaveLength(1);
 
-        expect(user1Mortalities[0].uid).toBe(mortality.uid);
+        expect(user1Mortalities.data[0].uid).toBe(mortality.uid);
     });
 
     test("Should delete one mortality keeping remaining mortalities", async () => {
@@ -132,9 +132,9 @@ describe("MortalityUsecase - delete", () => {
 
         const mortalities = expectSuccess(await usecaseUser1.find());
 
-        expect(mortalities).toHaveLength(2);
+        expect(mortalities.data).toHaveLength(2);
 
-        expect(mortalities.map((mortality) => mortality.uid)).toEqual(
+        expect(mortalities.data.map((mortality) => mortality.uid)).toEqual(
             expect.arrayContaining([mortalityA.uid, mortalityC.uid])
         );
 

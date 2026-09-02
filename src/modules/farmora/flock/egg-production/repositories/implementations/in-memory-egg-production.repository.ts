@@ -2,7 +2,6 @@ import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { DateUtil } from "@/shared/utils/date/date.util";
-import { PaginationUtil } from "@/shared/utils/pagination/pagination.util";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
@@ -90,10 +89,6 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
                 orderBy: filters.orderBy,
                 order: filters.order,
             });
-        }
-
-        if (filters?.page && filters?.limit) {
-            eggProductions = PaginationUtil.paginate(eggProductions, filters.page, filters.limit);
         }
 
         const page = filters?.page ?? 1;

@@ -1,4 +1,4 @@
-import { MortalityProps } from "../entities/mortality.props";
+import { MortalityEntity } from "../entities/mortality.entity";
 import { MortalityCause } from "../enums/mortality-cause.enum";
 
 export interface FindMortalitiesDTO {
@@ -18,7 +18,7 @@ export interface FindMortalitiesDTO {
     limit?: number;
 
     orderBy?: keyof Pick<
-        MortalityProps,
+        MortalityEntity,
         "mortalityDate" | "quantity" | "cause" | "createdAt" | "updatedAt"
     >;
 

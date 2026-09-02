@@ -1,18 +1,18 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { DateUtil } from "@/shared/utils/date/date.util";
-import { PaginationUtil } from "@/shared/utils/pagination/pagination.util";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FindMortalitiesDTO } from "../../dtos/find-mortality.dto";
-import { MortalityProps } from "../../entities/mortality.props";
+import { MortalityEntity } from "../../entities/mortality.entity";
 import { IMortalityRepository } from "../mortality-repository.interface";
 
 export class InMemoryMortalityRepository implements IMortalityRepository {
-    private mortalities: MortalityProps[] = [];
+    private mortalities: MortalityEntity[] = [];
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<MortalityProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<MortalityEntity | null>> {
         const mortality =
             this.mortalities.find(
                 (mortality) =>
@@ -26,7 +26,7 @@ export class InMemoryMortalityRepository implements IMortalityRepository {
     async find(
         platformUID: string,
         filters?: FindMortalitiesDTO
-    ): Promise<Result<MortalityProps[]>> {
+    ): Promise<Result<PaginationResult<MortalityEntity>>> {
         let mortalities = this.mortalities.filter((mortality) =>
             StringUtil.equals(mortality.platformUID!, platformUID)
         );
@@ -79,20 +79,32 @@ export class InMemoryMortalityRepository implements IMortalityRepository {
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            mortalities = PaginationUtil.paginate(mortalities, filters.page, filters.limit);
-        }
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-        return ResultFactory.success(mortalities);
+        const total = mortalities.length;
+        const totalPages = Math.ceil(total / limit);
+
+        const start = (page - 1) * limit;
+
+        const data = mortalities.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
-    async register(mortality: MortalityProps): Promise<Result<MortalityProps>> {
+    async register(mortality: MortalityEntity): Promise<Result<MortalityEntity>> {
         this.mortalities.push(mortality);
 
         return ResultFactory.success(mortality);
     }
 
-    async update(mortality: MortalityProps): Promise<Result<MortalityProps>> {
+    async update(mortality: MortalityEntity): Promise<Result<MortalityEntity>> {
         const index = this.mortalities.findIndex((item) =>
             StringUtil.equals(item.uid, mortality.uid)
         );

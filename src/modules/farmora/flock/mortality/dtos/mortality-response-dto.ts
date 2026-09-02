@@ -1,7 +1,7 @@
-import { MortalityProps } from "../entities/mortality.props";
+import { MortalityEntity } from "../entities/mortality.entity";
 
 export type ResponseMortalityDTO = Pick<
-    MortalityProps,
+    MortalityEntity,
     | "uid"
     | "platformUID"
     | "flockUID"

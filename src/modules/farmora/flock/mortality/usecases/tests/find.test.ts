@@ -47,15 +47,15 @@ describe("MortalityUsecase - find", () => {
 
         const mortalities = expectSuccess(await usecaseUser1.find());
 
-        expect(mortalities.every((mortality) => mortality.platformUID === user1.platformUID)).toBe(
-            true
-        );
+        expect(
+            mortalities.data.every((mortality) => mortality.platformUID === user1.platformUID)
+        ).toBe(true);
     });
 
     test("Should return empty list when platform has no mortalities", async () => {
         const mortalities = expectSuccess(await usecaseUser2.find());
 
-        expect(mortalities).toEqual([]);
+        expect(mortalities.data).toEqual([]);
     });
 
     test("Should filter mortalities by flock", async () => {
@@ -85,9 +85,9 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities).toHaveLength(1);
+        expect(mortalities.data).toHaveLength(1);
 
-        expect(mortalities[0].flockUID).toBe(flockA.uid);
+        expect(mortalities.data[0].flockUID).toBe(flockA.uid);
     });
 
     test("Should filter mortalities by date", async () => {
@@ -115,7 +115,7 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities).toHaveLength(1);
+        expect(mortalities.data).toHaveLength(1);
     });
 
     test("Should filter mortalities by cause", async () => {
@@ -140,9 +140,9 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities).toHaveLength(1);
+        expect(mortalities.data).toHaveLength(1);
 
-        expect(mortalities[0].cause).toBe(MortalityCause.DISEASE);
+        expect(mortalities.data[0].cause).toBe(MortalityCause.DISEASE);
     });
 
     test("Should filter mortalities by minimum quantity", async () => {
@@ -167,9 +167,9 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities).toHaveLength(1);
+        expect(mortalities.data).toHaveLength(1);
 
-        expect(mortalities[0].quantity).toBe(8);
+        expect(mortalities.data[0].quantity).toBe(8);
     });
 
     test("Should order mortalities by date descending", async () => {
@@ -198,7 +198,7 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities.map((m) => m.uid)).toEqual([newest.uid, oldest.uid]);
+        expect(mortalities.data.map((m) => m.uid)).toEqual([newest.uid, oldest.uid]);
     });
 
     test("Should return first page", async () => {
@@ -226,9 +226,9 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities).toHaveLength(2);
+        expect(mortalities.data).toHaveLength(2);
 
-        expect(mortalities.map((m) => m.uid)).toEqual([mortalityA.uid, mortalityB.uid]);
+        expect(mortalities.data.map((m) => m.uid)).toEqual([mortalityA.uid, mortalityB.uid]);
     });
 
     test("Should filter, order and paginate mortalities", async () => {
@@ -262,7 +262,7 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities.map((m) => m.uid)).toEqual([mortalityA.uid, mortalityB.uid]);
+        expect(mortalities.data.map((m) => m.uid)).toEqual([mortalityA.uid, mortalityB.uid]);
     });
 
     test("Should filter mortalities by date range", async () => {
@@ -291,9 +291,9 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities).toHaveLength(1);
+        expect(mortalities.data).toHaveLength(1);
 
-        expect(mortalities[0].mortalityDate).toEqual(new Date("2026-07-15"));
+        expect(mortalities.data[0].mortalityDate).toEqual(new Date("2026-07-15"));
     });
 
     test("Should filter mortalities by maximum quantity", async () => {
@@ -323,8 +323,8 @@ describe("MortalityUsecase - find", () => {
             })
         );
 
-        expect(mortalities).toHaveLength(2);
+        expect(mortalities.data).toHaveLength(2);
 
-        expect(mortalities.every((mortality) => mortality.quantity <= 5)).toBe(true);
+        expect(mortalities.data.every((mortality) => mortality.quantity <= 5)).toBe(true);
     });
 });

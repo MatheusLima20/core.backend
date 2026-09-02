@@ -1,7 +1,7 @@
 import { MortalityCause } from "../enums/mortality-cause.enum";
 
 export interface MortalityProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 
