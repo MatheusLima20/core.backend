@@ -1,4 +1,4 @@
-import { EggProductionProps } from "../entities/egg-production.props";
+import { EggProductionEntity } from "../entities/egg-production.entity";
 
 export interface FindEggProductionsDTO {
     flockUID?: string;
@@ -15,7 +15,7 @@ export interface FindEggProductionsDTO {
     limit?: number;
 
     orderBy?: keyof Pick<
-        EggProductionProps,
+        EggProductionEntity,
         | "productionDate"
         | "totalEggs"
         | "crackedEggs"

@@ -1,7 +1,7 @@
 import { FlockStatus } from "../enums/flock-status.enum";
 
 export interface FlockProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 

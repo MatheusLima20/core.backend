@@ -1,8 +1,7 @@
-import { randomUUID } from "crypto";
-
 import { RequestContext } from "@/shared/context/request-context";
 import { FlockClosedError } from "@/shared/errors/flock-closed.error";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -62,7 +61,6 @@ export class EggProductionUsecase {
         }
 
         const eggProduction = new EggProductionEntity({
-            uid: randomUUID(),
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -125,7 +123,9 @@ export class EggProductionUsecase {
         return ResultMapper.map(ResultFactory.success(egg), EggProductionMapper.toResponseDTO);
     }
 
-    async find(filters?: FindEggProductionsDTO): Promise<Result<ResponseEggProductionDTO[]>> {
+    async find(
+        filters?: FindEggProductionsDTO
+    ): Promise<Result<PaginationResult<ResponseEggProductionDTO>>> {
         const result = await this.eggProductionRepository.find(
             this.context.user.platformUID,
             filters
@@ -135,7 +135,10 @@ export class EggProductionUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch egg productions."));
         }
 
-        return ResultMapper.map(result, EggProductionMapper.toResponseDTOList);
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: EggProductionMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async update(data: UpdateEggProductionDTO): Promise<Result<UpdateEggProductionResponseDTO>> {

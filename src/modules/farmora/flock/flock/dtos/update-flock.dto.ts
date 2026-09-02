@@ -1,13 +1,12 @@
-import { FlockProps } from "../entities/flock.props";
-
+import { FlockEntity } from "../entities/flock.entity";
 export interface UpdateFlockDTO extends Partial<
-    Pick<FlockProps, "name" | "quantity" | "birthDate" | "arrivalDate" | "status" | "description">
+    Pick<FlockEntity, "name" | "quantity" | "birthDate" | "arrivalDate" | "status" | "description">
 > {
     uid: string;
 }
 
 export type UpdateFlockResponseDTO = Pick<
-    FlockProps,
+    FlockEntity,
     | "uid"
     | "name"
     | "quantity"

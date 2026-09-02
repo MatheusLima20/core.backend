@@ -29,9 +29,9 @@ describe("FlockUsecase - delete", () => {
 
         const after = expectSuccess(await usecaseUser1.find());
 
-        expect(before).toHaveLength(1);
+        expect(before.data).toHaveLength(1);
 
-        expect(after).toHaveLength(0);
+        expect(after.data).toHaveLength(0);
 
         const find = expectSuccess(await usecaseUser1.findByUID(flock.uid));
 
@@ -69,14 +69,14 @@ describe("FlockUsecase - delete", () => {
 
         const user2Flocks = expectSuccess(await usecaseUser2.find());
 
-        expect(user2Flocks).toHaveLength(0);
+        expect(user2Flocks.data).toHaveLength(0);
 
         expectFailure(await usecaseUser2.delete(flock.uid), FlockNotFoundError);
 
         const user1Flocks = expectSuccess(await usecaseUser1.find());
 
-        expect(user1Flocks).toHaveLength(1);
-        expect(user1Flocks[0].uid).toBe(flock.uid);
+        expect(user1Flocks.data).toHaveLength(1);
+        expect(user1Flocks.data[0].uid).toBe(flock.uid);
     });
 
     test("Should delete one flock keeping remaining flocks", async () => {
@@ -93,9 +93,9 @@ describe("FlockUsecase - delete", () => {
 
         const flocks = expectSuccess(await usecaseUser1.find());
 
-        expect(flocks).toHaveLength(2);
+        expect(flocks.data).toHaveLength(2);
 
-        expect(flocks.map((flock) => flock.uid)).toEqual(
+        expect(flocks.data.map((flock) => flock.uid)).toEqual(
             expect.arrayContaining([flockA.uid, flockC.uid])
         );
 

@@ -1,7 +1,7 @@
-import { EggProductionProps } from "../entities/egg-production.props";
+import { EggProductionEntity } from "../entities/egg-production.entity";
 
 export type CreateEggProductionDTO = Pick<
-    EggProductionProps,
+    EggProductionEntity,
     | "flockUID"
     | "productionDate"
     | "totalEggs"
@@ -10,10 +10,10 @@ export type CreateEggProductionDTO = Pick<
     | "discardedEggs"
     | "notes"
 > &
-    Partial<Pick<EggProductionProps, "createdAt">>;
+    Partial<Pick<EggProductionEntity, "createdAt">>;
 
 export type CreateEggProductionResponseDTO = Pick<
-    EggProductionProps,
+    EggProductionEntity,
     | "uid"
     | "platformUID"
     | "flockUID"

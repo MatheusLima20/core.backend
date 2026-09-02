@@ -1,13 +1,13 @@
-import { FlockProps } from "../entities/flock.props";
+import { FlockEntity } from "../entities/flock.entity";
 
 export type CreateFlockDTO = Pick<
-    FlockProps,
+    FlockEntity,
     "name" | "quantity" | "birthDate" | "arrivalDate" | "status" | "description"
 > &
-    Partial<Pick<FlockProps, "createdAt">>;
+    Partial<Pick<FlockEntity, "createdAt">>;
 
 export type CreateFlockResponseDTO = Pick<
-    FlockProps,
+    FlockEntity,
     | "uid"
     | "platformUID"
     | "name"

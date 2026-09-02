@@ -1,10 +1,10 @@
 import { CreateFlockResponseDTO } from "../dtos/create-flock.dto";
 import { ResponseFlockDTO } from "../dtos/flock-response.dto";
 import { UpdateFlockResponseDTO } from "../dtos/update-flock.dto";
-import { FlockProps } from "../entities/flock.props";
+import { FlockEntity } from "../entities/flock.entity";
 
 export const FlockMapper = {
-    toResponseDTO: (flock: FlockProps): ResponseFlockDTO => {
+    toResponseDTO: (flock: FlockEntity): ResponseFlockDTO => {
         return {
             uid: flock.uid,
             platformUID: flock.platformUID,
@@ -21,11 +21,11 @@ export const FlockMapper = {
         };
     },
 
-    toResponseDTOList: (flocks: FlockProps[]): ResponseFlockDTO[] => {
+    toResponseDTOList: (flocks: FlockEntity[]): ResponseFlockDTO[] => {
         return flocks.map(FlockMapper.toResponseDTO);
     },
 
-    toCreateResponseDTO: (flock: FlockProps): CreateFlockResponseDTO => {
+    toCreateResponseDTO: (flock: FlockEntity): CreateFlockResponseDTO => {
         return {
             uid: flock.uid,
             name: flock.name,
@@ -40,7 +40,7 @@ export const FlockMapper = {
         };
     },
 
-    toUpdatedResponseDTO: (flock: FlockProps): UpdateFlockResponseDTO => {
+    toUpdatedResponseDTO: (flock: FlockEntity): UpdateFlockResponseDTO => {
         return {
             uid: flock.uid,
             name: flock.name,

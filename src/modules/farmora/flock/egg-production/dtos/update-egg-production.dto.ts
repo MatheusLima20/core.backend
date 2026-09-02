@@ -1,9 +1,9 @@
-import { EggProductionProps } from "../entities/egg-production.props";
+import { EggProductionEntity } from "../entities/egg-production.entity";
 
-export type UpdateEggProductionDTO = Pick<EggProductionProps, "uid"> &
+export type UpdateEggProductionDTO = Pick<EggProductionEntity, "uid"> &
     Partial<
         Pick<
-            EggProductionProps,
+            EggProductionEntity,
             | "flockUID"
             | "productionDate"
             | "totalEggs"
@@ -15,7 +15,7 @@ export type UpdateEggProductionDTO = Pick<EggProductionProps, "uid"> &
     >;
 
 export type UpdateEggProductionResponseDTO = Pick<
-    EggProductionProps,
+    EggProductionEntity,
     | "uid"
     | "flockUID"
     | "productionDate"

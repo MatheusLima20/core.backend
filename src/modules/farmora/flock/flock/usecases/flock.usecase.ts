@@ -1,7 +1,6 @@
-import { randomUUID } from "crypto";
-
 import { RequestContext } from "@/shared/context/request-context";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -33,7 +32,6 @@ export class FlockUsecase {
         }
 
         const flock = new FlockEntity({
-            uid: randomUUID(),
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -76,14 +74,17 @@ export class FlockUsecase {
         return ResultMapper.map(result, FlockMapper.toResponseDTOList);
     }
 
-    async find(filters?: FindFlocksDTO): Promise<Result<ResponseFlockDTO[]>> {
+    async find(filters?: FindFlocksDTO): Promise<Result<PaginationResult<ResponseFlockDTO>>> {
         const result = await this.flockRepository.find(this.context.user.platformUID, filters);
 
         if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch flocks."));
         }
 
-        return ResultMapper.map(result, FlockMapper.toResponseDTOList);
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: FlockMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async update(data: UpdateFlockDTO): Promise<Result<UpdateFlockResponseDTO>> {

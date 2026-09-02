@@ -1,25 +1,26 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindEggProductionsDTO } from "../dtos/find-egg-production.dto";
-import { EggProductionProps } from "../entities/egg-production.props";
+import { EggProductionEntity } from "../entities/egg-production.entity";
 
 export interface IEggProductionRepository {
-    findByUID(platformUID: string, uid: string): Promise<Result<EggProductionProps | null>>;
+    findByUID(platformUID: string, uid: string): Promise<Result<EggProductionEntity | null>>;
 
     findByFlockAndDate(
         platformUID: string,
         flockUID: string,
         productionDate: Date
-    ): Promise<Result<EggProductionProps | null>>;
+    ): Promise<Result<EggProductionEntity | null>>;
 
     find(
         platformUID: string,
         filters?: FindEggProductionsDTO
-    ): Promise<Result<EggProductionProps[]>>;
+    ): Promise<Result<PaginationResult<EggProductionEntity>>>;
 
-    register(eggProduction: EggProductionProps): Promise<Result<EggProductionProps>>;
+    register(eggProduction: EggProductionEntity): Promise<Result<EggProductionEntity>>;
 
-    update(eggProduction: EggProductionProps): Promise<Result<EggProductionProps>>;
+    update(eggProduction: EggProductionEntity): Promise<Result<EggProductionEntity>>;
 
     delete(uid: string): Promise<Result<void>>;
 }

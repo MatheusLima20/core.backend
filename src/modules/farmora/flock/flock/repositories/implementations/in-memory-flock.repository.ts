@@ -1,17 +1,17 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
-import { PaginationUtil } from "@/shared/utils/pagination/pagination.util";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FindFlocksDTO } from "../../dtos/find-flock.dto";
-import { FlockProps } from "../../entities/flock.props";
+import { FlockEntity } from "../../entities/flock.entity";
 import { IFlockRepository } from "../flock-repository.interface";
 
 export class InMemoryFlockRepository implements IFlockRepository {
-    private flocks: FlockProps[] = [];
+    private flocks: FlockEntity[] = [];
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<FlockProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<FlockEntity | null>> {
         const flock =
             this.flocks.find(
                 (flock) =>
@@ -22,7 +22,7 @@ export class InMemoryFlockRepository implements IFlockRepository {
         return ResultFactory.success(flock);
     }
 
-    async findByName(platformUID: string, name: string): Promise<Result<FlockProps[]>> {
+    async findByName(platformUID: string, name: string): Promise<Result<FlockEntity[]>> {
         const flocks = this.flocks.filter(
             (flock) => flock.platformUID === platformUID && StringUtil.equals(flock.name, name)
         );
@@ -30,7 +30,10 @@ export class InMemoryFlockRepository implements IFlockRepository {
         return ResultFactory.success(flocks);
     }
 
-    async find(platformUID: string, filters?: FindFlocksDTO): Promise<Result<FlockProps[]>> {
+    async find(
+        platformUID: string,
+        filters?: FindFlocksDTO
+    ): Promise<Result<PaginationResult<FlockEntity>>> {
         let flocks = this.flocks.filter((flock) =>
             StringUtil.equals(flock.platformUID!, platformUID)
         );
@@ -59,20 +62,32 @@ export class InMemoryFlockRepository implements IFlockRepository {
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            flocks = PaginationUtil.paginate(flocks, filters.page, filters.limit);
-        }
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-        return ResultFactory.success(flocks);
+        const total = flocks.length;
+        const totalPages = Math.ceil(total / limit);
+
+        const start = (page - 1) * limit;
+
+        const data = flocks.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
-    async register(flock: FlockProps): Promise<Result<FlockProps>> {
+    async register(flock: FlockEntity): Promise<Result<FlockEntity>> {
         this.flocks.push(flock);
 
         return ResultFactory.success(flock);
     }
 
-    async update(flock: FlockProps): Promise<Result<FlockProps>> {
+    async update(flock: FlockEntity): Promise<Result<FlockEntity>> {
         const index = this.flocks.findIndex((f) => StringUtil.equals(f.uid, flock.uid));
 
         this.flocks[index] = flock;

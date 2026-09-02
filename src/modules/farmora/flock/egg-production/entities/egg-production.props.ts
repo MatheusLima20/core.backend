@@ -1,5 +1,5 @@
 export interface EggProductionProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 

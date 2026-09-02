@@ -1,4 +1,4 @@
-import { FlockProps } from "../entities/flock.props";
+import { FlockEntity } from "../entities/flock.entity";
 import { FlockStatus } from "../enums/flock-status.enum";
 
 export interface FindFlocksDTO {
@@ -12,7 +12,7 @@ export interface FindFlocksDTO {
     page?: number;
     limit?: number;
 
-    orderBy?: keyof Pick<FlockProps, "name" | "quantity" | "status" | "createdAt" | "updatedAt">;
+    orderBy?: keyof Pick<FlockEntity, "name" | "quantity" | "status" | "createdAt" | "updatedAt">;
 
     order?: "asc" | "desc";
 }

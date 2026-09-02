@@ -1,7 +1,7 @@
-import { FlockProps } from "../entities/flock.props";
+import { FlockEntity } from "../entities/flock.entity";
 
 export type ResponseFlockDTO = Pick<
-    FlockProps,
+    FlockEntity,
     | "uid"
     | "platformUID"
     | "name"

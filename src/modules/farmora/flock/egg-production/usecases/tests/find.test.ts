@@ -47,14 +47,14 @@ describe("EggProductionUsecase - find", () => {
         const productions = expectSuccess(await usecaseUser1.find());
 
         expect(
-            productions.every((production) => production.platformUID === user1.platformUID)
+            productions.data.every((production) => production.platformUID === user1.platformUID)
         ).toBe(true);
     });
 
     test("Should return empty list when platform has no productions", async () => {
         const productions = expectSuccess(await usecaseUser2.find());
 
-        expect(productions).toEqual([]);
+        expect(productions.data).toEqual([]);
     });
 
     test("Should filter productions by flock", async () => {
@@ -84,9 +84,9 @@ describe("EggProductionUsecase - find", () => {
             })
         );
 
-        expect(productions).toHaveLength(1);
+        expect(productions.data).toHaveLength(1);
 
-        expect(productions[0].flockUID).toBe(flockA.uid);
+        expect(productions.data[0].flockUID).toBe(flockA.uid);
     });
 
     test("Should filter productions by production date", async () => {
@@ -114,7 +114,7 @@ describe("EggProductionUsecase - find", () => {
             })
         );
 
-        expect(productions).toHaveLength(1);
+        expect(productions.data).toHaveLength(1);
     });
 
     test("Should filter productions by minimum eggs", async () => {
@@ -139,9 +139,9 @@ describe("EggProductionUsecase - find", () => {
             })
         );
 
-        expect(productions).toHaveLength(1);
+        expect(productions.data).toHaveLength(1);
 
-        expect(productions[0].totalEggs).toBe(120);
+        expect(productions.data[0].totalEggs).toBe(120);
     });
 
     test("Should order productions by date descending", async () => {
@@ -170,7 +170,10 @@ describe("EggProductionUsecase - find", () => {
             })
         );
 
-        expect(productions.map((production) => production.uid)).toEqual([newest.uid, oldest.uid]);
+        expect(productions.data.map((production) => production.uid)).toEqual([
+            newest.uid,
+            oldest.uid,
+        ]);
     });
 
     test("Should return first page", async () => {
@@ -198,9 +201,9 @@ describe("EggProductionUsecase - find", () => {
             })
         );
 
-        expect(productions).toHaveLength(2);
+        expect(productions.data).toHaveLength(2);
 
-        expect(productions.map((production) => production.uid)).toEqual([
+        expect(productions.data.map((production) => production.uid)).toEqual([
             productionA.uid,
             productionB.uid,
         ]);
@@ -237,7 +240,7 @@ describe("EggProductionUsecase - find", () => {
             })
         );
 
-        expect(productions.map((production) => production.uid)).toEqual([
+        expect(productions.data.map((production) => production.uid)).toEqual([
             productionA.uid,
             productionB.uid,
         ]);

@@ -33,13 +33,13 @@ describe("FlockUsecase - find", () => {
 
         const flocks = expectSuccess(await usecaseUser1.find());
 
-        expect(flocks.every((flock) => flock.platformUID === user1.platformUID)).toBe(true);
+        expect(flocks.data.every((flock) => flock.platformUID === user1.platformUID)).toBe(true);
     });
 
     test("Should return empty list when platform has no flocks", async () => {
         const flocks = expectSuccess(await usecaseUser2.find());
 
-        expect(flocks).toEqual([]);
+        expect(flocks.data).toEqual([]);
     });
 
     test("Should filter flocks by name", async () => {
@@ -51,9 +51,9 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks).toHaveLength(1);
+        expect(flocks.data).toHaveLength(1);
 
-        expect(flocks[0].name).toBe(activeFlock.name);
+        expect(flocks.data[0].name).toBe(activeFlock.name);
     });
 
     test("Should filter flocks by status", async () => {
@@ -65,9 +65,9 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks).toHaveLength(1);
+        expect(flocks.data).toHaveLength(1);
 
-        expect(flocks[0].status).toBe(FlockStatus.CLOSED);
+        expect(flocks.data[0].status).toBe(FlockStatus.CLOSED);
     });
 
     test("Should filter flocks by minimum quantity", async () => {
@@ -79,9 +79,9 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks).toHaveLength(1);
+        expect(flocks.data).toHaveLength(1);
 
-        expect(flocks[0].quantity).toBe(largeFlock.quantity);
+        expect(flocks.data[0].quantity).toBe(largeFlock.quantity);
     });
 
     test("Should filter flocks by maximum quantity", async () => {
@@ -93,9 +93,9 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks).toHaveLength(1);
+        expect(flocks.data).toHaveLength(1);
 
-        expect(flocks[0].quantity).toBe(smallFlock.quantity);
+        expect(flocks.data[0].quantity).toBe(smallFlock.quantity);
     });
 
     test("Should filter flocks by quantity range", async () => {
@@ -108,9 +108,9 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks).toHaveLength(1);
+        expect(flocks.data).toHaveLength(1);
 
-        expect(flocks[0].quantity).toBe(mediumFlock.quantity);
+        expect(flocks.data[0].quantity).toBe(mediumFlock.quantity);
     });
 
     test("Should return empty when filters match nothing", async () => {
@@ -122,7 +122,7 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks).toEqual([]);
+        expect(flocks.data).toEqual([]);
     });
 
     test("Should order flocks by name ascending", async () => {
@@ -143,7 +143,7 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks.map((flock) => flock.uid)).toEqual([flockA.uid, flockB.uid]);
+        expect(flocks.data.map((flock) => flock.uid)).toEqual([flockA.uid, flockB.uid]);
     });
 
     test("Should order flocks by quantity descending", async () => {
@@ -158,7 +158,7 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks.map((flock) => flock.uid)).toEqual([large.uid, small.uid]);
+        expect(flocks.data.map((flock) => flock.uid)).toEqual([large.uid, small.uid]);
     });
 
     test("Should desc order flocks by createdAt", async () => {
@@ -176,7 +176,7 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks[0].uid).toBe(newest.uid);
+        expect(flocks.data[0].uid).toBe(newest.uid);
     });
 
     test("Should return first page", async () => {
@@ -195,13 +195,13 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks).toHaveLength(2);
+        expect(flocks.data).toHaveLength(2);
 
-        expect(flocks.map((flock) => flock.uid)).toEqual([flockA.uid, flockB.uid]);
+        expect(flocks.data.map((flock) => flock.uid)).toEqual([flockA.uid, flockB.uid]);
     });
 
     test("Should return second page", async () => {
-        const [, , flockC, flockD] = await setupFlocks(
+        const [_flockA, _flockB, flockC, flockD] = await setupFlocks(
             usecaseUser1,
             activeFlock,
             closedFlock,
@@ -216,7 +216,9 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks.map((flock) => flock.uid)).toEqual([flockC.uid, flockD.uid]);
+        expect(flocks.data).toHaveLength(2);
+
+        expect(flocks.data.map((flock) => flock.uid)).toEqual([flockC.uid, flockD.uid]);
     });
 
     test("Should filter, order and paginate flocks", async () => {
@@ -247,6 +249,6 @@ describe("FlockUsecase - find", () => {
             })
         );
 
-        expect(flocks.map((flock) => flock.uid)).toEqual([flockA.uid, flockB.uid]);
+        expect(flocks.data.map((flock) => flock.uid)).toEqual([flockA.uid, flockB.uid]);
     });
 });
