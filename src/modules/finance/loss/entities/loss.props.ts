@@ -1,7 +1,7 @@
 import { LossReason } from "../enums/loss-reason.enum";
 
 export interface LossProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 

@@ -1,5 +1,5 @@
-import { TransactionProps } from "../entities/transaction.props";
 import { TransactionType } from "../../transaction-category/enums/transaction.type";
+import { TransactionEntity } from "../entities/transaction.entity";
 
 export interface FindTransactionsDTO {
     description?: string;
@@ -21,7 +21,7 @@ export interface FindTransactionsDTO {
     limit?: number;
 
     orderBy?: keyof Pick<
-        TransactionProps,
+        TransactionEntity,
         "description" | "amount" | "occurredAt" | "createdAt" | "updatedAt"
     >;
 

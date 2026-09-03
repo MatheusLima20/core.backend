@@ -1,8 +1,8 @@
-import { TransactionSourceType } from "../enums/transaction-source.type";
 import { TransactionType } from "../../transaction-category/enums/transaction.type";
+import { TransactionSourceType } from "../enums/transaction-source.type";
 
 export interface TransactionProps {
-    uid: string;
+    uid?: string;
 
     platformUID: string;
 

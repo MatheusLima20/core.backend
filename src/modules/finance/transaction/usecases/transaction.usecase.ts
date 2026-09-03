@@ -1,7 +1,6 @@
-import { randomUUID } from "crypto";
-
 import { RequestContext } from "@/shared/context/request-context";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { ResultMapper } from "@/shared/result/result.mapper";
@@ -23,7 +22,6 @@ export class TransactionUsecase {
 
     async create(data: CreateTransactionDTO): Promise<Result<CreateTransactionResponseDTO>> {
         const transaction = new TransactionEntity({
-            uid: randomUUID(),
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -55,7 +53,9 @@ export class TransactionUsecase {
         return ResultMapper.map(transaction, TransactionMapper.toResponseDTO);
     }
 
-    async find(filters?: FindTransactionsDTO): Promise<Result<ResponseTransactionDTO[]>> {
+    async find(
+        filters?: FindTransactionsDTO
+    ): Promise<Result<PaginationResult<ResponseTransactionDTO>>> {
         const result = await this.transactionRepository.find(
             this.context.user.platformUID,
             filters
@@ -65,7 +65,10 @@ export class TransactionUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch transactions."));
         }
 
-        return ResultMapper.map(result, TransactionMapper.toResponseDTOList);
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: TransactionMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async update(data: UpdateTransactionDTO): Promise<Result<UpdateTransactionResponseDTO>> {

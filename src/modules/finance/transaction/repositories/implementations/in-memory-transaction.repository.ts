@@ -1,14 +1,15 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindTransactionsDTO } from "../../dtos/find-transaction.dto";
-import { TransactionProps } from "../../entities/transaction.props";
+import { TransactionEntity } from "../../entities/transaction.entity";
 import { ITransactionRepository } from "../transaction-repository.interface";
 
 export class InMemoryTransactionRepository implements ITransactionRepository {
-    private transactions: TransactionProps[] = [];
+    private transactions: TransactionEntity[] = [];
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<TransactionProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<TransactionEntity | null>> {
         const transaction =
             this.transactions.find(
                 (transaction) => transaction.platformUID === platformUID && transaction.uid === uid
@@ -20,7 +21,7 @@ export class InMemoryTransactionRepository implements ITransactionRepository {
     async find(
         platformUID: string,
         filters?: FindTransactionsDTO
-    ): Promise<Result<TransactionProps[]>> {
+    ): Promise<Result<PaginationResult<TransactionEntity>>> {
         let transactions = this.transactions.filter(
             (transaction) => transaction.platformUID === platformUID
         );
@@ -90,23 +91,32 @@ export class InMemoryTransactionRepository implements ITransactionRepository {
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            const start = (filters.page - 1) * filters.limit;
-            const end = start + filters.limit;
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-            transactions = transactions.slice(start, end);
-        }
+        const total = transactions.length;
+        const totalPages = Math.ceil(total / limit);
 
-        return ResultFactory.success(transactions);
+        const start = (page - 1) * limit;
+
+        const data = transactions.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
-    async register(transaction: TransactionProps): Promise<Result<TransactionProps>> {
+    async register(transaction: TransactionEntity): Promise<Result<TransactionEntity>> {
         this.transactions.push(transaction);
 
         return ResultFactory.success(transaction);
     }
 
-    async update(transaction: TransactionProps): Promise<Result<TransactionProps>> {
+    async update(transaction: TransactionEntity): Promise<Result<TransactionEntity>> {
         const index = this.transactions.findIndex((t) => t.uid === transaction.uid);
 
         this.transactions[index] = transaction;

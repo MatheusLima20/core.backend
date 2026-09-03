@@ -17,7 +17,13 @@ describe("LossUsecase - find", () => {
         ({
             usecases: [usecaseUser1, usecaseUser2],
             users: [user1],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = (
+            await (
+                await (await scenario().loadUsers(["1", "2"])).loadInventoryItems()
+            ).loadTransactions()
+        )
+            .createUsecases()
+            .build());
     });
 
     test("Should find all platform losses", async () => {
@@ -25,13 +31,13 @@ describe("LossUsecase - find", () => {
 
         const losses = expectSuccess(await usecaseUser1.find());
 
-        expect(losses.every((loss) => loss.platformUID === user1.platformUID)).toBe(true);
+        expect(losses.data.every((loss) => loss.platformUID === user1.platformUID)).toBe(true);
     });
 
     test("Should return empty list when platform has no losses", async () => {
         const losses = expectSuccess(await usecaseUser2.find());
 
-        expect(losses).toEqual([]);
+        expect(losses.data).toEqual([]);
     });
 
     test("Should filter losses by productUID", async () => {
@@ -43,9 +49,9 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses).toHaveLength(1);
+        expect(losses.data).toHaveLength(1);
 
-        expect(losses[0].productUID).toBe(dataLoss1.productUID);
+        expect(losses.data[0].productUID).toBe(dataLoss1.productUID);
     });
 
     test("Should filter losses by transactionUID", async () => {
@@ -57,9 +63,9 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses).toHaveLength(1);
+        expect(losses.data).toHaveLength(1);
 
-        expect(losses[0].transactionUID).toBe(dataLoss1.transactionUID);
+        expect(losses.data[0].transactionUID).toBe(dataLoss1.transactionUID);
     });
 
     test("Should filter losses by reason", async () => {
@@ -81,9 +87,9 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses).toHaveLength(1);
+        expect(losses.data).toHaveLength(1);
 
-        expect(losses[0].reason).toBe(LossReason.FEED_WASTE);
+        expect(losses.data[0].reason).toBe(LossReason.FEED_WASTE);
     });
 
     test("Should search losses by productUID and reason", async () => {
@@ -96,9 +102,9 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses).toHaveLength(1);
+        expect(losses.data).toHaveLength(1);
 
-        expect(losses[0]).toMatchObject({
+        expect(losses.data[0]).toMatchObject({
             productUID: dataLoss1.productUID,
             reason: dataLoss1.reason,
         });
@@ -113,7 +119,7 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses).toEqual([]);
+        expect(losses.data).toEqual([]);
     });
 
     test("Should order losses by occurredAt ascending", async () => {
@@ -134,7 +140,7 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses.map((loss) => loss.uid)).toEqual([lossA.uid, lossB.uid]);
+        expect(losses.data.map((loss) => loss.uid)).toEqual([lossA.uid, lossB.uid]);
     });
 
     test("Should order losses by occurredAt descending", async () => {
@@ -155,7 +161,7 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses.map((loss) => loss.uid)).toEqual([lossB.uid, lossA.uid]);
+        expect(losses.data.map((loss) => loss.uid)).toEqual([lossB.uid, lossA.uid]);
     });
 
     test("Should return first page", async () => {
@@ -180,9 +186,9 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses).toHaveLength(2);
+        expect(losses.data).toHaveLength(2);
 
-        expect(losses.map((loss) => loss.uid)).toEqual([lossA.uid, lossB.uid]);
+        expect(losses.data.map((loss) => loss.uid)).toEqual([lossA.uid, lossB.uid]);
     });
 
     test("Should return second page", async () => {
@@ -207,7 +213,7 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses.map((loss) => loss.uid)).toEqual([lossC.uid, lossD.uid]);
+        expect(losses.data.map((loss) => loss.uid)).toEqual([lossC.uid, lossD.uid]);
     });
 
     test("Should return remaining losses on last page", async () => {
@@ -236,7 +242,7 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses.map((loss) => loss.uid)).toEqual([lossE.uid]);
+        expect(losses.data.map((loss) => loss.uid)).toEqual([lossE.uid]);
     });
 
     test("Should return empty list when page does not exist", async () => {
@@ -249,7 +255,7 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses).toEqual([]);
+        expect(losses.data).toEqual([]);
     });
 
     test("Should filter, order and paginate losses", async () => {
@@ -279,6 +285,6 @@ describe("LossUsecase - find", () => {
             })
         );
 
-        expect(losses.map((loss) => loss.uid)).toEqual([lossB.uid, lossA.uid]);
+        expect(losses.data.map((loss) => loss.uid)).toEqual([lossB.uid, lossA.uid]);
     });
 });

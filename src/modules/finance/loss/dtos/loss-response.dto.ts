@@ -1,7 +1,7 @@
-import { LossProps } from "../entities/loss.props";
+import { LossEntity } from "../entities/loss.entity";
 
 export type ResponseLossDTO = Pick<
-    LossProps,
+    LossEntity,
     | "uid"
     | "platformUID"
     | "transactionUID"

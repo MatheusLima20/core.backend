@@ -1,16 +1,20 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindTransactionsDTO } from "../dtos/find-transaction.dto";
-import { TransactionProps } from "../entities/transaction.props";
+import { TransactionEntity } from "../entities/transaction.entity";
 
 export interface ITransactionRepository {
-    findByUID(platformUID: string, uid: string): Promise<Result<TransactionProps | null>>;
+    findByUID(platformUID: string, uid: string): Promise<Result<TransactionEntity | null>>;
 
-    find(platformUID: string, filters?: FindTransactionsDTO): Promise<Result<TransactionProps[]>>;
+    find(
+        platformUID: string,
+        filters?: FindTransactionsDTO
+    ): Promise<Result<PaginationResult<TransactionEntity>>>;
 
-    register(transaction: TransactionProps): Promise<Result<TransactionProps>>;
+    register(transaction: TransactionEntity): Promise<Result<TransactionEntity>>;
 
-    update(transaction: TransactionProps): Promise<Result<TransactionProps>>;
+    update(transaction: TransactionEntity): Promise<Result<TransactionEntity>>;
 
     delete(uid: string): Promise<Result<void>>;
 }

@@ -17,9 +17,14 @@ describe("LossUsecase - findByUID", () => {
     beforeEach(async () => {
         ({
             usecases: [usecaseUser1, usecaseUser2],
-
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = (
+            await (
+                await (await scenario().loadUsers(["1", "2"])).loadInventoryItems()
+            ).loadTransactions()
+        )
+            .createUsecases()
+            .build());
     });
 
     test("Should find a loss by uid", async () => {

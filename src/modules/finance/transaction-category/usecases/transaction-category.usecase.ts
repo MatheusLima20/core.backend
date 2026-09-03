@@ -1,7 +1,6 @@
-import { randomUUID } from "crypto";
-
 import { RequestContext } from "@/shared/context/request-context";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -39,8 +38,6 @@ export class TransactionCategoryUsecase {
         }
 
         const category = new TransactionCategoryEntity({
-            uid: randomUUID(),
-
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -65,8 +62,8 @@ export class TransactionCategoryUsecase {
 
     async findByUID(uid: string): Promise<Result<TransactionCategoryResponseDTO>> {
         const result = await this.transactionCategoryRepository.findByUID(
-            this.context.user.platformUID,
-            uid
+            uid,
+            this.context.user.platformUID
         );
 
         const category = ResultMapper.requireData(
@@ -79,7 +76,7 @@ export class TransactionCategoryUsecase {
 
     async find(
         filters?: FindTransactionCategoriesDTO
-    ): Promise<Result<TransactionCategoryResponseDTO[]>> {
+    ): Promise<Result<PaginationResult<TransactionCategoryResponseDTO>>> {
         const result = await this.transactionCategoryRepository.find(
             filters,
             this.context.user.platformUID
@@ -91,7 +88,10 @@ export class TransactionCategoryUsecase {
             );
         }
 
-        return ResultMapper.map(result, TransactionCategoryMapper.toResponseDTOList);
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: TransactionCategoryMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async update(
@@ -101,12 +101,6 @@ export class TransactionCategoryUsecase {
 
         if (!existing.success) {
             return existing;
-        }
-
-        const validation = await this.validateCategoryAlreadyExists(data.name, data.uid);
-
-        if (!validation.success) {
-            return validation;
         }
 
         const category = new TransactionCategoryEntity({
@@ -161,7 +155,7 @@ export class TransactionCategoryUsecase {
             return result;
         }
 
-        const [category] = result.data;
+        const [category] = result.data.data;
 
         if (category && category.uid !== uid) {
             return ResultFactory.failure(new TransactionCategoryAlreadyExistsError(name));

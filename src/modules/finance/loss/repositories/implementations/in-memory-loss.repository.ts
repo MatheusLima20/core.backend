@@ -1,14 +1,15 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindLossesDTO } from "../../dtos/find-losses.dto";
-import { LossProps } from "../../entities/loss.props";
+import { LossEntity } from "../../entities/loss.entity";
 import { ILossRepository } from "../loss-repository.interface";
 
 export class InMemoryLossRepository implements ILossRepository {
-    private losses: LossProps[] = [];
+    private losses: LossEntity[] = [];
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<LossProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<LossEntity | null>> {
         const loss =
             this.losses.find((loss) => loss.platformUID === platformUID && loss.uid === uid) ??
             null;
@@ -16,7 +17,10 @@ export class InMemoryLossRepository implements ILossRepository {
         return ResultFactory.success(loss);
     }
 
-    async find(platformUID: string, filters?: FindLossesDTO): Promise<Result<LossProps[]>> {
+    async find(
+        platformUID: string,
+        filters?: FindLossesDTO
+    ): Promise<Result<PaginationResult<LossEntity>>> {
         let losses = this.losses.filter((loss) => loss.platformUID === platformUID);
 
         if (filters?.transactionUID) {
@@ -68,23 +72,32 @@ export class InMemoryLossRepository implements ILossRepository {
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            const start = (filters.page - 1) * filters.limit;
-            const end = start + filters.limit;
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-            losses = losses.slice(start, end);
-        }
+        const total = losses.length;
+        const totalPages = Math.ceil(total / limit);
 
-        return ResultFactory.success(losses);
+        const start = (page - 1) * limit;
+
+        const data = losses.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
-    async register(loss: LossProps): Promise<Result<LossProps>> {
+    async register(loss: LossEntity): Promise<Result<LossEntity>> {
         this.losses.push(loss);
 
         return ResultFactory.success(loss);
     }
 
-    async update(loss: LossProps): Promise<Result<LossProps>> {
+    async update(loss: LossEntity): Promise<Result<LossEntity>> {
         const index = this.losses.findIndex((l) => l.uid === loss.uid);
 
         this.losses[index] = loss;

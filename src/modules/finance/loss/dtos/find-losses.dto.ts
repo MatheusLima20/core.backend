@@ -1,4 +1,4 @@
-import { LossProps } from "../entities/loss.props";
+import { LossEntity } from "../entities/loss.entity";
 import { LossReason } from "../enums/loss-reason.enum";
 
 export interface FindLossesDTO {
@@ -21,7 +21,7 @@ export interface FindLossesDTO {
     limit?: number;
 
     orderBy?: keyof Pick<
-        LossProps,
+        LossEntity,
         "quantity" | "totalCost" | "occurredAt" | "createdAt" | "updatedAt"
     >;
 

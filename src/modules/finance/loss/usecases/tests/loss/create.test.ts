@@ -2,7 +2,7 @@ import { AuthUser } from "@/shared/context/auth.user";
 
 import { LossReason } from "../../../enums/loss-reason.enum";
 import { LossUsecase } from "../../loss.usecase";
-import { dataLoss1, dataLoss2 } from "../factories/loss-data.factory";
+import { dataLoss1, dataLossPlatform2 } from "../factories/loss-data.factory";
 import { scenario } from "../setup/loss.builder";
 import { setupLoss } from "../setup/loss-setup";
 
@@ -16,9 +16,14 @@ describe("LossUsecase - create", () => {
     beforeEach(async () => {
         ({
             usecases: [lossUsecaseUser1, lossUsecaseUser2],
-
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = (
+            await (
+                await (await scenario().loadUsers(["1", "2"])).loadInventoryItems()
+            ).loadTransactions()
+        )
+            .createUsecases()
+            .build());
     });
 
     test("Should register a loss", async () => {
@@ -52,7 +57,7 @@ describe("LossUsecase - create", () => {
     test("Should register losses with different users", async () => {
         const loss1 = await setupLoss(lossUsecaseUser1, dataLoss1);
 
-        const loss2 = await setupLoss(lossUsecaseUser2, dataLoss2);
+        const loss2 = await setupLoss(lossUsecaseUser2, dataLossPlatform2);
 
         expect(loss1.platformUID).toBe(user1.platformUID);
 
@@ -116,6 +121,10 @@ describe("LossUsecase - create", () => {
     test("Should allow same loss in different platforms", async () => {
         await setupLoss(lossUsecaseUser1, dataLoss1);
 
-        await setupLoss(lossUsecaseUser2, dataLoss1);
+        await setupLoss(lossUsecaseUser2, {
+            ...dataLoss1,
+            productUID: dataLossPlatform2.productUID,
+            transactionUID: dataLossPlatform2.transactionUID,
+        });
     });
 });

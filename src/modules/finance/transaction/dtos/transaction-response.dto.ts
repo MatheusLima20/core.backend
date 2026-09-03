@@ -1,7 +1,7 @@
-import { TransactionProps } from "../entities/transaction.props";
+import { TransactionEntity } from "../entities/transaction.entity";
 
 export type ResponseTransactionDTO = Pick<
-    TransactionProps,
+    TransactionEntity,
     | "uid"
     | "platformUID"
     | "categoryUID"

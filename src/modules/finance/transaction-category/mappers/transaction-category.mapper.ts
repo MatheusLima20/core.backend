@@ -1,10 +1,10 @@
 import { CreateTransactionCategoryResponseDTO } from "../dtos/create-transaction-category.dto";
 import { TransactionCategoryResponseDTO } from "../dtos/transaction-category-response.dto";
 import { UpdateTransactionCategoryResponseDTO } from "../dtos/update-transaction-category.dto";
-import { TransactionCategoryProps } from "../entities/transaction-category.props";
+import { TransactionCategoryEntity } from "../entities/transaction-category.entity";
 
 export const TransactionCategoryMapper = {
-    toResponseDTO: (category: TransactionCategoryProps): TransactionCategoryResponseDTO => {
+    toResponseDTO: (category: TransactionCategoryEntity): TransactionCategoryResponseDTO => {
         return {
             uid: category.uid,
             platformUID: category.platformUID,
@@ -20,13 +20,13 @@ export const TransactionCategoryMapper = {
     },
 
     toResponseDTOList: (
-        categories: TransactionCategoryProps[]
+        categories: TransactionCategoryEntity[]
     ): TransactionCategoryResponseDTO[] => {
         return categories.map(TransactionCategoryMapper.toResponseDTO);
     },
 
     toCreatedResponseDTO: (
-        category: TransactionCategoryProps
+        category: TransactionCategoryEntity
     ): CreateTransactionCategoryResponseDTO => {
         return {
             uid: category.uid,
@@ -41,7 +41,7 @@ export const TransactionCategoryMapper = {
     },
 
     toUpdatedResponseDTO: (
-        category: TransactionCategoryProps
+        category: TransactionCategoryEntity
     ): UpdateTransactionCategoryResponseDTO => {
         return {
             uid: category.uid,

@@ -12,7 +12,13 @@ describe("LossUsecase - update", () => {
     beforeEach(async () => {
         ({
             usecases: [lossUsecase],
-        } = (await scenario().loadUsers(["1"])).createUsecases().build());
+        } = (
+            await (
+                await (await scenario().loadUsers(["1", "2"])).loadInventoryItems()
+            ).loadTransactions()
+        )
+            .createUsecases()
+            .build());
     });
 
     test("Should update a loss", async () => {

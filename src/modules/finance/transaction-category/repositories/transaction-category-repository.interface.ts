@@ -1,19 +1,20 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindTransactionCategoriesDTO } from "../dtos/find-transaction-category.dto";
-import { TransactionCategoryProps } from "../entities/transaction-category.props";
+import { TransactionCategoryEntity } from "../entities/transaction-category.entity";
 
 export interface ITransactionCategoryRepository {
-    findByUID(uid: string, platformUID?: string): Promise<Result<TransactionCategoryProps | null>>;
+    findByUID(uid: string, platformUID?: string): Promise<Result<TransactionCategoryEntity | null>>;
 
     find(
         filters?: FindTransactionCategoriesDTO,
         platformUID?: string
-    ): Promise<Result<TransactionCategoryProps[]>>;
+    ): Promise<Result<PaginationResult<TransactionCategoryEntity>>>;
 
-    register(category: TransactionCategoryProps): Promise<Result<TransactionCategoryProps>>;
+    register(category: TransactionCategoryEntity): Promise<Result<TransactionCategoryEntity>>;
 
-    update(category: TransactionCategoryProps): Promise<Result<TransactionCategoryProps>>;
+    update(category: TransactionCategoryEntity): Promise<Result<TransactionCategoryEntity>>;
 
     delete(uid: string): Promise<Result<void>>;
 }

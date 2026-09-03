@@ -26,14 +26,14 @@ describe("TransactionUsecase - find", () => {
         const transactions = expectSuccess(await usecaseUser1.find());
 
         expect(
-            transactions.every((transaction) => transaction.platformUID === user1.platformUID)
+            transactions.data.every((transaction) => transaction.platformUID === user1.platformUID)
         ).toBe(true);
     });
 
     test("Should return empty list when platform has no transactions", async () => {
         const transactions = expectSuccess(await usecaseUser2.find());
 
-        expect(transactions).toEqual([]);
+        expect(transactions.data).toEqual([]);
     });
 
     test("Should filter transactions by categoryUID", async () => {
@@ -45,9 +45,9 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions).toHaveLength(1);
+        expect(transactions.data).toHaveLength(1);
 
-        expect(transactions[0].categoryUID).toBe(dataTransaction1.categoryUID);
+        expect(transactions.data[0].categoryUID).toBe(dataTransaction1.categoryUID);
     });
 
     test("Should filter transactions by type", async () => {
@@ -69,9 +69,9 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions).toHaveLength(1);
+        expect(transactions.data).toHaveLength(1);
 
-        expect(transactions[0].type).toBe(TransactionType.INCOME);
+        expect(transactions.data[0].type).toBe(TransactionType.INCOME);
     });
 
     test("Should filter transactions by description", async () => {
@@ -83,9 +83,9 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions).toHaveLength(1);
+        expect(transactions.data).toHaveLength(1);
 
-        expect(transactions[0].description).toBe(dataTransaction1.description);
+        expect(transactions.data[0].description).toBe(dataTransaction1.description);
     });
 
     test("Should search transactions by categoryUID and type", async () => {
@@ -98,9 +98,9 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions).toHaveLength(1);
+        expect(transactions.data).toHaveLength(1);
 
-        expect(transactions[0]).toMatchObject({
+        expect(transactions.data[0]).toMatchObject({
             categoryUID: dataTransaction1.categoryUID,
             type: dataTransaction1.type,
         });
@@ -115,7 +115,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions).toEqual([]);
+        expect(transactions.data).toEqual([]);
     });
 
     test("Should order transactions by occurredAt ascending", async () => {
@@ -136,7 +136,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual([
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual([
             transactionA.uid,
             transactionB.uid,
         ]);
@@ -160,7 +160,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual([
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual([
             transactionB.uid,
             transactionA.uid,
         ]);
@@ -188,9 +188,9 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions).toHaveLength(2);
+        expect(transactions.data).toHaveLength(2);
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual([
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual([
             transactionA.uid,
             transactionB.uid,
         ]);
@@ -218,7 +218,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual([
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual([
             transactionC.uid,
             transactionD.uid,
         ]);
@@ -250,7 +250,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual([transactionE.uid]);
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual([transactionE.uid]);
     });
 
     test("Should return empty list when page does not exist", async () => {
@@ -263,7 +263,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions).toEqual([]);
+        expect(transactions.data).toEqual([]);
     });
 
     test("Should filter and order transactions", async () => {
@@ -286,7 +286,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual([
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual([
             transactionB.uid,
             transactionA.uid,
         ]);
@@ -322,7 +322,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual([
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual([
             transactionC.uid,
             transactionD.uid,
         ]);
@@ -355,7 +355,7 @@ describe("TransactionUsecase - find", () => {
             })
         );
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual([
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual([
             transactionB.uid,
             transactionA.uid,
         ]);

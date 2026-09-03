@@ -1,7 +1,7 @@
 import { TransactionType } from "../enums/transaction.type";
 
 export interface TransactionCategoryProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 

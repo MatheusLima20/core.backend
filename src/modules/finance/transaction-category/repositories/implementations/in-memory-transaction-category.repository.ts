@@ -1,17 +1,18 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindTransactionCategoriesDTO } from "../../dtos/find-transaction-category.dto";
-import { TransactionCategoryProps } from "../../entities/transaction-category.props";
+import { TransactionCategoryEntity } from "../../entities/transaction-category.entity";
 import { ITransactionCategoryRepository } from "../transaction-category-repository.interface";
 
 export class InMemoryTransactionCategoryRepository implements ITransactionCategoryRepository {
-    private transactions: TransactionCategoryProps[] = [];
+    private transactions: TransactionCategoryEntity[] = [];
 
     async findByUID(
         platformUID: string,
         uid: string
-    ): Promise<Result<TransactionCategoryProps | null>> {
+    ): Promise<Result<TransactionCategoryEntity | null>> {
         const transaction =
             this.transactions.find(
                 (transaction) => transaction.platformUID === platformUID && transaction.uid === uid
@@ -23,7 +24,7 @@ export class InMemoryTransactionCategoryRepository implements ITransactionCatego
     async find(
         filters?: FindTransactionCategoriesDTO,
         platformUID?: string
-    ): Promise<Result<TransactionCategoryProps[]>> {
+    ): Promise<Result<PaginationResult<TransactionCategoryEntity>>> {
         let transactions = this.transactions;
 
         if (platformUID) {
@@ -55,25 +56,36 @@ export class InMemoryTransactionCategoryRepository implements ITransactionCatego
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            const start = (filters.page - 1) * filters.limit;
-            const end = start + filters.limit;
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-            transactions = transactions.slice(start, end);
-        }
+        const total = transactions.length;
+        const totalPages = Math.ceil(total / limit);
 
-        return ResultFactory.success(transactions);
+        const start = (page - 1) * limit;
+
+        const data = transactions.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
     async register(
-        transaction: TransactionCategoryProps
-    ): Promise<Result<TransactionCategoryProps>> {
+        transaction: TransactionCategoryEntity
+    ): Promise<Result<TransactionCategoryEntity>> {
         this.transactions.push(transaction);
 
         return ResultFactory.success(transaction);
     }
 
-    async update(transaction: TransactionCategoryProps): Promise<Result<TransactionCategoryProps>> {
+    async update(
+        transaction: TransactionCategoryEntity
+    ): Promise<Result<TransactionCategoryEntity>> {
         const index = this.transactions.findIndex((t) => t.uid === transaction.uid);
 
         this.transactions[index] = transaction;

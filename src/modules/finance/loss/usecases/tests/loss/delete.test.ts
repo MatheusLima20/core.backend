@@ -12,7 +12,13 @@ describe("LossUsecase - delete", () => {
     beforeEach(async () => {
         ({
             usecases: [usecase],
-        } = (await scenario().loadUsers(["1"])).createUsecases().build());
+        } = (
+            await (
+                await (await scenario().loadUsers(["1", "2"])).loadInventoryItems()
+            ).loadTransactions()
+        )
+            .createUsecases()
+            .build());
     });
 
     test("Should delete a loss", async () => {

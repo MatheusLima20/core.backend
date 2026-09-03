@@ -35,15 +35,15 @@ describe("TransactionCategoryUsecase - find", () => {
 
         const categories = expectSuccess(await usecaseUser1.find());
 
-        expect(categories.every((category) => category.platformUID === user1.platformUID)).toBe(
-            true
-        );
+        expect(
+            categories.data.every((category) => category.platformUID === user1.platformUID)
+        ).toBe(true);
     });
 
     test("Should return empty list when platform has no transaction categories", async () => {
         const categories = expectSuccess(await usecaseUser2.find());
 
-        expect(categories).toEqual([]);
+        expect(categories.data).toEqual([]);
     });
 
     test("Should filter transaction categories by name", async () => {
@@ -59,9 +59,9 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories).toHaveLength(1);
+        expect(categories.data).toHaveLength(1);
 
-        expect(categories[0].name).toBe(dataTransactionCategory1.name);
+        expect(categories.data[0].name).toBe(dataTransactionCategory1.name);
     });
 
     test("Should filter transaction categories by type", async () => {
@@ -83,9 +83,9 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories).toHaveLength(1);
+        expect(categories.data).toHaveLength(1);
 
-        expect(categories[0].type).toBe(TransactionType.INCOME);
+        expect(categories.data[0].type).toBe(TransactionType.INCOME);
     });
 
     test("Should search transaction categories by name and type", async () => {
@@ -102,9 +102,9 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories).toHaveLength(1);
+        expect(categories.data).toHaveLength(1);
 
-        expect(categories[0]).toMatchObject({
+        expect(categories.data[0]).toMatchObject({
             name: dataTransactionCategory1.name,
             type: dataTransactionCategory1.type,
         });
@@ -119,7 +119,7 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories).toEqual([]);
+        expect(categories.data).toEqual([]);
     });
 
     test("Should order transaction categories by name ascending", async () => {
@@ -140,7 +140,10 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories.map((category) => category.uid)).toEqual([categoryA.uid, categoryB.uid]);
+        expect(categories.data.map((category) => category.uid)).toEqual([
+            categoryA.uid,
+            categoryB.uid,
+        ]);
     });
 
     test("Should order transaction categories by name descending", async () => {
@@ -161,7 +164,10 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories.map((category) => category.uid)).toEqual([categoryB.uid, categoryA.uid]);
+        expect(categories.data.map((category) => category.uid)).toEqual([
+            categoryB.uid,
+            categoryA.uid,
+        ]);
     });
 
     test("Should return first page", async () => {
@@ -186,9 +192,12 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories).toHaveLength(2);
+        expect(categories.data).toHaveLength(2);
 
-        expect(categories.map((category) => category.uid)).toEqual([categoryA.uid, categoryB.uid]);
+        expect(categories.data.map((category) => category.uid)).toEqual([
+            categoryA.uid,
+            categoryB.uid,
+        ]);
     });
 
     test("Should return second page", async () => {
@@ -213,7 +222,10 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories.map((category) => category.uid)).toEqual([categoryC.uid, categoryD.uid]);
+        expect(categories.data.map((category) => category.uid)).toEqual([
+            categoryC.uid,
+            categoryD.uid,
+        ]);
     });
 
     test("Should return remaining transaction categories on last page", async () => {
@@ -242,7 +254,7 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories.map((category) => category.uid)).toEqual([categoryE.uid]);
+        expect(categories.data.map((category) => category.uid)).toEqual([categoryE.uid]);
     });
 
     test("Should return empty list when page does not exist", async () => {
@@ -259,7 +271,7 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories).toEqual([]);
+        expect(categories.data).toEqual([]);
     });
 
     test("Should filter and order transaction categories", async () => {
@@ -288,7 +300,10 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories.map((category) => category.uid)).toEqual([categoryA.uid, categoryB.uid]);
+        expect(categories.data.map((category) => category.uid)).toEqual([
+            categoryA.uid,
+            categoryB.uid,
+        ]);
     });
 
     test("Should order before paginate", async () => {
@@ -321,7 +336,10 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories.map((category) => category.uid)).toEqual([categoryC.uid, categoryD.uid]);
+        expect(categories.data.map((category) => category.uid)).toEqual([
+            categoryC.uid,
+            categoryD.uid,
+        ]);
     });
 
     test("Should filter, order and paginate transaction categories", async () => {
@@ -353,6 +371,9 @@ describe("TransactionCategoryUsecase - find", () => {
             })
         );
 
-        expect(categories.map((category) => category.uid)).toEqual([categoryA.uid, categoryB.uid]);
+        expect(categories.data.map((category) => category.uid)).toEqual([
+            categoryA.uid,
+            categoryB.uid,
+        ]);
     });
 });

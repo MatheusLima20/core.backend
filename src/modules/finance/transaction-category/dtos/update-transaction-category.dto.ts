@@ -1,11 +1,11 @@
-import { TransactionCategoryProps } from "../entities/transaction-category.props";
+import { TransactionCategoryEntity } from "../entities/transaction-category.entity";
 
 export type UpdateTransactionCategoryDTO = Pick<
-    TransactionCategoryProps,
+    TransactionCategoryEntity,
     "uid" | "name" | "description" | "type"
 >;
 
 export type UpdateTransactionCategoryResponseDTO = Pick<
-    TransactionCategoryProps,
+    TransactionCategoryEntity,
     "uid" | "name" | "description" | "type" | "updatedBy" | "updatedAt"
 >;

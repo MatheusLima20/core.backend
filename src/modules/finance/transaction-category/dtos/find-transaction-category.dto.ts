@@ -1,4 +1,4 @@
-import { TransactionCategoryProps } from "../entities/transaction-category.props";
+import { TransactionCategoryEntity } from "../entities/transaction-category.entity";
 import { TransactionType } from "../enums/transaction.type";
 
 export interface FindTransactionCategoriesDTO {
@@ -9,7 +9,7 @@ export interface FindTransactionCategoriesDTO {
     page?: number;
     limit?: number;
 
-    orderBy?: keyof Pick<TransactionCategoryProps, "name" | "createdAt" | "updatedAt">;
+    orderBy?: keyof Pick<TransactionCategoryEntity, "name" | "createdAt" | "updatedAt">;
 
     order?: "asc" | "desc";
 }

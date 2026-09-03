@@ -25,8 +25,8 @@ describe("TransactionUsecase - delete", () => {
 
         const after = expectSuccess(await usecaseUser1.find());
 
-        expect(before).toHaveLength(1);
-        expect(after).toHaveLength(0);
+        expect(before.data).toHaveLength(1);
+        expect(after.data).toHaveLength(0);
 
         expectFailure(await usecaseUser1.findByUID(transaction.uid), TransactionNotFoundError);
     });
@@ -74,9 +74,9 @@ describe("TransactionUsecase - delete", () => {
 
         const transactions = expectSuccess(await usecaseUser1.find());
 
-        expect(transactions).toHaveLength(2);
+        expect(transactions.data).toHaveLength(2);
 
-        expect(transactions.map((transaction) => transaction.uid)).toEqual(
+        expect(transactions.data.map((transaction) => transaction.uid)).toEqual(
             expect.arrayContaining([transactionA.uid, transactionC.uid])
         );
 

@@ -1,10 +1,10 @@
 import { CreateTransactionResponseDTO } from "../dtos/create-transaction.dto";
 import { ResponseTransactionDTO } from "../dtos/transaction-response.dto";
 import { UpdateTransactionResponseDTO } from "../dtos/update-transaction.dto";
-import { TransactionProps } from "../entities/transaction.props";
+import { TransactionEntity } from "../entities/transaction.entity";
 
 export const TransactionMapper = {
-    toResponseDTO: (transaction: TransactionProps): ResponseTransactionDTO => {
+    toResponseDTO: (transaction: TransactionEntity): ResponseTransactionDTO => {
         return {
             uid: transaction.uid,
             platformUID: transaction.platformUID,
@@ -23,11 +23,11 @@ export const TransactionMapper = {
         };
     },
 
-    toResponseDTOList: (transactions: TransactionProps[]): ResponseTransactionDTO[] => {
+    toResponseDTOList: (transactions: TransactionEntity[]): ResponseTransactionDTO[] => {
         return transactions.map(TransactionMapper.toResponseDTO);
     },
 
-    toCreateResponseDTO: (transaction: TransactionProps): CreateTransactionResponseDTO => {
+    toCreateResponseDTO: (transaction: TransactionEntity): CreateTransactionResponseDTO => {
         return {
             uid: transaction.uid,
             platformUID: transaction.platformUID,
@@ -44,7 +44,7 @@ export const TransactionMapper = {
         };
     },
 
-    toUpdatedResponseDTO: (transaction: TransactionProps): UpdateTransactionResponseDTO => {
+    toUpdatedResponseDTO: (transaction: TransactionEntity): UpdateTransactionResponseDTO => {
         return {
             uid: transaction.uid,
             description: transaction.description,
