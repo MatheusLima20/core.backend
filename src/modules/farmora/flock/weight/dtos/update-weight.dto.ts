@@ -1,12 +1,12 @@
-import { WeightProps } from "../entities/weight.props";
+import { WeightEntity } from "../entities/weight.entity";
 
-export type UpdateWeightDTO = Pick<WeightProps, "uid"> &
+export type UpdateWeightDTO = Pick<WeightEntity, "uid"> &
     Partial<
-        Pick<WeightProps, "flockUID" | "weighingDate" | "averageWeight" | "sampleSize" | "notes">
+        Pick<WeightEntity, "flockUID" | "weighingDate" | "averageWeight" | "sampleSize" | "notes">
     >;
 
 export type UpdateWeightResponseDTO = Pick<
-    WeightProps,
+    WeightEntity,
     | "uid"
     | "flockUID"
     | "weighingDate"

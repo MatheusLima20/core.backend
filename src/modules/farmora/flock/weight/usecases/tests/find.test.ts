@@ -52,13 +52,13 @@ describe("WeightUsecase - find", () => {
 
         const weights = expectSuccess(await usecaseUser1.find());
 
-        expect(weights.every((weight) => weight.platformUID === user1.platformUID)).toBe(true);
+        expect(weights.data.every((weight) => weight.platformUID === user1.platformUID)).toBe(true);
     });
 
     test("Should return empty list when platform has no weights", async () => {
         const weights = expectSuccess(await usecaseUser2.find());
 
-        expect(weights).toEqual([]);
+        expect(weights.data).toEqual([]);
     });
 
     test("Should filter weights by flock", async () => {
@@ -79,9 +79,9 @@ describe("WeightUsecase - find", () => {
             })
         );
 
-        expect(weights).toHaveLength(1);
+        expect(weights.data).toHaveLength(1);
 
-        expect(weights[0].flockUID).toBe(flock1.uid);
+        expect(weights.data[0].flockUID).toBe(flock1.uid);
     });
 
     test("Should filter weights by weighing date", async () => {
@@ -103,9 +103,9 @@ describe("WeightUsecase - find", () => {
             })
         );
 
-        expect(weights).toHaveLength(1);
+        expect(weights.data).toHaveLength(1);
 
-        expect(weights[0].weighingDate).toEqual(new Date("2026-01-01"));
+        expect(weights.data[0].weighingDate).toEqual(new Date("2026-01-01"));
     });
 
     test("Should filter weights by date range", async () => {
@@ -132,9 +132,9 @@ describe("WeightUsecase - find", () => {
             })
         );
 
-        expect(weights).toHaveLength(1);
+        expect(weights.data).toHaveLength(1);
 
-        expect(weights[0].weighingDate).toEqual(new Date("2026-02-01"));
+        expect(weights.data[0].weighingDate).toEqual(new Date("2026-02-01"));
     });
 
     test("Should order weights by weighing date descending", async () => {
@@ -161,7 +161,7 @@ describe("WeightUsecase - find", () => {
             })
         );
 
-        expect(weights.map((weight) => weight.uid)).toEqual([second.uid, first.uid]);
+        expect(weights.data.map((weight) => weight.uid)).toEqual([second.uid, first.uid]);
     });
 
     test("Should return first page", async () => {
@@ -196,9 +196,9 @@ describe("WeightUsecase - find", () => {
             })
         );
 
-        expect(weights).toHaveLength(2);
+        expect(weights.data).toHaveLength(2);
 
-        expect(weights.map((weight) => weight.uid)).toEqual([weightA.uid, weightB.uid]);
+        expect(weights.data.map((weight) => weight.uid)).toEqual([weightA.uid, weightB.uid]);
     });
 
     test("Should filter, order and paginate weights", async () => {
@@ -240,6 +240,6 @@ describe("WeightUsecase - find", () => {
             })
         );
 
-        expect(weights.map((weight) => weight.uid)).toEqual([weightA.uid, weightB.uid]);
+        expect(weights.data.map((weight) => weight.uid)).toEqual([weightA.uid, weightB.uid]);
     });
 });

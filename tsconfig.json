@@ -8,8 +8,9 @@
             "@shared/*": ["./src/shared/*"]
         },
         "target": "es6",
-        "module": "node16",
-        "moduleResolution": "node16",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "ignoreDeprecations": "6.0",
         "rootDir": "./src",
         "outDir": "./build",
         "typeRoots": ["./src/@types", "./node_modules/@types"],

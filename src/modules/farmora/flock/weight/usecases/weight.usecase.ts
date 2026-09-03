@@ -1,8 +1,7 @@
-import { randomUUID } from "crypto";
-
 import { RequestContext } from "@/shared/context/request-context";
 import { FlockClosedError } from "@/shared/errors/flock-closed.error";
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -43,8 +42,6 @@ export class WeightUsecase {
         }
 
         const weight = new WeightEntity({
-            uid: randomUUID(),
-
             platformUID: this.context.user.platformUID,
 
             createdBy: this.context.user.uid,
@@ -75,14 +72,17 @@ export class WeightUsecase {
         return ResultMapper.map(ResultFactory.success(result.data), WeightMapper.toResponseDTO);
     }
 
-    async find(filters?: FindWeightsDTO): Promise<Result<ResponseWeightDTO[]>> {
+    async find(filters?: FindWeightsDTO): Promise<Result<PaginationResult<ResponseWeightDTO>>> {
         const result = await this.weightRepository.find(this.context.user.platformUID, filters);
 
         if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch weights."));
         }
 
-        return ResultMapper.map(result, WeightMapper.toResponseDTOList);
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: WeightMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async update(data: UpdateWeightDTO): Promise<Result<UpdateWeightResponseDTO>> {

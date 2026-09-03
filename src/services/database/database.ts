@@ -26,7 +26,7 @@ const config: DataSourceOptions = {
     password: getEnv("DB_PASSWORD"),
     database: getEnv("DB_DATABASE"),
 
-    synchronize: true,
+    synchronize: false,
     logging: false,
 
     entities: [getEnv("PATH_ENTITY")],

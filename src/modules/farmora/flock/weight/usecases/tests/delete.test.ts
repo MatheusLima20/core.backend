@@ -44,9 +44,9 @@ describe("WeightUsecase - delete", () => {
 
         const after = expectSuccess(await usecaseUser1.find());
 
-        expect(before).toHaveLength(1);
+        expect(before.data).toHaveLength(1);
 
-        expect(after).toHaveLength(0);
+        expect(after.data).toHaveLength(0);
 
         const found = expectSuccess(await usecaseUser1.findByUID(weight.uid));
 
@@ -92,15 +92,15 @@ describe("WeightUsecase - delete", () => {
 
         const user2Weights = expectSuccess(await usecaseUser2.find());
 
-        expect(user2Weights).toHaveLength(0);
+        expect(user2Weights.data).toHaveLength(0);
 
         expectFailure(await usecaseUser2.delete(weight.uid), WeightNotFoundError);
 
         const user1Weights = expectSuccess(await usecaseUser1.find());
 
-        expect(user1Weights).toHaveLength(1);
+        expect(user1Weights.data).toHaveLength(1);
 
-        expect(user1Weights[0].uid).toBe(weight.uid);
+        expect(user1Weights.data[0].uid).toBe(weight.uid);
     });
 
     test("Should delete one weight keeping remaining weights", async () => {
@@ -126,9 +126,9 @@ describe("WeightUsecase - delete", () => {
 
         const weights = expectSuccess(await usecaseUser1.find());
 
-        expect(weights).toHaveLength(2);
+        expect(weights.data).toHaveLength(2);
 
-        expect(weights.map((weight) => weight.uid)).toEqual(
+        expect(weights.data.map((weight) => weight.uid)).toEqual(
             expect.arrayContaining([weightA.uid, weightC.uid])
         );
 

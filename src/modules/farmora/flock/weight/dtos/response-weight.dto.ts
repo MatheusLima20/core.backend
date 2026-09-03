@@ -1,7 +1,7 @@
-import { WeightProps } from "../entities/weight.props";
+import { WeightEntity } from "../entities/weight.entity";
 
 export type ResponseWeightDTO = Pick<
-    WeightProps,
+    WeightEntity,
     | "uid"
     | "platformUID"
     | "flockUID"

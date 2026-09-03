@@ -1,5 +1,5 @@
 export interface WeightProps {
-    uid: string;
+    uid?: string;
 
     platformUID?: string;
 

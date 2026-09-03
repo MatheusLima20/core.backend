@@ -1,12 +1,16 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
 import { FindWeightsDTO } from "../dtos/find-weights.dto";
-import { WeightProps } from "../entities/weight.props";
+import { WeightEntity } from "../entities/weight.entity";
 
 export interface IWeightRepository {
-    findByUID(platformUID: string, uid: string): Promise<Result<WeightProps | null>>;
+    findByUID(platformUID: string, uid: string): Promise<Result<WeightEntity | null>>;
 
-    find(platformUID: string, filters?: FindWeightsDTO): Promise<Result<WeightProps[]>>;
+    find(
+        platformUID: string,
+        filters?: FindWeightsDTO
+    ): Promise<Result<PaginationResult<WeightEntity>>>;
 
     exists(
         platformUID: string,
@@ -17,9 +21,9 @@ export interface IWeightRepository {
         }
     ): Promise<Result<boolean>>;
 
-    register(weight: WeightProps): Promise<Result<WeightProps>>;
+    register(weight: WeightEntity): Promise<Result<WeightEntity>>;
 
-    update(weight: WeightProps): Promise<Result<WeightProps>>;
+    update(weight: WeightEntity): Promise<Result<WeightEntity>>;
 
     delete(uid: string): Promise<Result<void>>;
 }

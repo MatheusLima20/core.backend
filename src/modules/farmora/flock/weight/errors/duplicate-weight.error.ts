@@ -7,9 +7,12 @@ interface DuplicateWeightErrorProps {
 
 export class DuplicateWeightError extends AppError {
     constructor(data: DuplicateWeightErrorProps) {
-        super(
-            `A weight record already exists for flock '${data.flockUID}' on '${data.weighingDate.toISOString()}'.`
-        );
+        const weighingDate =
+            data.weighingDate instanceof Date
+                ? data.weighingDate.toISOString().split("T")[0]
+                : data.weighingDate;
+
+        super(`A weight record already exists for flock '${data.flockUID}' on '${weighingDate}'.`);
 
         this.name = "DuplicateWeightError";
     }

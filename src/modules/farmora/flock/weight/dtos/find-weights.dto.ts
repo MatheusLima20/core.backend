@@ -1,4 +1,4 @@
-import { WeightProps } from "../entities/weight.props";
+import { WeightEntity } from "../entities/weight.entity";
 
 export interface FindWeightsDTO {
     flockUID?: string;
@@ -11,7 +11,10 @@ export interface FindWeightsDTO {
     page?: number;
     limit?: number;
 
-    orderBy?: keyof Pick<WeightProps, "weighingDate" | "averageWeight" | "createdAt" | "updatedAt">;
+    orderBy?: keyof Pick<
+        WeightEntity,
+        "weighingDate" | "averageWeight" | "createdAt" | "updatedAt"
+    >;
 
     order?: "asc" | "desc";
 }

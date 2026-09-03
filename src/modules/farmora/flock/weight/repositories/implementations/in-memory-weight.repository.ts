@@ -1,18 +1,18 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { DateUtil } from "@/shared/utils/date/date.util";
-import { PaginationUtil } from "@/shared/utils/pagination/pagination.util";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FindWeightsDTO } from "../../dtos/find-weights.dto";
-import { WeightProps } from "../../entities/weight.props";
+import { WeightEntity } from "../../entities/weight.entity";
 import { IWeightRepository } from "../weight-repository.interface";
 
 export class InMemoryWeightRepository implements IWeightRepository {
-    private weights: WeightProps[] = [];
+    private weights: WeightEntity[] = [];
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<WeightProps | null>> {
+    async findByUID(platformUID: string, uid: string): Promise<Result<WeightEntity | null>> {
         const weight =
             this.weights.find(
                 (weight) =>
@@ -23,7 +23,10 @@ export class InMemoryWeightRepository implements IWeightRepository {
         return ResultFactory.success(weight);
     }
 
-    async find(platformUID: string, filters?: FindWeightsDTO): Promise<Result<WeightProps[]>> {
+    async find(
+        platformUID: string,
+        filters?: FindWeightsDTO
+    ): Promise<Result<PaginationResult<WeightEntity>>> {
         let weights = this.weights.filter((weight) =>
             StringUtil.equals(weight.platformUID!, platformUID)
         );
@@ -56,11 +59,23 @@ export class InMemoryWeightRepository implements IWeightRepository {
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            weights = PaginationUtil.paginate(weights, filters.page, filters.limit);
-        }
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-        return ResultFactory.success(weights);
+        const total = weights.length;
+        const totalPages = Math.ceil(total / limit);
+
+        const start = (page - 1) * limit;
+
+        const data = weights.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
     async exists(
@@ -82,13 +97,13 @@ export class InMemoryWeightRepository implements IWeightRepository {
         return ResultFactory.success(exists);
     }
 
-    async register(weight: WeightProps): Promise<Result<WeightProps>> {
+    async register(weight: WeightEntity): Promise<Result<WeightEntity>> {
         this.weights.push(weight);
 
         return ResultFactory.success(weight);
     }
 
-    async update(weight: WeightProps): Promise<Result<WeightProps>> {
+    async update(weight: WeightEntity): Promise<Result<WeightEntity>> {
         const index = this.weights.findIndex((item) => StringUtil.equals(item.uid, weight.uid));
 
         this.weights[index] = weight;

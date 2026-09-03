@@ -1,10 +1,10 @@
 import { CreateWeightResponseDTO } from "../dtos/create-weight.dto";
 import { ResponseWeightDTO } from "../dtos/response-weight.dto";
 import { UpdateWeightResponseDTO } from "../dtos/update-weight.dto";
-import { WeightProps } from "../entities/weight.props";
+import { WeightEntity } from "../entities/weight.entity";
 
 export const WeightMapper = {
-    toResponseDTO: (weight: WeightProps): ResponseWeightDTO => {
+    toResponseDTO: (weight: WeightEntity): ResponseWeightDTO => {
         return {
             uid: weight.uid,
             platformUID: weight.platformUID,
@@ -20,11 +20,11 @@ export const WeightMapper = {
         };
     },
 
-    toResponseDTOList: (weights: WeightProps[]): ResponseWeightDTO[] => {
+    toResponseDTOList: (weights: WeightEntity[]): ResponseWeightDTO[] => {
         return weights.map(WeightMapper.toResponseDTO);
     },
 
-    toCreateResponseDTO: (weight: WeightProps): CreateWeightResponseDTO => {
+    toCreateResponseDTO: (weight: WeightEntity): CreateWeightResponseDTO => {
         return {
             uid: weight.uid,
             platformUID: weight.platformUID,
@@ -38,7 +38,7 @@ export const WeightMapper = {
         };
     },
 
-    toUpdatedResponseDTO: (weight: WeightProps): UpdateWeightResponseDTO => {
+    toUpdatedResponseDTO: (weight: WeightEntity): UpdateWeightResponseDTO => {
         return {
             uid: weight.uid,
             flockUID: weight.flockUID,
