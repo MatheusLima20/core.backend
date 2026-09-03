@@ -1,5 +1,5 @@
 export interface NutritionProps {
-    uid: string;
+    uid?: string;
 
     name: string;
 

@@ -1,4 +1,4 @@
-import { NutritionProps } from "../entities/nutrition.props";
+import { NutritionEntity } from "../entities/nutrition.entity";
 
 export interface FindNutritionDTO {
     page?: number;
@@ -10,7 +10,7 @@ export interface FindNutritionDTO {
     endWeek?: number;
 
     orderBy?: keyof Pick<
-        NutritionProps,
+        NutritionEntity,
         | "name"
         | "createdAt"
         | "updatedAt"

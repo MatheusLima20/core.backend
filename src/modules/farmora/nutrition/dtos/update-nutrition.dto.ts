@@ -1,14 +1,14 @@
-import { NutritionProps } from "../entities/nutrition.props";
+import { NutritionEntity } from "../entities/nutrition.entity";
 
-export type UpdateNutritionDTO = Pick<NutritionProps, "uid"> &
+export type UpdateNutritionDTO = Pick<NutritionEntity, "uid"> &
     Partial<
         Pick<
-            NutritionProps,
+            NutritionEntity,
             "minimumCrudeProtein" | "maximumCrudeProtein" | "startWeek" | "endWeek"
         >
     >;
 
 export type UpdateNutritionResponseDTO = Pick<
-    NutritionProps,
+    NutritionEntity,
     "uid" | "minimumCrudeProtein" | "maximumCrudeProtein" | "startWeek" | "endWeek" | "updatedAt"
 >;

@@ -1,4 +1,5 @@
 import { PersistenceError } from "@/shared/errors/persistence.error";
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
@@ -27,14 +28,19 @@ export class NutritionUsecase {
         return ResultMapper.map(ResultFactory.success(result.data), NutritionMapper.toResponseDTO);
     }
 
-    async find(filters?: FindNutritionDTO): Promise<Result<ResponseNutritionDTO[]>> {
+    async find(
+        filters?: FindNutritionDTO
+    ): Promise<Result<PaginationResult<ResponseNutritionDTO>>> {
         const result = await this.nutritionRepository.find(filters);
 
         if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch nutritious."));
         }
 
-        return ResultMapper.map(result, NutritionMapper.toResponseDTOList);
+        return ResultMapper.map(result, (pagination) => ({
+            ...pagination,
+            data: NutritionMapper.toResponseDTOList(pagination.data),
+        }));
     }
 
     async findByWeek(week: number): Promise<Result<ResponseNutritionDTO>> {

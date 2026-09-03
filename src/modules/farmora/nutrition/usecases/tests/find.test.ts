@@ -13,7 +13,7 @@ describe("NutritionUsecase - find", () => {
     test("Should return all nutritious", async () => {
         const nutritious = expectSuccess(await usecase.find());
 
-        expect(nutritious).toHaveLength(4);
+        expect(nutritious.data).toHaveLength(4);
     });
 
     test("Should filter by name", async () => {
@@ -23,8 +23,8 @@ describe("NutritionUsecase - find", () => {
             })
         );
 
-        expect(nutritious).toHaveLength(1);
-        expect(nutritious[0].name).toBe("Postura");
+        expect(nutritious.data).toHaveLength(1);
+        expect(nutritious.data[0].name).toBe("Postura");
     });
 
     test("Should filter by start week", async () => {
@@ -34,8 +34,8 @@ describe("NutritionUsecase - find", () => {
             })
         );
 
-        expect(nutritious).toHaveLength(1);
-        expect(nutritious[0].name).toBe("Postura");
+        expect(nutritious.data).toHaveLength(1);
+        expect(nutritious.data[0].name).toBe("Postura");
     });
 
     test("Should filter by end week", async () => {
@@ -45,8 +45,8 @@ describe("NutritionUsecase - find", () => {
             })
         );
 
-        expect(nutritious).toHaveLength(1);
-        expect(nutritious[0].name).toBe("Inicial");
+        expect(nutritious.data).toHaveLength(1);
+        expect(nutritious.data[0].name).toBe("Inicial");
     });
 
     test("Should return empty list when no nutrition matches filters", async () => {
@@ -56,7 +56,7 @@ describe("NutritionUsecase - find", () => {
             })
         );
 
-        expect(nutritious).toEqual([]);
+        expect(nutritious.data).toEqual([]);
     });
 
     test("Should order nutritious by minimum crude protein descending", async () => {
@@ -67,8 +67,8 @@ describe("NutritionUsecase - find", () => {
             })
         );
 
-        expect(nutritious[0].minimumCrudeProtein).toBeGreaterThanOrEqual(
-            nutritious[1].minimumCrudeProtein
+        expect(nutritious.data[0].minimumCrudeProtein).toBeGreaterThanOrEqual(
+            nutritious.data[1].minimumCrudeProtein
         );
     });
 
@@ -80,6 +80,6 @@ describe("NutritionUsecase - find", () => {
             })
         );
 
-        expect(nutritious).toHaveLength(2);
+        expect(nutritious.data).toHaveLength(2);
     });
 });

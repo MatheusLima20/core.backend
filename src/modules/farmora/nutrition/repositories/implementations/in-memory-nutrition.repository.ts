@@ -1,16 +1,16 @@
+import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
-import { PaginationUtil } from "@/shared/utils/pagination/pagination.util";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FindNutritionDTO } from "../../dtos/find-nutrition.dto";
-import { NutritionProps } from "../../entities/nutrition.props";
+import { NutritionEntity } from "../../entities/nutrition.entity";
 import { INutritionRepository } from "../nutrition-repository.interface";
 
 export class InMemoryNutritionRepository implements INutritionRepository {
-    private nutritious: NutritionProps[] = [
-        {
+    private nutritious: NutritionEntity[] = [
+        new NutritionEntity({
             uid: "nutrition-1",
 
             name: "Inicial",
@@ -23,8 +23,8 @@ export class InMemoryNutritionRepository implements INutritionRepository {
 
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
-        {
+        }),
+        new NutritionEntity({
             uid: "nutrition-2",
 
             name: "Crescimento",
@@ -37,8 +37,8 @@ export class InMemoryNutritionRepository implements INutritionRepository {
 
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
-        {
+        }),
+        new NutritionEntity({
             uid: "nutrition-3",
 
             name: "Desenvolvimento",
@@ -51,8 +51,8 @@ export class InMemoryNutritionRepository implements INutritionRepository {
 
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
-        {
+        }),
+        new NutritionEntity({
             uid: "nutrition-4",
 
             name: "Postura",
@@ -67,16 +67,16 @@ export class InMemoryNutritionRepository implements INutritionRepository {
 
             createdAt: new Date(),
             updatedAt: new Date(),
-        },
+        }),
     ];
 
-    async findByUID(uid: string): Promise<Result<NutritionProps | null>> {
+    async findByUID(uid: string): Promise<Result<NutritionEntity | null>> {
         const nutrition = this.nutritious.find((item) => StringUtil.equals(item.uid, uid)) ?? null;
 
         return ResultFactory.success(nutrition);
     }
 
-    async find(filters?: FindNutritionDTO): Promise<Result<NutritionProps[]>> {
+    async find(filters?: FindNutritionDTO): Promise<Result<PaginationResult<NutritionEntity>>> {
         let nutritious = [...this.nutritious];
 
         if (filters?.name) {
@@ -101,14 +101,26 @@ export class InMemoryNutritionRepository implements INutritionRepository {
             });
         }
 
-        if (filters?.page && filters?.limit) {
-            nutritious = PaginationUtil.paginate(nutritious, filters.page, filters.limit);
-        }
+        const page = filters?.page ?? 1;
+        const limit = filters?.limit ?? 10;
 
-        return ResultFactory.success(nutritious);
+        const total = nutritious.length;
+        const totalPages = Math.ceil(total / limit);
+
+        const start = (page - 1) * limit;
+
+        const data = nutritious.slice(start, start + limit);
+
+        return ResultFactory.success({
+            data,
+            page,
+            limit,
+            total,
+            totalPages,
+        });
     }
 
-    async findByWeek(week: number): Promise<Result<NutritionProps | null>> {
+    async findByWeek(week: number): Promise<Result<NutritionEntity | null>> {
         const nutrition =
             this.nutritious.find((item) => item.startWeek <= week && item.endWeek >= week) ?? null;
 

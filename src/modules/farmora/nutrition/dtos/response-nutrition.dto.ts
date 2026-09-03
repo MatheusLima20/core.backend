@@ -1,7 +1,7 @@
-import { NutritionProps } from "../entities/nutrition.props";
+import { NutritionEntity } from "../entities/nutrition.entity";
 
 export type ResponseNutritionDTO = Pick<
-    NutritionProps,
+    NutritionEntity,
     | "uid"
     | "name"
     | "minimumCrudeProtein"
