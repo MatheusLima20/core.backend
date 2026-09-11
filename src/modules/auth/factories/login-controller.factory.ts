@@ -1,5 +1,7 @@
 import { MembershipEntity } from "@/modules/membership/entities/membership.entity";
 import { TypeORMMembershipRepository } from "@/modules/membership/repositories/implementations/type-orm-membership.repository";
+import { PlatformEntity } from "@/modules/platform/entities/platform.entity";
+import { TypeORMPlatformRepository } from "@/modules/platform/repositories/implementations/type-orm-platform.repository";
 import { UserEntity } from "@/modules/user/entities/user.entity";
 import { TypeORMUserRepository } from "@/modules/user/repositories/implementations/type-orm-user.repository";
 import { dataSource } from "@/services/database/database";
@@ -16,6 +18,10 @@ export function makeAuthController(): AuthController {
         dataSource.getRepository(MembershipEntity)
     );
 
+    const platformRepository = new TypeORMPlatformRepository(
+        dataSource.getRepository(PlatformEntity)
+    );
+
     const hashProvider = new BcryptHashProvider();
 
     const tokenProvider = new JWTTokenProvider();
@@ -23,6 +29,7 @@ export function makeAuthController(): AuthController {
     const usecase = new LoginUsecase(
         userRepository,
         membershipRepository,
+        platformRepository,
         hashProvider,
         tokenProvider
     );
