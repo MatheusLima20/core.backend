@@ -3,8 +3,8 @@ import { Gender } from "../enum/gender.enum";
 export interface UserProps {
     uid?: string;
     name: string;
-    docNumberPerson: number | null;
-    docNumberBusiness: number | null;
+    docNumberPerson: string | null;
+    docNumberBusiness: string | null;
     isActivated: boolean;
     gender: Gender;
     email: string;

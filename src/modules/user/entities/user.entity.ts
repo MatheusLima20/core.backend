@@ -16,10 +16,10 @@ export class UserEntity extends BaseEntity implements UserProps {
     name!: string;
 
     @Column({ type: "bigint", nullable: true })
-    docNumberPerson!: number | null;
+    docNumberPerson!: string | null;
 
     @Column({ type: "bigint", nullable: true })
-    docNumberBusiness!: number | null;
+    docNumberBusiness!: string | null;
 
     @Column({
         type: "enum",

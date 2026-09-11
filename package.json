@@ -75,7 +75,7 @@
     "scripts": {
         "dev": "nodemon --exec \"ts-node --files src/server.ts\"",
         "start": "node build/server.js",
-        "seed:nutrition": "ts-node -r tsconfig-paths/register src/database/seeds/run-seeds.ts",
+        "seed:run": "ts-node -r tsconfig-paths/register src/database/seeds/run-seeds.ts",
         "migration:generate": "NODE_OPTIONS='-r tsconfig-paths/register' typeorm-ts-node-commonjs migration:generate -d src/services/database/database.ts src/database/migrations/Migration",
         "migration:run": "NODE_OPTIONS='-r tsconfig-paths/register' typeorm-ts-node-commonjs migration:run -d src/services/database/database.ts",
         "migration:revert": "NODE_OPTIONS='-r tsconfig-paths/register' typeorm-ts-node-commonjs migration:revert -d src/services/database/database.ts",
