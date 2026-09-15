@@ -9,6 +9,12 @@ export abstract class AppError extends Error {
 
         Object.setPrototypeOf(this, new.target.prototype);
     }
-}
 
-export type AppErrorClass<E extends AppError = AppError> = new (...args: any[]) => E;
+    toJSON() {
+        return {
+            name: this.name,
+            message: this.message,
+            statusCode: this.statusCode,
+        };
+    }
+}

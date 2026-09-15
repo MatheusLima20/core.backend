@@ -15,15 +15,23 @@ export function errorMiddleware(
 
     if (error instanceof AppError) {
         response.status(error.statusCode).json({
-            error: error.message,
+            success: false,
+            error: {
+                name: error.name,
+                message: error.message,
+                statusCode: error.statusCode,
+            },
         });
 
         return;
     }
 
-    console.error(error);
-
     response.status(500).json({
-        error: "Internal server error",
+        success: false,
+        error: {
+            name: "InternalServerError",
+            message: "Internal server error",
+            statusCode: 500,
+        },
     });
 }
