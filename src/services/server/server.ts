@@ -2,6 +2,7 @@ import { errorMiddleware } from "@shared/errors/error.middleware";
 import cors from "cors";
 import express from "express";
 import { createServer, Server } from "http";
+import path from "path";
 
 import routes from "../../routes";
 import { IServer } from "./interface/server.interface";
@@ -29,6 +30,8 @@ export class ServerClass implements IServer {
 
     private addResources(): void {
         const app = this.app;
+
+        app.use("/uploads", express.static(path.resolve("uploads")));
 
         app.use(express.static(__dirname, { dotfiles: "allow" }));
 

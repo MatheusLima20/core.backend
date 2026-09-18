@@ -1,3 +1,5 @@
+import { getPublicUrl } from "@/shared/helpers/get-public-url";
+
 import { ContentResponseDTO } from "../dtos/content-response.dto";
 import { CreateContentResponseDTO } from "../dtos/create-content.dto";
 import { UpdateContentResponseDTO } from "../dtos/update-content.dto";
@@ -9,7 +11,7 @@ export const ContentMapper = {
             uid: content.uid,
             platformUID: content.platformUID,
             type: content.type,
-            url: content.url,
+            url: getPublicUrl(content.url),
             alt: content.alt,
             name: content.name,
             mimeType: content.mimeType,
@@ -43,7 +45,7 @@ export const ContentMapper = {
         return {
             uid: content.uid,
             type: content.type,
-            url: content.url,
+            url: getPublicUrl(content.url),
             alt: content.alt,
             name: content.name,
             mimeType: content.mimeType,

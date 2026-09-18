@@ -58,4 +58,8 @@ export class ContentEntity extends BaseEntity implements ContentProps {
             Object.assign(this, props);
         }
     }
+
+    static generateFileUrl(uid: string, extension: string): string {
+        return `/uploads/${uid}${extension}`;
+    }
 }

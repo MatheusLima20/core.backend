@@ -2,7 +2,6 @@ import { CreateContentDTO } from "../../../dtos/create-content.dto";
 import { ContentType } from "../../../enums/content.type";
 
 export const dataContent1: CreateContentDTO = {
-    platformUID: "plt_123",
     type: ContentType.IMAGE,
     url: "https://example.com/image-1.jpg",
     alt: "Product image",
@@ -12,7 +11,6 @@ export const dataContent1: CreateContentDTO = {
 };
 
 export const dataContent2: CreateContentDTO = {
-    platformUID: "plt_123",
     type: ContentType.IMAGE,
     url: "https://example.com/image-2.jpg",
     alt: "Product image",

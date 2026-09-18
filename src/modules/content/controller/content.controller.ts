@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 
 import { resultResponse } from "@/shared/http/result-response";
+import { UploadRequest } from "@/shared/http/types/upload-request";
 import { isFailure } from "@/shared/result/result.guard";
 
 import { CreateContentDTO } from "../dtos/create-content.dto";
 import { FindContentsDTO } from "../dtos/find-contents.dto";
 import { UpdateContentDTO } from "../dtos/update-content.dto";
+import { UploadContentDTO } from "../dtos/upload-content.dto";
+import { ContentType } from "../enums/content.type";
 import { ContentUsecase } from "../usecases/content.usecase";
 
 export class ContentController {
@@ -67,4 +70,38 @@ export class ContentController {
 
         return response.status(204).send();
     }
+
+    async upload(request: UploadRequest, response: Response): Promise<Response> {
+        if (!request.file) {
+            return response.status(400).json({
+                message: "File is required.",
+            });
+        }
+
+        const mimeType = request.file.mimetype ?? "application/octet-stream";
+
+        const data: UploadContentDTO = {
+            filepath: request.file.filepath,
+            originalFilename: request.file.originalFilename ?? "file",
+            mimeType,
+            size: request.file.size,
+            type: getContentType(mimeType),
+        };
+
+        const result = await this.usecase.upload(data);
+
+        return resultResponse(result, response, 201);
+    }
+}
+
+export function getContentType(mimeType: string): ContentType {
+    if (mimeType.startsWith("image/")) {
+        return ContentType.IMAGE;
+    }
+
+    if (mimeType.startsWith("video/")) {
+        return ContentType.VIDEO;
+    }
+
+    return ContentType.FILE;
 }

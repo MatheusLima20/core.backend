@@ -4,6 +4,7 @@ declare namespace NodeJS {
         HOST: string;
         HOST_NAME: string;
         PORT: string;
+        PROTOCOL: string;
 
         DB_TYPE: string;
         DB_HOST: string;
