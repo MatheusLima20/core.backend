@@ -72,7 +72,7 @@ export class CreatePlatformOwnerUseCase {
                 if (isFailure(membershipResult)) {
                     return ResultFactory.failure(membershipResult.error);
                 }
-                console.log(data);
+
                 return ResultFactory.success({
                     platform: {
                         uid: platform.uid,

@@ -6,7 +6,7 @@ export const user1: CreateUserDTO = {
     email: "john.doe@example.com",
     password: "123456",
     docNumberBusiness: null,
-    docNumberPerson: 123456789,
+    docNumberPerson: "123456789",
     gender: Gender.MALE,
 };
 
@@ -15,7 +15,7 @@ export const user2: CreateUserDTO = {
     email: "jane.doe@example.com",
     password: "123456",
     docNumberBusiness: null,
-    docNumberPerson: 987654321,
+    docNumberPerson: "987654321",
     gender: Gender.FEMALE,
 };
 

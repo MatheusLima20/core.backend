@@ -41,7 +41,7 @@ describe("UserUseCase", () => {
                 email: "matheus.lima@gmail.com",
                 password: "87654321",
                 docNumberBusiness: null,
-                docNumberPerson: 54879854,
+                docNumberPerson: "54879854",
                 gender: Gender.MALE,
             })
         );
@@ -78,7 +78,7 @@ describe("UserUseCase", () => {
             email: "unknown@example.com",
             password: "123456",
             docNumberBusiness: null,
-            docNumberPerson: 123456789,
+            docNumberPerson: "123456789",
             gender: Gender.MALE,
         });
 
@@ -90,7 +90,7 @@ describe("UserUseCase", () => {
     test("Should find an user by uid", async () => {
         const user = await setupUser(userUsecase, user1);
 
-        const result = expectSuccess(await userUsecase.findByUID(user.uid));
+        const result = expectSuccess(await userUsecase.findByUID(user?.uid));
 
         expect(result).not.toBeNull();
         expect(result?.uid).toBe(user.uid);

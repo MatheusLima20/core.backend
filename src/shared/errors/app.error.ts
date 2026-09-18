@@ -18,3 +18,5 @@ export abstract class AppError extends Error {
         };
     }
 }
+
+export type AppErrorClass<T extends AppError> = new (...args: any[]) => T;

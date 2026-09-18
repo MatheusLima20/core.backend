@@ -10,8 +10,8 @@ export class InMemoryTransactionCategoryRepository implements ITransactionCatego
     private transactions: TransactionCategoryEntity[] = [];
 
     async findByUID(
-        platformUID: string,
-        uid: string
+        uid: string,
+        platformUID: string
     ): Promise<Result<TransactionCategoryEntity | null>> {
         const transaction =
             this.transactions.find(
