@@ -34,6 +34,7 @@ export class ContentUsecase {
             platformUID: this.context.user.platformUID,
 
             createdAt: new Date(),
+            updatedAt: new Date(),
             createdBy: this.context.user.uid,
         });
 

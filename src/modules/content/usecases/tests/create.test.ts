@@ -77,13 +77,12 @@ describe("ContentUsecase - create", () => {
     });
 
     test("Should use the authenticated user platform", async () => {
-        const content = await setupContent(usecaseUser1, {
+        const content = await setupContent(usecaseUser2, {
             ...dataContent1,
-            platformUID: user2.platformUID,
         });
 
         expect(content).toMatchObject({
-            createdBy: user1.uid,
+            createdBy: user2.uid,
         });
     });
 

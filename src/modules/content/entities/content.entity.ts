@@ -7,7 +7,7 @@ import { ContentProps } from "./content.props";
 
 @Entity("contents")
 export class ContentEntity extends BaseEntity implements ContentProps {
-    static prefix = "cnt";
+    private static prefix = "cnt";
 
     @PrimaryColumn()
     uid!: string;
@@ -39,8 +39,8 @@ export class ContentEntity extends BaseEntity implements ContentProps {
     @Column()
     createdBy!: string;
 
-    @Column()
-    updatedBy?: string;
+    @Column({ nullable: true })
+    updatedBy?: string | null;
 
     @CreateDateColumn()
     createdAt!: Date;

@@ -10,7 +10,7 @@ export interface ContentProps {
     mimeType?: string | null;
     size?: number | null;
     createdBy?: string;
-    updatedBy?: string;
+    updatedBy?: string | null;
     createdAt: Date;
     updatedAt?: Date;
 }
