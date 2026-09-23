@@ -18,7 +18,7 @@ export class TestStockContext {
 
     productRepository = new InMemoryProductRepository();
 
-    stockRepository = new InMemoryStockRepository();
+    stockRepository = new InMemoryStockRepository(this.productRepository);
 
     users: AuthUser[] = [];
 

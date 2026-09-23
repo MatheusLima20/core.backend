@@ -27,6 +27,9 @@ describe("StockUsecase - find", () => {
 
     let productUID1!: string;
     let productUID2!: string;
+    let productUID3!: string;
+    let productUID4!: string;
+    let productUID5!: string;
 
     beforeEach(async () => {
         ({
@@ -44,8 +47,32 @@ describe("StockUsecase - find", () => {
 
         const product2 = expectSuccess(await productUsecaseUser1.create(dataProduct2(categoryUID)));
 
+        const product3 = expectSuccess(
+            await productUsecaseUser1.create({
+                ...dataProduct1(categoryUID),
+                name: "Product 3",
+            })
+        );
+
+        const product4 = expectSuccess(
+            await productUsecaseUser1.create({
+                ...dataProduct1(categoryUID),
+                name: "Product 4",
+            })
+        );
+
+        const product5 = expectSuccess(
+            await productUsecaseUser1.create({
+                ...dataProduct1(categoryUID),
+                name: "Product 5",
+            })
+        );
+
         productUID1 = product1.uid;
         productUID2 = product2.uid;
+        productUID3 = product3.uid;
+        productUID4 = product4.uid;
+        productUID5 = product5.uid;
     });
 
     test("Should find all platform stocks", async () => {
@@ -53,7 +80,30 @@ describe("StockUsecase - find", () => {
 
         const stocks = expectSuccess(await usecaseUser1.find());
 
-        expect(stocks.data.every((stock) => stock.platformUID === user1.platformUID)).toBe(true);
+        expect(stocks.data).toHaveLength(2);
+
+        expect(stocks.data.every((item) => item.platformUID === user1.platformUID)).toBe(true);
+    });
+
+    test("Should return stocks with product data", async () => {
+        const stock = await setupStock(usecaseUser1, dataStock1(productUID1));
+
+        const stocks = expectSuccess(await usecaseUser1.find());
+
+        expect(stocks.data).toHaveLength(1);
+
+        expect(stocks.data[0]).toMatchObject({
+            uid: stock.uid,
+            platformUID: user1.platformUID,
+            productUID: productUID1,
+            quantity: 100,
+            minimumStock: 20,
+            product: {
+                name: "Product 1",
+                description: dataProduct1(categoryUID).description ?? null,
+                price: dataProduct1(categoryUID).price,
+            },
+        });
     });
 
     test("Should return empty list when platform has no stocks", async () => {
@@ -108,7 +158,7 @@ describe("StockUsecase - find", () => {
             })
         );
 
-        expect(stocks.data.map((stock) => stock.uid)).toEqual([stockA.uid, stockB.uid]);
+        expect(stocks.data.map((item) => item.uid)).toEqual([stockA.uid, stockB.uid]);
     });
 
     test("Should order stocks by quantity descending", async () => {
@@ -129,7 +179,7 @@ describe("StockUsecase - find", () => {
             })
         );
 
-        expect(stocks.data.map((stock) => stock.uid)).toEqual([stockB.uid, stockA.uid]);
+        expect(stocks.data.map((item) => item.uid)).toEqual([stockB.uid, stockA.uid]);
     });
 
     test("Should order stocks by minimum stock ascending", async () => {
@@ -150,20 +200,24 @@ describe("StockUsecase - find", () => {
             })
         );
 
-        expect(stocks.data.map((stock) => stock.uid)).toEqual([stockA.uid, stockB.uid]);
+        expect(stocks.data.map((item) => item.uid)).toEqual([stockA.uid, stockB.uid]);
     });
 
     test("Should return first page", async () => {
         const [stockA, stockB] = await setupStocks(
             usecaseUser1,
             dataStock1(productUID1),
-            dataStock2(productUID2),
+            dataStock2(productUID2)
+        );
+
+        await setupStocks(
+            usecaseUser1,
             {
-                ...dataStock1(productUID1),
+                ...dataStock1(productUID3),
                 quantity: 300,
             },
             {
-                ...dataStock2(productUID2),
+                ...dataStock2(productUID4),
                 quantity: 400,
             }
         );
@@ -177,20 +231,20 @@ describe("StockUsecase - find", () => {
 
         expect(stocks.data).toHaveLength(2);
 
-        expect(stocks.data.map((stock) => stock.uid)).toEqual([stockA.uid, stockB.uid]);
+        expect(stocks.data.map((item) => item.uid)).toEqual([stockA.uid, stockB.uid]);
     });
 
     test("Should return second page", async () => {
-        const [, , stockC, stockD] = await setupStocks(
+        await setupStocks(usecaseUser1, dataStock1(productUID1), dataStock2(productUID2));
+
+        const [stockC, stockD] = await setupStocks(
             usecaseUser1,
-            dataStock1(productUID1),
-            dataStock2(productUID2),
             {
-                ...dataStock1(productUID1),
+                ...dataStock1(productUID3),
                 quantity: 300,
             },
             {
-                ...dataStock2(productUID2),
+                ...dataStock2(productUID4),
                 quantity: 400,
             }
         );
@@ -202,27 +256,28 @@ describe("StockUsecase - find", () => {
             })
         );
 
-        expect(stocks.data.map((stock) => stock.uid)).toEqual([stockC.uid, stockD.uid]);
+        expect(stocks.data.map((item) => item.uid)).toEqual([stockC.uid, stockD.uid]);
     });
 
     test("Should return remaining stocks on last page", async () => {
-        const [, , , , stockE] = await setupStocks(
+        await setupStocks(
             usecaseUser1,
             dataStock1(productUID1),
             dataStock2(productUID2),
             {
-                ...dataStock1(productUID1),
+                ...dataStock1(productUID3),
                 quantity: 300,
             },
             {
-                ...dataStock2(productUID2),
+                ...dataStock2(productUID4),
                 quantity: 400,
-            },
-            {
-                ...dataStock1(productUID1),
-                quantity: 500,
             }
         );
+
+        const [stockE] = await setupStocks(usecaseUser1, {
+            ...dataStock1(productUID5),
+            quantity: 500,
+        });
 
         const stocks = expectSuccess(
             await usecaseUser1.find({
@@ -231,7 +286,7 @@ describe("StockUsecase - find", () => {
             })
         );
 
-        expect(stocks.data.map((stock) => stock.uid)).toEqual([stockE.uid]);
+        expect(stocks.data.map((item) => item.uid)).toEqual([stockE.uid]);
     });
 
     test("Should return empty list when page does not exist", async () => {
@@ -248,24 +303,23 @@ describe("StockUsecase - find", () => {
     });
 
     test("Should filter, order and paginate stocks", async () => {
-        const stockB = await setupStock(usecaseUser1, {
-            productUID: productUID1,
-            quantity: 200,
-            minimumStock: 20,
-        });
-
         const stockA = await setupStock(usecaseUser1, {
-            productUID: productUID2,
+            productUID: productUID1,
             quantity: 100,
             minimumStock: 30,
         });
 
-        expectSuccess(
-            await productUsecaseUser1.create({
-                ...dataProduct1(categoryUID),
-                name: "Product 3",
-            })
-        );
+        const stockB = await setupStock(usecaseUser1, {
+            productUID: productUID2,
+            quantity: 200,
+            minimumStock: 20,
+        });
+
+        await setupStock(usecaseUser1, {
+            productUID: productUID3,
+            quantity: 300,
+            minimumStock: 10,
+        });
 
         const stocks = expectSuccess(
             await usecaseUser1.find({
@@ -276,24 +330,13 @@ describe("StockUsecase - find", () => {
             })
         );
 
-        expect(stocks.data.map((stock) => stock.uid)).toEqual([stockA.uid, stockB.uid]);
+        expect(stocks.data.map((item) => item.uid)).toEqual([stockA.uid, stockB.uid]);
+
+        expect(stocks.total).toBe(3);
+        expect(stocks.totalPages).toBe(2);
     });
 
     test("Should order before paginate", async () => {
-        const product3 = expectSuccess(
-            await productUsecaseUser1.create({
-                ...dataProduct1(categoryUID),
-                name: "Product 3",
-            })
-        );
-
-        const product4 = expectSuccess(
-            await productUsecaseUser1.create({
-                ...dataProduct1(categoryUID),
-                name: "Product 4",
-            })
-        );
-
         await setupStock(usecaseUser1, {
             productUID: productUID1,
             quantity: 100,
@@ -307,13 +350,13 @@ describe("StockUsecase - find", () => {
         });
 
         const stockC = await setupStock(usecaseUser1, {
-            productUID: product3.uid,
+            productUID: productUID3,
             quantity: 300,
             minimumStock: 30,
         });
 
         const stockD = await setupStock(usecaseUser1, {
-            productUID: product4.uid,
+            productUID: productUID4,
             quantity: 400,
             minimumStock: 40,
         });
@@ -327,6 +370,6 @@ describe("StockUsecase - find", () => {
             })
         );
 
-        expect(stocks.data.map((stock) => stock.uid)).toEqual([stockC.uid, stockD.uid]);
+        expect(stocks.data.map((item) => item.uid)).toEqual([stockC.uid, stockD.uid]);
     });
 });

@@ -1,11 +1,13 @@
 import { Repository } from "typeorm";
 
+import { ProductEntity } from "@/modules/product/entities/product.entity";
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FindStocksDTO } from "../../dtos/find-stocks.dto";
 import { StockEntity } from "../../entities/stock.entity";
+import { StockWithProduct } from "../../types/stock-with-product";
 import { IStockRepository } from "../stock-repository.interface";
 
 export class TypeORMStockRepository implements IStockRepository {
@@ -30,11 +32,33 @@ export class TypeORMStockRepository implements IStockRepository {
     async find(
         filters?: FindStocksDTO,
         platformUID?: string
-    ): Promise<Result<PaginationResult<StockEntity>>> {
+    ): Promise<Result<PaginationResult<StockWithProduct>>> {
         const page = filters?.page ?? 1;
         const limit = filters?.limit ?? 10;
 
-        const query = this.stockRepository.createQueryBuilder("stock");
+        const query = this.stockRepository
+            .createQueryBuilder("stock")
+            .innerJoin(
+                ProductEntity,
+                "product",
+                "product.uid = stock.productUID AND product.platformUID = stock.platformUID"
+            )
+            .select([
+                "stock.uid AS stock_uid",
+                "stock.platformUID AS stock_platform_uid",
+                "stock.productUID AS stock_product_uid",
+                "stock.quantity AS stock_quantity",
+                "stock.minimumStock AS stock_minimum_stock",
+                "stock.createdBy AS stock_created_by",
+                "stock.updatedBy AS stock_updated_by",
+                "stock.createdAt AS stock_created_at",
+                "stock.updatedAt AS stock_updated_at",
+
+                "product.uid AS product_uid",
+                "product.name AS product_name",
+                "product.description AS product_description",
+                "product.price AS product_price",
+            ]);
 
         if (platformUID) {
             query.andWhere("stock.platformUID = :platformUID", {
@@ -59,7 +83,27 @@ export class TypeORMStockRepository implements IStockRepository {
 
         query.skip((page - 1) * limit).take(limit);
 
-        const data = await query.getMany();
+        const rows = await query.getRawMany();
+
+        const data: StockWithProduct[] = rows.map((row) => ({
+            stock: new StockEntity({
+                uid: row.stock_uid,
+                platformUID: row.stock_platform_uid,
+                productUID: row.stock_product_uid,
+                quantity: Number(row.stock_quantity),
+                minimumStock: Number(row.stock_minimum_stock),
+                createdBy: row.stock_created_by,
+                updatedBy: row.stock_updated_by,
+                createdAt: row.stock_created_at,
+                updatedAt: row.stock_updated_at,
+            }),
+            product: {
+                uid: row.product_uid,
+                name: row.product_name,
+                description: row.product_description,
+                price: Number(row.product_price),
+            },
+        }));
 
         return ResultFactory.success({
             data,

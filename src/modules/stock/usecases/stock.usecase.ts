@@ -10,6 +10,7 @@ import { ResultMapper } from "@/shared/result/result.mapper";
 
 import { CreateStockDTO, CreateStockResponseDTO } from "../dtos/create-stock.dto";
 import { FindStocksDTO } from "../dtos/find-stocks.dto";
+import { StockListResponseDTO } from "../dtos/stock-list-response.dto";
 import { StockResponseDTO } from "../dtos/stock-response.dto";
 import { UpdateStockDTO, UpdateStockResponseDTO } from "../dtos/update-stock.dto";
 import { StockEntity } from "../entities/stock.entity";
@@ -17,6 +18,7 @@ import { StockAlreadyExistsError } from "../errors/stock-already-exists.error";
 import { StockNotFoundError } from "../errors/stock-not-found.error";
 import { StockMapper } from "../mappers/stock.mapper";
 import { IStockRepository } from "../repositories/stock-repository.interface";
+import { StockWithProduct } from "../types/stock-with-product";
 
 export class StockUsecase {
     constructor(
@@ -28,13 +30,13 @@ export class StockUsecase {
     async create(data: CreateStockDTO): Promise<Result<CreateStockResponseDTO>> {
         const product = await this.validateProduct(data.productUID);
 
-        if (!product.success) {
-            return ResultFactory.failure(new ProductNotFoundError({ uid: data.productUID }));
+        if (isFailure(product)) {
+            return ResultFactory.failure(product.error);
         }
 
         const validation = await this.validateStockAlreadyExists(data.productUID);
 
-        if (!validation.success) {
+        if (isFailure(validation)) {
             return validation;
         }
 
@@ -48,7 +50,7 @@ export class StockUsecase {
 
         const created = await this.stockRepository.register(stock);
 
-        if (!created.success) {
+        if (isFailure(created)) {
             return ResultFactory.failure(new PersistenceError("Failed to create stock."));
         }
 
@@ -63,23 +65,27 @@ export class StockUsecase {
         return ResultMapper.map(stock, StockMapper.toResponseDTO);
     }
 
-    async find(filters?: FindStocksDTO): Promise<Result<PaginationResult<StockResponseDTO>>> {
+    async find(filters?: FindStocksDTO): Promise<Result<PaginationResult<StockListResponseDTO>>> {
         const result = await this.stockRepository.find(filters, this.context.user.platformUID);
 
-        if (!result.success) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch stocks."));
+        if (isFailure(result)) {
+            return ResultFactory.failure(result.error);
         }
 
-        return ResultMapper.map(result, (pagination) => ({
-            ...pagination,
-            data: StockMapper.toResponseDTOList(pagination.data),
-        }));
+        const data: StockListResponseDTO[] = result.data.data.map(({ stock, product }) =>
+            StockMapper.toListResponseDTO({ stock, product })
+        );
+
+        return ResultFactory.success({
+            ...result.data,
+            data,
+        });
     }
 
     async update(data: UpdateStockDTO): Promise<Result<UpdateStockResponseDTO>> {
         const existing = await this.findByUID(data.uid);
 
-        if (!existing.success) {
+        if (isFailure(existing)) {
             return existing;
         }
 
@@ -138,7 +144,7 @@ export class StockUsecase {
 
     private async validateStockAlreadyExists(
         productUID: string
-    ): Promise<Result<StockResponseDTO | null>> {
+    ): Promise<Result<StockWithProduct | null>> {
         const result = await this.stockRepository.find(
             {
                 productUID,

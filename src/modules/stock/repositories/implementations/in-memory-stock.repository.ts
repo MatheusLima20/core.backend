@@ -1,12 +1,18 @@
+import { ProductNotFoundError } from "@/modules/product/errors/product-not-found.error";
+import { IProductRepository } from "@/modules/product/repositories/product-repository.interface";
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
 
 import { FindStocksDTO } from "../../dtos/find-stocks.dto";
 import { StockEntity } from "../../entities/stock.entity";
+import { StockWithProduct } from "../../types/stock-with-product";
 import { IStockRepository } from "../stock-repository.interface";
 
 export class InMemoryStockRepository implements IStockRepository {
+    constructor(private readonly productRepository: IProductRepository) {}
+
     private stocks: StockEntity[] = [];
 
     async findByUID(uid: string, platformUID: string): Promise<Result<StockEntity | null>> {
@@ -20,8 +26,8 @@ export class InMemoryStockRepository implements IStockRepository {
     async find(
         filters?: FindStocksDTO,
         platformUID?: string
-    ): Promise<Result<PaginationResult<StockEntity>>> {
-        let stocks = this.stocks;
+    ): Promise<Result<PaginationResult<StockWithProduct>>> {
+        let stocks = [...this.stocks];
 
         if (platformUID) {
             stocks = stocks.filter((stock) => stock.platformUID === platformUID);
@@ -56,7 +62,37 @@ export class InMemoryStockRepository implements IStockRepository {
 
         const start = (page - 1) * limit;
 
-        const data = stocks.slice(start, start + limit);
+        const paginatedStocks = stocks.slice(start, start + limit);
+
+        const data: StockWithProduct[] = [];
+
+        for (const stock of paginatedStocks) {
+            const productResult = await this.productRepository.findByUID(
+                stock.productUID,
+                stock.platformUID
+            );
+
+            if (isFailure(productResult)) {
+                return ResultFactory.failure(productResult.error);
+            }
+
+            if (!productResult.data) {
+                return ResultFactory.failure(
+                    new ProductNotFoundError({
+                        uid: stock.productUID,
+                    })
+                );
+            }
+
+            data.push({
+                stock,
+                product: {
+                    name: productResult.data.name,
+                    description: productResult.data.description ?? null,
+                    price: productResult.data.price,
+                },
+            });
+        }
 
         return ResultFactory.success({
             data,
