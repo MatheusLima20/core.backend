@@ -1,5 +1,6 @@
 import { InMemoryCategoryRepository } from "@/modules/category/repositories/implementations/in-memory-category.repository";
 import { CategoryUsecase } from "@/modules/category/usecases/category.usecase";
+import { InMemoryContentRepository } from "@/modules/content/repositories/implementations/in-memory-content.repository";
 import { InMemoryMembershipRepository } from "@/modules/membership/repositories/implementations/in-memory-membership.repository";
 import { InMemoryUserRepository } from "@/modules/user/repositories/implementations/in-memory-user.repository";
 import { AuthUser } from "@/shared/context/auth.user";
@@ -14,7 +15,9 @@ export class TestProductContext {
 
     categoryRepository = new InMemoryCategoryRepository();
 
-    productRepository = new InMemoryProductRepository();
+    contentRepository = new InMemoryContentRepository();
+
+    productRepository = new InMemoryProductRepository(this.contentRepository);
 
     users: AuthUser[] = [];
 

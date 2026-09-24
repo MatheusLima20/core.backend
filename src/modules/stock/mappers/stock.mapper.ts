@@ -36,6 +36,7 @@ export const StockMapper = {
             name: product.name,
             description: product.description,
             price: product.price,
+            content: product.content,
         },
     }),
 

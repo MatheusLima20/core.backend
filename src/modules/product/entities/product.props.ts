@@ -5,6 +5,8 @@ export interface ProductProps {
 
     categoryUID: string;
 
+    contentUID?: string | null;
+
     name: string;
 
     description?: string | null;

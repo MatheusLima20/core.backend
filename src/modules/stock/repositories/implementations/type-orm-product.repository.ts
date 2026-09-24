@@ -1,5 +1,6 @@
 import { Repository } from "typeorm";
 
+import { ContentEntity } from "@/modules/content/entities/content.entity";
 import { ProductEntity } from "@/modules/product/entities/product.entity";
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
@@ -43,6 +44,7 @@ export class TypeORMStockRepository implements IStockRepository {
                 "product",
                 "product.uid = stock.productUID AND product.platformUID = stock.platformUID"
             )
+            .leftJoin(ContentEntity, "content", "content.uid = product.contentUID")
             .select([
                 "stock.uid AS stock_uid",
                 "stock.platformUID AS stock_platform_uid",
@@ -58,6 +60,9 @@ export class TypeORMStockRepository implements IStockRepository {
                 "product.name AS product_name",
                 "product.description AS product_description",
                 "product.price AS product_price",
+
+                "content.uid AS content_uid",
+                "content.url AS content_url",
             ]);
 
         if (platformUID) {
@@ -97,11 +102,17 @@ export class TypeORMStockRepository implements IStockRepository {
                 createdAt: row.stock_created_at,
                 updatedAt: row.stock_updated_at,
             }),
+
             product: {
-                uid: row.product_uid,
                 name: row.product_name,
                 description: row.product_description,
                 price: Number(row.product_price),
+
+                content: row.content_uid
+                    ? {
+                          url: row.content_url,
+                      }
+                    : null,
             },
         }));
 

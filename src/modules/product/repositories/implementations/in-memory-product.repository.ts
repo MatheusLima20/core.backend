@@ -1,12 +1,16 @@
+import { InMemoryContentRepository } from "@/modules/content/repositories/implementations/in-memory-content.repository";
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
 
 import { FindProductsDTO } from "../../dtos/find-products.dto";
 import { ProductEntity } from "../../entities/product.entity";
+import { ProductWithContent } from "../../types/product-with.content";
 import { IProductRepository } from "../product-repository.interface";
 
 export class InMemoryProductRepository implements IProductRepository {
+    constructor(private readonly contentRepository: InMemoryContentRepository) {}
     private products: ProductEntity[] = [];
 
     async findByUID(uid: string, platformUID: string): Promise<Result<ProductEntity | null>> {
@@ -21,8 +25,8 @@ export class InMemoryProductRepository implements IProductRepository {
     async find(
         filters?: FindProductsDTO,
         platformUID?: string
-    ): Promise<Result<PaginationResult<ProductEntity>>> {
-        let products = this.products;
+    ): Promise<Result<PaginationResult<ProductWithContent>>> {
+        let products = [...this.products];
 
         if (platformUID) {
             products = products.filter((product) => product.platformUID === platformUID);
@@ -62,8 +66,35 @@ export class InMemoryProductRepository implements IProductRepository {
         const totalPages = Math.ceil(total / limit);
 
         const start = (page - 1) * limit;
+        const paginatedProducts = products.slice(start, start + limit);
 
-        const data = products.slice(start, start + limit);
+        const data: ProductWithContent[] = [];
+
+        for (const product of paginatedProducts) {
+            let content: ProductWithContent["content"] = null;
+
+            if (product.contentUID) {
+                const contentResult = await this.contentRepository.findByUID(
+                    product.contentUID,
+                    product.platformUID
+                );
+
+                if (isFailure(contentResult)) {
+                    return ResultFactory.failure(contentResult.error);
+                }
+
+                if (contentResult.data) {
+                    content = {
+                        url: contentResult.data.url,
+                    };
+                }
+            }
+
+            data.push({
+                product,
+                content,
+            });
+        }
 
         return ResultFactory.success({
             data,

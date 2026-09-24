@@ -10,6 +10,7 @@ import { ResultMapper } from "@/shared/result/result.mapper";
 
 import { CreateProductDTO, CreateProductResponseDTO } from "../dtos/create-product.dto";
 import { FindProductsDTO } from "../dtos/find-products.dto";
+import { ProductListResponseDTO } from "../dtos/product-list-response.dto";
 import { ProductResponseDTO } from "../dtos/product-response.dto";
 import { UpdateProductDTO, UpdateProductResponseDTO } from "../dtos/update-product.dto";
 import { ProductEntity } from "../entities/product.entity";
@@ -28,8 +29,8 @@ export class ProductUsecase {
     async create(data: CreateProductDTO): Promise<Result<CreateProductResponseDTO>> {
         const category = await this.validateCategory(data.categoryUID);
 
-        if (!category.success) {
-            return ResultFactory.failure(new CategoryNotFoundError({ uid: data.categoryUID }));
+        if (isFailure(category)) {
+            return category;
         }
 
         const validation = await this.validateProductAlreadyExists(data.name);
@@ -63,17 +64,19 @@ export class ProductUsecase {
         return ResultMapper.map(product, ProductMapper.toResponseDTO);
     }
 
-    async find(filters?: FindProductsDTO): Promise<Result<PaginationResult<ProductResponseDTO>>> {
+    async find(
+        filters?: FindProductsDTO
+    ): Promise<Result<PaginationResult<ProductListResponseDTO>>> {
         const result = await this.productRepository.find(filters, this.context.user.platformUID);
 
-        if (!result.success) {
+        if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch products."));
         }
 
-        return ResultMapper.map(result, (pagination) => ({
-            ...pagination,
-            data: ProductMapper.toResponseDTOList(pagination.data),
-        }));
+        return ResultFactory.success({
+            ...result.data,
+            data: result.data.data.map((item) => ProductMapper.toListResponseDTO(item)),
+        });
     }
 
     async update(data: UpdateProductDTO): Promise<Result<UpdateProductResponseDTO>> {
@@ -86,8 +89,8 @@ export class ProductUsecase {
         if (data.categoryUID && data.categoryUID !== existing.data.categoryUID) {
             const category = await this.validateCategory(data.categoryUID);
 
-            if (!category.success) {
-                return ResultFactory.failure(new CategoryNotFoundError({ uid: data.categoryUID }));
+            if (isFailure(category)) {
+                return category;
             }
         }
 
@@ -119,8 +122,8 @@ export class ProductUsecase {
     async delete(uid: string): Promise<Result<void>> {
         const existing = await this.productRepository.findByUID(uid, this.context.user.platformUID);
 
-        if (!existing.success) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch product."));
+        if (isFailure(existing)) {
+            return ResultFactory.failure(existing.error);
         }
 
         if (!existing.data) {
@@ -129,7 +132,7 @@ export class ProductUsecase {
 
         const deleted = await this.productRepository.delete(uid);
 
-        if (!deleted.success) {
+        if (isFailure(deleted)) {
             return ResultFactory.failure(new PersistenceError("Failed to delete product."));
         }
 
@@ -169,15 +172,19 @@ export class ProductUsecase {
         );
 
         if (isFailure(result)) {
-            return result;
+            return ResultFactory.failure(result.error);
         }
 
-        const [product] = result.data.data;
+        const [item] = result.data.data;
 
-        if (product && product.uid !== uid) {
+        if (!item) {
+            return ResultFactory.success(null);
+        }
+
+        if (item.product.uid !== uid) {
             return ResultFactory.failure(new ProductAlreadyExistsError({ name }));
         }
 
-        return ResultFactory.success(product ? ProductMapper.toResponseDTO(product) : null);
+        return ResultFactory.success(ProductMapper.toResponseDTO(item.product));
     }
 }

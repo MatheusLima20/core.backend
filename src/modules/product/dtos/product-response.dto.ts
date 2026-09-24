@@ -5,6 +5,7 @@ export type ProductResponseDTO = Pick<
     | "uid"
     | "platformUID"
     | "categoryUID"
+    | "contentUID"
     | "name"
     | "description"
     | "price"

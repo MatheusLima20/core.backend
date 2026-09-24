@@ -98,7 +98,7 @@ export class StockUsecase {
 
         const updated = await this.stockRepository.update(stock);
 
-        if (!updated.success) {
+        if (isFailure(updated)) {
             return ResultFactory.failure(new PersistenceError("Failed to update stock."));
         }
 
@@ -108,7 +108,7 @@ export class StockUsecase {
     async delete(uid: string): Promise<Result<void>> {
         const existing = await this.stockRepository.findByUID(uid, this.context.user.platformUID);
 
-        if (!existing.success) {
+        if (isFailure(existing)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch stock."));
         }
 
@@ -118,7 +118,7 @@ export class StockUsecase {
 
         const deleted = await this.stockRepository.delete(uid);
 
-        if (!deleted.success) {
+        if (isFailure(deleted)) {
             return ResultFactory.failure(new PersistenceError("Failed to delete stock."));
         }
 

@@ -5,5 +5,8 @@ export interface StockListResponseDTO extends StockResponseDTO {
         name: string;
         description: string | null;
         price: number;
+        content: {
+            url: string;
+        } | null;
     };
 }

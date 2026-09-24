@@ -68,6 +68,8 @@ export class TestBuilder {
                 product: this.testContext.productRepository,
 
                 stock: this.testContext.stockRepository,
+
+                content: this.testContext.contentRepository,
             },
         };
     }

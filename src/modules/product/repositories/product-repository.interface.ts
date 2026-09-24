@@ -3,6 +3,7 @@ import { Result } from "@/shared/result";
 
 import { FindProductsDTO } from "../dtos/find-products.dto";
 import { ProductEntity } from "../entities/product.entity";
+import { ProductWithContent } from "../types/product-with.content";
 
 export interface IProductRepository {
     findByUID(uid: string, platformUID?: string): Promise<Result<ProductEntity | null>>;
@@ -10,7 +11,7 @@ export interface IProductRepository {
     find(
         filters?: FindProductsDTO,
         platformUID?: string
-    ): Promise<Result<PaginationResult<ProductEntity>>>;
+    ): Promise<Result<PaginationResult<ProductWithContent>>>;
 
     register(product: ProductEntity): Promise<Result<ProductEntity>>;
 

@@ -31,7 +31,7 @@ export class ContentUsecase {
     async create(data: CreateContentDTO): Promise<Result<CreateContentResponseDTO>> {
         const validation = await this.validateContentAlreadyExists(data.name);
 
-        if (!validation.success) {
+        if (isFailure(validation)) {
             return validation;
         }
 
@@ -46,7 +46,7 @@ export class ContentUsecase {
 
         const created = await this.contentRepository.register(content);
 
-        if (!created.success) {
+        if (isFailure(created)) {
             return ResultFactory.failure(new PersistenceError("Failed to create content."));
         }
 
@@ -150,7 +150,7 @@ export class ContentUsecase {
 
         const uploaded = await this.fileStorage.upload(data.filepath, `${content.uid}${extension}`);
 
-        if (!uploaded.success) {
+        if (isFailure(uploaded)) {
             return ResultFactory.failure(new FileStorageError());
         }
 

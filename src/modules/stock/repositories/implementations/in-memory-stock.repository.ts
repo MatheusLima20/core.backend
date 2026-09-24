@@ -1,3 +1,4 @@
+import { IContentRepository } from "@/modules/content/repositories/content-repository.interface";
 import { ProductNotFoundError } from "@/modules/product/errors/product-not-found.error";
 import { IProductRepository } from "@/modules/product/repositories/product-repository.interface";
 import { PaginationResult } from "@/shared/pagination/pagination.result";
@@ -11,7 +12,10 @@ import { StockWithProduct } from "../../types/stock-with-product";
 import { IStockRepository } from "../stock-repository.interface";
 
 export class InMemoryStockRepository implements IStockRepository {
-    constructor(private readonly productRepository: IProductRepository) {}
+    constructor(
+        private readonly productRepository: IProductRepository,
+        private readonly contentRepository: IContentRepository
+    ) {}
 
     private stocks: StockEntity[] = [];
 
@@ -84,12 +88,32 @@ export class InMemoryStockRepository implements IStockRepository {
                 );
             }
 
+            let content: StockWithProduct["product"]["content"] = null;
+
+            if (productResult.data.contentUID) {
+                const contentResult = await this.contentRepository.findByUID(
+                    productResult.data.contentUID,
+                    stock.platformUID
+                );
+
+                if (isFailure(contentResult)) {
+                    return ResultFactory.failure(contentResult.error);
+                }
+
+                if (contentResult.data) {
+                    content = {
+                        url: contentResult.data.url,
+                    };
+                }
+            }
+
             data.push({
                 stock,
                 product: {
                     name: productResult.data.name,
                     description: productResult.data.description ?? null,
                     price: productResult.data.price,
+                    content,
                 },
             });
         }

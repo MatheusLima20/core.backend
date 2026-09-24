@@ -31,6 +31,9 @@ export class ProductEntity extends BaseEntity implements ProductProps {
     price!: number;
 
     @Column({ nullable: true })
+    contentUID?: string | null;
+
+    @Column({ nullable: true })
     barcode?: string | null | undefined;
 
     @Column({ nullable: true })
