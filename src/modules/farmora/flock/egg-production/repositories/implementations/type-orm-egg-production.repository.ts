@@ -5,13 +5,18 @@ import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FlockEntity } from "../../../flock/entities/flock.entity";
+import { FlockStatus } from "../../../flock/enums/flock-status.enum";
+import { EggProductionSummaryResponseDTO } from "../../dtos/egg-production-summary";
 import { FindEggProductionsDTO } from "../../dtos/find-egg-production.dto";
 import { EggProductionEntity } from "../../entities/egg-production.entity";
 import { EggProductionWithFlock } from "../../types/egg-production-with.flock";
 import { IEggProductionRepository } from "../egg-production-repository.interface";
 
 export class TypeORMEggProductionRepository implements IEggProductionRepository {
-    constructor(private readonly eggProductionRepository: Repository<EggProductionEntity>) {}
+    constructor(
+        private readonly eggProductionRepository: Repository<EggProductionEntity>,
+        private readonly flockRepository: Repository<FlockEntity>
+    ) {}
 
     async findByUID(platformUID: string, uid: string): Promise<Result<EggProductionEntity | null>> {
         const eggProduction = await this.eggProductionRepository.findOne({
@@ -122,6 +127,63 @@ export class TypeORMEggProductionRepository implements IEggProductionRepository 
             limit,
             total,
             totalPages: Math.ceil(total / limit),
+        });
+    }
+
+    async findSummary(platformUID: string): Promise<Result<EggProductionSummaryResponseDTO>> {
+        const today = new Date();
+
+        const productionResult = await this.eggProductionRepository
+            .createQueryBuilder("eggProduction")
+            .select("COALESCE(SUM(eggProduction.totalEggs), 0)", "totalCollectedToday")
+            .addSelect(
+                `COALESCE(
+        SUM(
+          COALESCE(eggProduction.crackedEggs, 0) +
+          COALESCE(eggProduction.dirtyEggs, 0) +
+          COALESCE(eggProduction.discardedEggs, 0)
+        ),
+        0
+      )`,
+                "discardedEggs"
+            )
+            .where("eggProduction.platformUID = :platformUID", {
+                platformUID,
+            })
+            .andWhere("DATE(eggProduction.productionDate) = DATE(:today)", { today })
+            .getRawOne<{
+                totalCollectedToday: string;
+                discardedEggs: string;
+            }>();
+
+        const flockResult = await this.flockRepository
+            .createQueryBuilder("flock")
+            .select("COALESCE(SUM(flock.quantity), 0)", "totalBirds")
+            .where("flock.platformUID = :platformUID", {
+                platformUID,
+            })
+            .andWhere("flock.status = :status", {
+                status: FlockStatus.IN_PRODUCTION,
+            })
+            .getRawOne<{
+                totalBirds: string;
+            }>();
+
+        const totalCollectedToday = Number(productionResult?.totalCollectedToday ?? 0);
+
+        const discardedEggs = Number(productionResult?.discardedEggs ?? 0);
+
+        const totalBirds = Number(flockResult?.totalBirds ?? 0);
+
+        const commercialEggs = Math.max(totalCollectedToday - discardedEggs, 0);
+
+        const layingRate = totalBirds > 0 ? (totalCollectedToday / totalBirds) * 100 : 0;
+
+        return ResultFactory.success({
+            totalCollectedToday,
+            layingRate,
+            commercialEggs,
+            discardedEggs,
         });
     }
 

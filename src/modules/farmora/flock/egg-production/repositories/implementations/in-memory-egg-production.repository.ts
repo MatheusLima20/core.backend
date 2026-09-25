@@ -6,7 +6,9 @@ import { DateUtil } from "@/shared/utils/date/date.util";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
+import { FlockStatus } from "../../../flock/enums/flock-status.enum";
 import { InMemoryFlockRepository } from "../../../flock/repositories/implementations/in-memory-flock.repository";
+import { EggProductionSummaryResponseDTO } from "../../dtos/egg-production-summary";
 import { FindEggProductionsDTO } from "../../dtos/find-egg-production.dto";
 import { EggProductionEntity } from "../../entities/egg-production.entity";
 import { EggProductionWithFlock } from "../../types/egg-production-with.flock";
@@ -66,13 +68,14 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
 
         if (filters?.startDate) {
             eggProductions = eggProductions.filter(
-                (eggProduction) => eggProduction.productionDate >= filters.startDate!
+                (eggProduction) =>
+                    !DateUtil.isBefore(eggProduction.productionDate, filters.startDate!)
             );
         }
 
         if (filters?.endDate) {
             eggProductions = eggProductions.filter(
-                (eggProduction) => eggProduction.productionDate <= filters.endDate!
+                (eggProduction) => !DateUtil.isAfter(eggProduction.productionDate, filters.endDate!)
             );
         }
 
@@ -134,6 +137,56 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
             limit,
             total,
             totalPages,
+        });
+    }
+
+    async findSummary(platformUID: string): Promise<Result<EggProductionSummaryResponseDTO>> {
+        const today = new Date();
+
+        const eggProductions = this.eggProductions.filter(
+            (eggProduction) =>
+                StringUtil.equals(eggProduction.platformUID!, platformUID) &&
+                DateUtil.isSameDay(eggProduction.productionDate, today)
+        );
+
+        const totalCollectedToday = eggProductions.reduce(
+            (total, production) => total + production.totalEggs,
+            0
+        );
+
+        const discardedEggs = eggProductions.reduce(
+            (total, production) =>
+                total +
+                (production.crackedEggs ?? 0) +
+                (production.dirtyEggs ?? 0) +
+                (production.discardedEggs ?? 0),
+            0
+        );
+
+        const commercialEggs = totalCollectedToday - discardedEggs;
+
+        const flocksResult = await this.flockRepository.find(platformUID, {
+            status: FlockStatus.IN_PRODUCTION,
+            page: 1,
+            limit: 1000,
+        });
+
+        if (isFailure(flocksResult)) {
+            return ResultFactory.failure(flocksResult.error);
+        }
+
+        const totalBirds = flocksResult.data.data.reduce(
+            (total, flock) => total + flock.quantity,
+            0
+        );
+
+        const layingRate = totalBirds > 0 ? (totalCollectedToday / totalBirds) * 100 : 0;
+
+        return ResultFactory.success({
+            totalCollectedToday,
+            layingRate,
+            commercialEggs,
+            discardedEggs,
         });
     }
 

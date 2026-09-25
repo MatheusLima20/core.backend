@@ -1,6 +1,7 @@
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 
+import { EggProductionSummaryResponseDTO } from "../dtos/egg-production-summary";
 import { FindEggProductionsDTO } from "../dtos/find-egg-production.dto";
 import { EggProductionEntity } from "../entities/egg-production.entity";
 import { EggProductionWithFlock } from "../types/egg-production-with.flock";
@@ -18,6 +19,8 @@ export interface IEggProductionRepository {
         platformUID?: string,
         filters?: FindEggProductionsDTO
     ): Promise<Result<PaginationResult<EggProductionWithFlock>>>;
+
+    findSummary(platformUID: string): Promise<Result<EggProductionSummaryResponseDTO>>;
 
     register(eggProduction: EggProductionEntity): Promise<Result<EggProductionEntity>>;
 

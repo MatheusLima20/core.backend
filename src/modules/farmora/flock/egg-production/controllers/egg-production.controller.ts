@@ -35,14 +35,12 @@ export class EggProductionController {
             flockUID: request.query.flockUID as string | undefined,
 
             productionDate: request.query.productionDate
-                ? new Date(request.query.productionDate as string)
+                ? (request.query.productionDate as string)
                 : undefined,
 
-            startDate: request.query.startDate
-                ? new Date(request.query.startDate as string)
-                : undefined,
+            startDate: request.query.startDate as string | undefined,
 
-            endDate: request.query.endDate ? new Date(request.query.endDate as string) : undefined,
+            endDate: request.query.endDate as string | undefined,
 
             minTotalEggs: request.query.minTotalEggs
                 ? Number(request.query.minTotalEggs)
@@ -68,6 +66,12 @@ export class EggProductionController {
 
     async findByUID(request: Request, response: Response): Promise<Response> {
         const result = await this.usecase.findByUID(request.params.uid);
+
+        return resultResponse(result, response);
+    }
+
+    async findSummary(_request: Request, response: Response): Promise<Response> {
+        const result = await this.usecase.findSummary();
 
         return resultResponse(result, response);
     }

@@ -17,6 +17,7 @@ import {
 } from "../dtos/create-egg-production.dto";
 import { EggProductionListResponseDTO } from "../dtos/egg-production-list-response.dto";
 import { ResponseEggProductionDTO } from "../dtos/egg-production-response.dto";
+import { EggProductionSummaryResponseDTO } from "../dtos/egg-production-summary";
 import { FindEggProductionsDTO } from "../dtos/find-egg-production.dto";
 import {
     UpdateEggProductionDTO,
@@ -140,6 +141,18 @@ export class EggProductionUsecase {
             ...result.data,
             data: result.data.data.map((item) => EggProductionMapper.toListResponseDTO(item)),
         });
+    }
+
+    async findSummary(): Promise<Result<EggProductionSummaryResponseDTO>> {
+        const result = await this.eggProductionRepository.findSummary(
+            this.context.user.platformUID
+        );
+
+        if (isFailure(result)) {
+            return ResultFactory.failure(result.error);
+        }
+
+        return ResultFactory.success(EggProductionMapper.toSummaryResponseDTO(result.data));
     }
 
     async update(data: UpdateEggProductionDTO): Promise<Result<UpdateEggProductionResponseDTO>> {

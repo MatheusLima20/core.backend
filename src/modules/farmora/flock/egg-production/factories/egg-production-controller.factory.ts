@@ -10,7 +10,8 @@ import { EggProductionUsecase } from "../usecases/egg-production.usecase";
 
 export function makeEggProductionController(context: RequestContext) {
     const eggProductionRepository = new TypeORMEggProductionRepository(
-        dataSource.getRepository(EggProductionEntity)
+        dataSource.getRepository(EggProductionEntity),
+        dataSource.getRepository(FlockEntity)
     );
 
     const flockRepository = new TypeORMFlockRepository(dataSource.getRepository(FlockEntity));

@@ -3,10 +3,10 @@ import { EggProductionEntity } from "../entities/egg-production.entity";
 export interface FindEggProductionsDTO {
     flockUID?: string;
 
-    productionDate?: Date;
+    productionDate?: string;
 
-    startDate?: Date;
-    endDate?: Date;
+    startDate?: string;
+    endDate?: string;
 
     minTotalEggs?: number;
     maxTotalEggs?: number;

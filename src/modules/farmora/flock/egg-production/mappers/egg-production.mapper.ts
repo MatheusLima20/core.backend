@@ -1,6 +1,7 @@
 import { CreateEggProductionResponseDTO } from "../dtos/create-egg-production.dto";
 import { EggProductionListResponseDTO } from "../dtos/egg-production-list-response.dto";
 import { ResponseEggProductionDTO } from "../dtos/egg-production-response.dto";
+import { EggProductionSummaryResponseDTO } from "../dtos/egg-production-summary";
 import { UpdateEggProductionResponseDTO } from "../dtos/update-egg-production.dto";
 import { EggProductionEntity } from "../entities/egg-production.entity";
 import { EggProductionWithFlock } from "../types/egg-production-with.flock";
@@ -75,6 +76,17 @@ export const EggProductionMapper = {
             notes: eggProduction.notes,
             updatedBy: eggProduction.updatedBy,
             updatedAt: eggProduction.updatedAt,
+        };
+    },
+
+    toSummaryResponseDTO: (
+        summary: EggProductionSummaryResponseDTO
+    ): EggProductionSummaryResponseDTO => {
+        return {
+            totalCollectedToday: summary.totalCollectedToday,
+            layingRate: summary.layingRate,
+            commercialEggs: summary.commercialEggs,
+            discardedEggs: summary.discardedEggs,
         };
     },
 };

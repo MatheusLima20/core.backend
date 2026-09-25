@@ -1,93 +1,139 @@
+type DateInput = Date | string;
+
+function toDate(value: DateInput): Date {
+    if (value instanceof Date) {
+        return new Date(value);
+    }
+
+    const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+
+    if (dateOnly) {
+        const [, year, month, day] = dateOnly;
+
+        return new Date(Number(year), Number(month) - 1, Number(day));
+    }
+
+    const result = new Date(value);
+
+    if (Number.isNaN(result.getTime())) {
+        throw new Error(`Invalid date: ${value}`);
+    }
+
+    return result;
+}
+
 export const DateUtil = {
     now(): Date {
         return new Date();
     },
 
-    addDays(date: Date, days: number): Date {
-        const result = new Date(date);
+    toDate(value: DateInput): Date {
+        return toDate(value);
+    },
+
+    addDays(date: DateInput, days: number): Date {
+        const result = toDate(date);
 
         result.setDate(result.getDate() + days);
 
         return result;
     },
 
-    subtractDays(date: Date, days: number): Date {
+    subtractDays(date: DateInput, days: number): Date {
         return this.addDays(date, -days);
     },
 
-    daysBetween(start: Date, end: Date): number {
+    daysBetween(start: DateInput, end: DateInput): number {
+        const startDate = toDate(start);
+        const endDate = toDate(end);
+
         const millisecondsPerDay = 1000 * 60 * 60 * 24;
 
-        const difference = end.getTime() - start.getTime();
+        const difference = endDate.getTime() - startDate.getTime();
 
         return Math.floor(difference / millisecondsPerDay);
     },
 
-    isToday(date: Date): boolean {
+    isToday(date: DateInput): boolean {
+        const value = toDate(date);
         const today = new Date();
 
         return (
-            date.getDate() === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear()
+            value.getDate() === today.getDate() &&
+            value.getMonth() === today.getMonth() &&
+            value.getFullYear() === today.getFullYear()
         );
     },
 
-    startOfDay(date: Date): Date {
-        const result = new Date(date);
+    startOfDay(date: DateInput): Date {
+        const result = toDate(date);
 
         result.setHours(0, 0, 0, 0);
 
         return result;
     },
 
-    endOfDay(date: Date): Date {
-        const result = new Date(date);
+    endOfDay(date: DateInput): Date {
+        const result = toDate(date);
 
         result.setHours(23, 59, 59, 999);
 
         return result;
     },
 
-    startOfMonth(date: Date): Date {
-        return new Date(date.getFullYear(), date.getMonth(), 1);
+    startOfMonth(date: DateInput): Date {
+        const value = toDate(date);
+
+        return new Date(value.getFullYear(), value.getMonth(), 1);
     },
 
-    endOfMonth(date: Date): Date {
-        return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999);
+    endOfMonth(date: DateInput): Date {
+        const value = toDate(date);
+
+        return new Date(value.getFullYear(), value.getMonth() + 1, 0, 23, 59, 59, 999);
     },
 
-    isBetween(date: Date, start: Date, end: Date): boolean {
-        return date >= start && date <= end;
+    isBetween(date: DateInput, start: DateInput, end: DateInput): boolean {
+        const value = toDate(date);
+        const startDate = toDate(start);
+        const endDate = toDate(end);
+
+        return value >= startDate && value <= endDate;
     },
 
-    ageInWeeks(date: Date): number {
+    ageInWeeks(date: DateInput): number {
         return Math.floor(this.daysBetween(date, new Date()) / 7);
     },
 
-    ageInDays(date: Date): number {
+    ageInDays(date: DateInput): number {
         return this.daysBetween(date, new Date());
     },
 
-    isSameDay(dateA: Date, dateB: Date): boolean {
+    isSameDay(dateA: DateInput, dateB: DateInput): boolean {
+        const valueA = toDate(dateA);
+        const valueB = toDate(dateB);
+
         return (
-            dateA.getFullYear() === dateB.getFullYear() &&
-            dateA.getMonth() === dateB.getMonth() &&
-            dateA.getDate() === dateB.getDate()
+            valueA.getFullYear() === valueB.getFullYear() &&
+            valueA.getMonth() === valueB.getMonth() &&
+            valueA.getDate() === valueB.getDate()
         );
     },
 
-    isBefore(dateA: Date, dateB: Date): boolean {
-        return dateA.getTime() < dateB.getTime();
+    isBefore(dateA: DateInput, dateB: DateInput): boolean {
+        return toDate(dateA).getTime() < toDate(dateB).getTime();
     },
 
-    isAfter(dateA: Date, dateB: Date): boolean {
-        return dateA.getTime() > dateB.getTime();
+    isAfter(dateA: DateInput, dateB: DateInput): boolean {
+        return toDate(dateA).getTime() > toDate(dateB).getTime();
     },
 
-    differenceInDays(dateA: Date, dateB: Date): number {
+    differenceInDays(dateA: DateInput, dateB: DateInput): number {
+        const valueA = toDate(dateA);
+        const valueB = toDate(dateB);
+
         const millisecondsPerDay = 1000 * 60 * 60 * 24;
 
-        return Math.floor(Math.abs(dateA.getTime() - dateB.getTime()) / millisecondsPerDay);
+        return Math.floor(Math.abs(valueA.getTime() - valueB.getTime()) / millisecondsPerDay);
     },
 };
