@@ -2,6 +2,7 @@ import { CreateFlockResponseDTO } from "../dtos/create-flock.dto";
 import { ResponseFlockDTO } from "../dtos/flock-response.dto";
 import { UpdateFlockResponseDTO } from "../dtos/update-flock.dto";
 import { FlockEntity } from "../entities/flock.entity";
+import { calculateFlockWeeks } from "../utils/flock-calculations";
 
 export const FlockMapper = {
     toResponseDTO: (flock: FlockEntity): ResponseFlockDTO => {
@@ -13,6 +14,7 @@ export const FlockMapper = {
             birthDate: flock.birthDate,
             arrivalDate: flock.arrivalDate,
             status: flock.status,
+            weeks: calculateFlockWeeks(flock.birthDate ?? null),
             description: flock.description,
             createdBy: flock.createdBy,
             updatedBy: flock.updatedBy,

@@ -61,13 +61,13 @@ describe("FlockUsecase - find", () => {
 
         const flocks = expectSuccess(
             await usecaseUser1.find({
-                status: FlockStatus.CLOSED,
+                status: FlockStatus.FINISHED,
             })
         );
 
         expect(flocks.data).toHaveLength(1);
 
-        expect(flocks.data[0].status).toBe(FlockStatus.CLOSED);
+        expect(flocks.data[0].status).toBe(FlockStatus.FINISHED);
     });
 
     test("Should filter flocks by minimum quantity", async () => {
@@ -225,23 +225,23 @@ describe("FlockUsecase - find", () => {
         const flockB = await setupFlock(usecaseUser1, {
             ...activeFlock,
             name: "Banana",
-            status: FlockStatus.ACTIVE,
+            status: FlockStatus.IN_PRODUCTION,
         });
 
         const flockA = await setupFlock(usecaseUser1, {
             ...activeFlock,
             name: "Apple",
-            status: FlockStatus.ACTIVE,
+            status: FlockStatus.IN_PRODUCTION,
         });
 
         await setupFlock(usecaseUser1, {
             ...closedFlock,
-            status: FlockStatus.CLOSED,
+            status: FlockStatus.FINISHED,
         });
 
         const flocks = expectSuccess(
             await usecaseUser1.find({
-                status: FlockStatus.ACTIVE,
+                status: FlockStatus.IN_PRODUCTION,
                 orderBy: "name",
                 order: "asc",
                 page: 1,

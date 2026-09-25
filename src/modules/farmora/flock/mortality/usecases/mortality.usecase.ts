@@ -157,7 +157,7 @@ export class MortalityUsecase {
             return ResultFactory.failure(new FlockNotFoundError({ uid: flockUID }));
         }
 
-        if (existing.data.status === FlockStatus.CLOSED) {
+        if (existing.data.status === FlockStatus.FINISHED) {
             return ResultFactory.failure(new FlockClosedError());
         }
 

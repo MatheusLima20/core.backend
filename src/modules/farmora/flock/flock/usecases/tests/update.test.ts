@@ -33,7 +33,7 @@ describe("FlockUsecase - update", () => {
             quantity: 180,
             birthDate: new Date("2026-02-01"),
             arrivalDate: new Date("2026-06-01"),
-            status: FlockStatus.CLOSED,
+            status: FlockStatus.FINISHED,
             description: "Updated description",
         };
 
@@ -77,11 +77,11 @@ describe("FlockUsecase - update", () => {
         const updated = expectSuccess(
             await usecaseUser1.update({
                 uid: flock.uid,
-                status: FlockStatus.CLOSED,
+                status: FlockStatus.FINISHED,
             })
         );
 
-        expect(updated.status).toBe(FlockStatus.CLOSED);
+        expect(updated.status).toBe(FlockStatus.FINISHED);
     });
 
     test("Should update only description", async () => {
@@ -134,7 +134,7 @@ describe("FlockUsecase - update", () => {
             usecaseUser1,
             makeFlock({
                 name: "Lote Novo",
-                status: FlockStatus.ACTIVE,
+                status: FlockStatus.IN_PRODUCTION,
             })
         );
 
@@ -142,7 +142,7 @@ describe("FlockUsecase - update", () => {
             await usecaseUser1.update({
                 uid: flock.uid,
                 name: duplicatedActiveFlock.name,
-                status: FlockStatus.ACTIVE,
+                status: FlockStatus.IN_PRODUCTION,
             }),
             FlockAlreadyExistsError
         );

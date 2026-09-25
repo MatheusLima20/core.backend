@@ -1,4 +1,5 @@
 export enum FlockStatus {
-    ACTIVE = "ACTIVE",
-    CLOSED = "CLOSED",
+    IN_PRODUCTION = "IN_PRODUCTION",
+    FINISHED = "FINISHED",
+    GROWING = "GROWING",
 }

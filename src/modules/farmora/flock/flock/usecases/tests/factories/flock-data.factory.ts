@@ -6,7 +6,7 @@ export const activeFlock: CreateFlockDTO = {
     quantity: 120,
     birthDate: new Date("2026-01-01"),
     arrivalDate: new Date("2026-05-15"),
-    status: FlockStatus.ACTIVE,
+    status: FlockStatus.IN_PRODUCTION,
     description: "Main production flock.",
 };
 
@@ -15,7 +15,7 @@ export const closedFlock: CreateFlockDTO = {
     quantity: 80,
     birthDate: new Date("2025-03-01"),
     arrivalDate: new Date("2025-07-10"),
-    status: FlockStatus.CLOSED,
+    status: FlockStatus.FINISHED,
     description: "Retired flock.",
 };
 
@@ -24,7 +24,7 @@ export const smallFlock: CreateFlockDTO = {
     quantity: 25,
     birthDate: new Date("2026-02-10"),
     arrivalDate: new Date("2026-06-01"),
-    status: FlockStatus.ACTIVE,
+    status: FlockStatus.IN_PRODUCTION,
     description: "Small flock for tests.",
 };
 
@@ -33,7 +33,7 @@ export const mediumFlock: CreateFlockDTO = {
     quantity: 75,
     birthDate: new Date("2026-01-20"),
     arrivalDate: new Date("2026-05-20"),
-    status: FlockStatus.ACTIVE,
+    status: FlockStatus.IN_PRODUCTION,
     description: "Medium flock for tests.",
 };
 
@@ -42,7 +42,7 @@ export const largeFlock: CreateFlockDTO = {
     quantity: 180,
     birthDate: new Date("2025-12-15"),
     arrivalDate: new Date("2026-04-30"),
-    status: FlockStatus.ACTIVE,
+    status: FlockStatus.IN_PRODUCTION,
     description: "Large flock for tests.",
 };
 
@@ -51,7 +51,7 @@ export const oldestFlock: CreateFlockDTO = {
     quantity: 90,
     birthDate: new Date("2024-08-01"),
     arrivalDate: new Date("2024-12-01"),
-    status: FlockStatus.CLOSED,
+    status: FlockStatus.FINISHED,
     description: "Old flock.",
 };
 
@@ -60,7 +60,7 @@ export const newestFlock: CreateFlockDTO = {
     quantity: 60,
     birthDate: new Date("2026-07-01"),
     arrivalDate: new Date("2026-07-20"),
-    status: FlockStatus.ACTIVE,
+    status: FlockStatus.IN_PRODUCTION,
     description: "Newest flock.",
 };
 

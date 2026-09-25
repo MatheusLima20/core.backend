@@ -171,7 +171,7 @@ export class WeightUsecase {
             return existingFlock;
         }
 
-        if (existingFlock.data.status === FlockStatus.CLOSED) {
+        if (existingFlock.data.status === FlockStatus.FINISHED) {
             return ResultFactory.failure(new FlockClosedError());
         }
 

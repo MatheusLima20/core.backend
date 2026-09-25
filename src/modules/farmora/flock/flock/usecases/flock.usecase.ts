@@ -80,7 +80,6 @@ export class FlockUsecase {
         if (isFailure(result)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch flocks."));
         }
-
         return ResultMapper.map(result, (pagination) => ({
             ...pagination,
             data: FlockMapper.toResponseDTOList(pagination.data),
@@ -166,8 +165,8 @@ export class FlockUsecase {
         const duplicated = result.data.some(
             (flock) =>
                 StringUtil.noEquals(flock.uid, uid!) &&
-                StringUtil.equals(flock.status, FlockStatus.ACTIVE) &&
-                StringUtil.equals(status, FlockStatus.ACTIVE)
+                StringUtil.equals(flock.status, FlockStatus.IN_PRODUCTION) &&
+                StringUtil.equals(status, FlockStatus.IN_PRODUCTION)
         );
 
         if (duplicated) {

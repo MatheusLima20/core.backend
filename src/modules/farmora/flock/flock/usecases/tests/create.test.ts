@@ -68,19 +68,19 @@ describe("FlockUsecase - create", () => {
     test("Should register active flock", async () => {
         const flock = await setupFlock(usecaseUser1, {
             ...activeFlock,
-            status: FlockStatus.ACTIVE,
+            status: FlockStatus.IN_PRODUCTION,
         });
 
-        expect(flock.status).toBe(FlockStatus.ACTIVE);
+        expect(flock.status).toBe(FlockStatus.IN_PRODUCTION);
     });
 
     test("Should register closed flock", async () => {
         const flock = await setupFlock(usecaseUser1, {
             ...activeFlock,
-            status: FlockStatus.CLOSED,
+            status: FlockStatus.FINISHED,
         });
 
-        expect(flock.status).toBe(FlockStatus.CLOSED);
+        expect(flock.status).toBe(FlockStatus.FINISHED);
     });
 
     test("Should register flock without description", async () => {
