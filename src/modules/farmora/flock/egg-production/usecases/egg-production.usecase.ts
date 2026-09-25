@@ -15,6 +15,7 @@ import {
     CreateEggProductionDTO,
     CreateEggProductionResponseDTO,
 } from "../dtos/create-egg-production.dto";
+import { EggProductionListResponseDTO } from "../dtos/egg-production-list-response.dto";
 import { ResponseEggProductionDTO } from "../dtos/egg-production-response.dto";
 import { FindEggProductionsDTO } from "../dtos/find-egg-production.dto";
 import {
@@ -125,7 +126,7 @@ export class EggProductionUsecase {
 
     async find(
         filters?: FindEggProductionsDTO
-    ): Promise<Result<PaginationResult<ResponseEggProductionDTO>>> {
+    ): Promise<Result<PaginationResult<EggProductionListResponseDTO>>> {
         const result = await this.eggProductionRepository.find(
             this.context.user.platformUID,
             filters
@@ -135,10 +136,10 @@ export class EggProductionUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch egg productions."));
         }
 
-        return ResultMapper.map(result, (pagination) => ({
-            ...pagination,
-            data: EggProductionMapper.toResponseDTOList(pagination.data),
-        }));
+        return ResultFactory.success({
+            ...result.data,
+            data: result.data.data.map((item) => EggProductionMapper.toListResponseDTO(item)),
+        });
     }
 
     async update(data: UpdateEggProductionDTO): Promise<Result<UpdateEggProductionResponseDTO>> {

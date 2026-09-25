@@ -1,10 +1,12 @@
 import { CreateEggProductionResponseDTO } from "../dtos/create-egg-production.dto";
+import { EggProductionListResponseDTO } from "../dtos/egg-production-list-response.dto";
 import { ResponseEggProductionDTO } from "../dtos/egg-production-response.dto";
 import { UpdateEggProductionResponseDTO } from "../dtos/update-egg-production.dto";
-import { EggProductionProps } from "../entities/egg-production.props";
+import { EggProductionEntity } from "../entities/egg-production.entity";
+import { EggProductionWithFlock } from "../types/egg-production-with.flock";
 
 export const EggProductionMapper = {
-    toResponseDTO: (eggProduction: EggProductionProps): ResponseEggProductionDTO => {
+    toResponseDTO: (eggProduction: EggProductionEntity): ResponseEggProductionDTO => {
         return {
             uid: eggProduction.uid,
             platformUID: eggProduction.platformUID,
@@ -22,11 +24,30 @@ export const EggProductionMapper = {
         };
     },
 
-    toResponseDTOList: (eggProductions: EggProductionProps[]): ResponseEggProductionDTO[] => {
+    toResponseDTOList: (eggProductions: EggProductionEntity[]): ResponseEggProductionDTO[] => {
         return eggProductions.map(EggProductionMapper.toResponseDTO);
     },
 
-    toCreateResponseDTO: (eggProduction: EggProductionProps): CreateEggProductionResponseDTO => {
+    toListResponseDTO(eggProduction: EggProductionWithFlock): EggProductionListResponseDTO {
+        return {
+            uid: eggProduction.production.uid,
+            platformUID: eggProduction.production.platformUID,
+            flockUID: eggProduction.production.flockUID,
+            flockName: eggProduction.flock.name,
+            productionDate: eggProduction.production.productionDate,
+            totalEggs: eggProduction.production.totalEggs,
+            crackedEggs: eggProduction.production.crackedEggs,
+            dirtyEggs: eggProduction.production.dirtyEggs,
+            discardedEggs: eggProduction.production.discardedEggs,
+            notes: eggProduction.production.notes,
+            createdBy: eggProduction.production.createdBy,
+            updatedBy: eggProduction.production.updatedBy,
+            createdAt: eggProduction.production.createdAt,
+            updatedAt: eggProduction.production.updatedAt,
+        };
+    },
+
+    toCreateResponseDTO: (eggProduction: EggProductionEntity): CreateEggProductionResponseDTO => {
         return {
             uid: eggProduction.uid,
             platformUID: eggProduction.platformUID,
@@ -42,7 +63,7 @@ export const EggProductionMapper = {
         };
     },
 
-    toUpdatedResponseDTO: (eggProduction: EggProductionProps): UpdateEggProductionResponseDTO => {
+    toUpdatedResponseDTO: (eggProduction: EggProductionEntity): UpdateEggProductionResponseDTO => {
         return {
             uid: eggProduction.uid,
             flockUID: eggProduction.flockUID,

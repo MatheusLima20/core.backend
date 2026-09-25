@@ -3,6 +3,7 @@ import { Result } from "@/shared/result";
 
 import { FindEggProductionsDTO } from "../dtos/find-egg-production.dto";
 import { EggProductionEntity } from "../entities/egg-production.entity";
+import { EggProductionWithFlock } from "../types/egg-production-with.flock";
 
 export interface IEggProductionRepository {
     findByUID(platformUID: string, uid: string): Promise<Result<EggProductionEntity | null>>;
@@ -14,9 +15,9 @@ export interface IEggProductionRepository {
     ): Promise<Result<EggProductionEntity | null>>;
 
     find(
-        platformUID: string,
+        platformUID?: string,
         filters?: FindEggProductionsDTO
-    ): Promise<Result<PaginationResult<EggProductionEntity>>>;
+    ): Promise<Result<PaginationResult<EggProductionWithFlock>>>;
 
     register(eggProduction: EggProductionEntity): Promise<Result<EggProductionEntity>>;
 

@@ -1,15 +1,20 @@
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
 import { DateUtil } from "@/shared/utils/date/date.util";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
+import { InMemoryFlockRepository } from "../../../flock/repositories/implementations/in-memory-flock.repository";
 import { FindEggProductionsDTO } from "../../dtos/find-egg-production.dto";
 import { EggProductionEntity } from "../../entities/egg-production.entity";
+import { EggProductionWithFlock } from "../../types/egg-production-with.flock";
 import { IEggProductionRepository } from "../egg-production-repository.interface";
 
 export class InMemoryEggProductionRepository implements IEggProductionRepository {
+    constructor(private readonly flockRepository: InMemoryFlockRepository) {}
+
     private eggProductions: EggProductionEntity[] = [];
 
     async findByUID(platformUID: string, uid: string): Promise<Result<EggProductionEntity | null>> {
@@ -42,7 +47,7 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
     async find(
         platformUID: string,
         filters?: FindEggProductionsDTO
-    ): Promise<Result<PaginationResult<EggProductionEntity>>> {
+    ): Promise<Result<PaginationResult<EggProductionWithFlock>>> {
         let eggProductions = this.eggProductions.filter((eggProduction) =>
             StringUtil.equals(eggProduction.platformUID!, platformUID)
         );
@@ -99,7 +104,29 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
 
         const start = (page - 1) * limit;
 
-        const data = eggProductions.slice(start, start + limit);
+        const paginatedEggProductions = eggProductions.slice(start, start + limit);
+
+        const data: EggProductionWithFlock[] = [];
+
+        for (const production of paginatedEggProductions) {
+            const flockResult = await this.flockRepository.findByUID(
+                production.flockUID,
+                platformUID
+            );
+
+            if (isFailure(flockResult)) {
+                return ResultFactory.failure(flockResult.error);
+            }
+
+            const flock = flockResult.data;
+
+            data.push({
+                production,
+                flock: {
+                    name: flock?.name ?? "",
+                },
+            });
+        }
 
         return ResultFactory.success({
             data,

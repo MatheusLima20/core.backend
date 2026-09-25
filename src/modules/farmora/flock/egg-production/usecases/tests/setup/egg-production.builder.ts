@@ -14,7 +14,7 @@ export class TestBuilder {
     private flockRepository: InMemoryFlockRepository = new InMemoryFlockRepository();
     private eggProductionUsecases: EggProductionUsecase[] = [];
     private eggProductionRepository: InMemoryEggProductionRepository =
-        new InMemoryEggProductionRepository();
+        new InMemoryEggProductionRepository(this.flockRepository);
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {

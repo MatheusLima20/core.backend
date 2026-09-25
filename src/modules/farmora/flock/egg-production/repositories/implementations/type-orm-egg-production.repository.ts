@@ -4,8 +4,10 @@ import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
+import { FlockEntity } from "../../../flock/entities/flock.entity";
 import { FindEggProductionsDTO } from "../../dtos/find-egg-production.dto";
 import { EggProductionEntity } from "../../entities/egg-production.entity";
+import { EggProductionWithFlock } from "../../types/egg-production-with.flock";
 import { IEggProductionRepository } from "../egg-production-repository.interface";
 
 export class TypeORMEggProductionRepository implements IEggProductionRepository {
@@ -44,14 +46,16 @@ export class TypeORMEggProductionRepository implements IEggProductionRepository 
     }
 
     async find(
-        platformUID: string,
+        platformUID?: string,
         filters?: FindEggProductionsDTO
-    ): Promise<Result<PaginationResult<EggProductionEntity>>> {
+    ): Promise<Result<PaginationResult<EggProductionWithFlock>>> {
         const page = filters?.page ?? 1;
         const limit = filters?.limit ?? 10;
 
         const query = this.eggProductionRepository
             .createQueryBuilder("eggProduction")
+            .leftJoin(FlockEntity, "flock", "flock.uid = eggProduction.flockUID")
+            .addSelect(["flock.uid", "flock.name"])
             .where("eggProduction.platformUID = :platformUID", {
                 platformUID,
             });
@@ -103,7 +107,14 @@ export class TypeORMEggProductionRepository implements IEggProductionRepository 
 
         query.skip((page - 1) * limit).take(limit);
 
-        const data = await query.getMany();
+        const { entities, raw } = await query.getRawAndEntities();
+
+        const data: EggProductionWithFlock[] = entities.map((production, index) => ({
+            production,
+            flock: {
+                name: raw[index].flock_name,
+            },
+        }));
 
         return ResultFactory.success({
             data,
