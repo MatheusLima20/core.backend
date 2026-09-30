@@ -1,13 +1,13 @@
 import { CreateStockDTO } from "../../../dtos/create-stock.dto";
 
 export const dataStock1 = (productUID: string): CreateStockDTO => ({
-    productUID,
+    itemUID: productUID,
     quantity: 100,
     minimumStock: 20,
 });
 
 export const dataStock2 = (productUID: string): CreateStockDTO => ({
-    productUID,
+    itemUID: productUID,
     quantity: 200,
     minimumStock: 30,
 });

@@ -1,7 +1,7 @@
 import { StockEntity } from "../entities/stock.entity";
 
 export interface FindStocksDTO {
-    productUID?: string;
+    itemUID?: string;
 
     page?: number;
     limit?: number;

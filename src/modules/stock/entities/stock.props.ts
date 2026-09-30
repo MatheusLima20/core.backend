@@ -3,7 +3,7 @@ export interface StockProps {
 
     platformUID: string;
 
-    productUID: string;
+    itemUID: string;
 
     quantity: number;
 

@@ -37,8 +37,8 @@ export class InMemoryStockRepository implements IStockRepository {
             stocks = stocks.filter((stock) => stock.platformUID === platformUID);
         }
 
-        if (filters?.productUID) {
-            stocks = stocks.filter((stock) => stock.productUID === filters.productUID);
+        if (filters?.itemUID) {
+            stocks = stocks.filter((stock) => stock.itemUID === filters.itemUID);
         }
 
         if (filters?.orderBy) {
@@ -72,7 +72,7 @@ export class InMemoryStockRepository implements IStockRepository {
 
         for (const stock of paginatedStocks) {
             const productResult = await this.productRepository.findByUID(
-                stock.productUID,
+                stock.itemUID,
                 stock.platformUID
             );
 
@@ -83,7 +83,7 @@ export class InMemoryStockRepository implements IStockRepository {
             if (!productResult.data) {
                 return ResultFactory.failure(
                     new ProductNotFoundError({
-                        uid: stock.productUID,
+                        uid: stock.itemUID,
                     })
                 );
             }

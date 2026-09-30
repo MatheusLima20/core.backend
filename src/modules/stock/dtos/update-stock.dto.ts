@@ -5,5 +5,5 @@ export type UpdateStockDTO = Partial<Pick<StockEntity, "quantity" | "minimumStoc
 
 export type UpdateStockResponseDTO = Pick<
     StockEntity,
-    "uid" | "productUID" | "quantity" | "minimumStock" | "updatedAt" | "updatedBy"
+    "uid" | "itemUID" | "quantity" | "minimumStock" | "updatedAt" | "updatedBy"
 >;

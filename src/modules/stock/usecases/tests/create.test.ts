@@ -65,7 +65,7 @@ describe("StockUsecase - create", () => {
         const stock = await setupStock(usecaseUser1, dataStock1(product1UID));
 
         expect(stock).toMatchObject({
-            productUID: product1UID,
+            itemUID: product1UID,
             quantity: dataStock1(product1UID).quantity,
             minimumStock: dataStock1(product1UID).minimumStock,
 
@@ -83,7 +83,7 @@ describe("StockUsecase - create", () => {
         const stock2 = await setupStock(usecaseUser2, dataStock2(product2UID));
 
         expect(stock1).toMatchObject({
-            productUID: product1UID,
+            itemUID: product1UID,
             quantity: dataStock1(product1UID).quantity,
             minimumStock: dataStock1(product1UID).minimumStock,
 
@@ -95,7 +95,7 @@ describe("StockUsecase - create", () => {
         });
 
         expect(stock2).toMatchObject({
-            productUID: product2UID,
+            itemUID: product2UID,
             quantity: dataStock2(product2UID).quantity,
             minimumStock: dataStock2(product2UID).minimumStock,
 
@@ -120,10 +120,10 @@ describe("StockUsecase - create", () => {
 
         const stock2 = await setupStock(usecaseUser2, dataStock1(product2UID));
 
-        expect(stock1.productUID).toBe(product1UID);
-        expect(stock2.productUID).toBe(product2UID);
+        expect(stock1.itemUID).toBe(product1UID);
+        expect(stock2.itemUID).toBe(product2UID);
 
-        expect(stock1.productUID).not.toBe(stock2.productUID);
+        expect(stock1.itemUID).not.toBe(stock2.itemUID);
     });
 
     test("Should not register duplicated stock for the same product", async () => {

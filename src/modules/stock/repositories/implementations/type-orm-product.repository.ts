@@ -42,13 +42,13 @@ export class TypeORMStockRepository implements IStockRepository {
             .innerJoin(
                 ProductEntity,
                 "product",
-                "product.uid = stock.productUID AND product.platformUID = stock.platformUID"
+                "product.uid = stock.itemUID AND product.platformUID = stock.platformUID"
             )
             .leftJoin(ContentEntity, "content", "content.uid = product.contentUID")
             .select([
                 "stock.uid AS stock_uid",
                 "stock.platformUID AS stock_platform_uid",
-                "stock.productUID AS stock_product_uid",
+                "stock.itemUID AS stock_item_uid",
                 "stock.quantity AS stock_quantity",
                 "stock.minimumStock AS stock_minimum_stock",
                 "stock.createdBy AS stock_created_by",
@@ -71,9 +71,9 @@ export class TypeORMStockRepository implements IStockRepository {
             });
         }
 
-        if (filters?.productUID) {
-            query.andWhere("stock.productUID = :productUID", {
-                productUID: filters.productUID,
+        if (filters?.itemUID) {
+            query.andWhere("stock.itemUID = :itemUID", {
+                itemUID: filters.itemUID,
             });
         }
 
@@ -94,7 +94,7 @@ export class TypeORMStockRepository implements IStockRepository {
             stock: new StockEntity({
                 uid: row.stock_uid,
                 platformUID: row.stock_platform_uid,
-                productUID: row.stock_product_uid,
+                itemUID: row.stock_item_uid,
                 quantity: Number(row.stock_quantity),
                 minimumStock: Number(row.stock_minimum_stock),
                 createdBy: row.stock_created_by,

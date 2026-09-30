@@ -28,13 +28,13 @@ export class StockUsecase {
     ) {}
 
     async create(data: CreateStockDTO): Promise<Result<CreateStockResponseDTO>> {
-        const product = await this.validateProduct(data.productUID);
+        const product = await this.validateProduct(data.itemUID);
 
         if (isFailure(product)) {
             return ResultFactory.failure(product.error);
         }
 
-        const validation = await this.validateStockAlreadyExists(data.productUID);
+        const validation = await this.validateStockAlreadyExists(data.itemUID);
 
         if (isFailure(validation)) {
             return validation;
@@ -147,7 +147,7 @@ export class StockUsecase {
     ): Promise<Result<StockWithProduct | null>> {
         const result = await this.stockRepository.find(
             {
-                productUID,
+                itemUID: productUID,
             },
             this.context.user.platformUID
         );

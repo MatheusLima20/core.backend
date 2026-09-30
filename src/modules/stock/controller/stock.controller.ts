@@ -31,7 +31,7 @@ export class StockController {
 
     async find(request: Request, response: Response): Promise<Response> {
         const filters: FindStocksDTO = {
-            productUID: request.query.productUID as string | undefined,
+            itemUID: request.query.productUID as string | undefined,
 
             page: request.query.page ? Number(request.query.page) : undefined,
 

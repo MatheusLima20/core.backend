@@ -95,7 +95,7 @@ describe("StockUsecase - find", () => {
         expect(stocks.data[0]).toMatchObject({
             uid: stock.uid,
             platformUID: user1.platformUID,
-            productUID: productUID1,
+            itemUID: productUID1,
             quantity: 100,
             minimumStock: 20,
             product: {
@@ -119,13 +119,13 @@ describe("StockUsecase - find", () => {
 
         const stocks = expectSuccess(
             await usecaseUser1.find({
-                productUID: productUID1,
+                itemUID: productUID1,
             })
         );
 
         expect(stocks.data).toHaveLength(1);
         expect(stocks.data[0].uid).toBe(stock1.uid);
-        expect(stocks.data[0].productUID).toBe(productUID1);
+        expect(stocks.data[0].itemUID).toBe(productUID1);
     });
 
     test("Should return empty when filters match nothing", async () => {
@@ -133,7 +133,7 @@ describe("StockUsecase - find", () => {
 
         const stocks = expectSuccess(
             await usecaseUser1.find({
-                productUID: "invalid-product",
+                itemUID: "invalid-product",
             })
         );
 
@@ -304,19 +304,19 @@ describe("StockUsecase - find", () => {
 
     test("Should filter, order and paginate stocks", async () => {
         const stockA = await setupStock(usecaseUser1, {
-            productUID: productUID1,
+            itemUID: productUID1,
             quantity: 100,
             minimumStock: 30,
         });
 
         const stockB = await setupStock(usecaseUser1, {
-            productUID: productUID2,
+            itemUID: productUID2,
             quantity: 200,
             minimumStock: 20,
         });
 
         await setupStock(usecaseUser1, {
-            productUID: productUID3,
+            itemUID: productUID3,
             quantity: 300,
             minimumStock: 10,
         });
@@ -338,25 +338,25 @@ describe("StockUsecase - find", () => {
 
     test("Should order before paginate", async () => {
         await setupStock(usecaseUser1, {
-            productUID: productUID1,
+            itemUID: productUID1,
             quantity: 100,
             minimumStock: 10,
         });
 
         await setupStock(usecaseUser1, {
-            productUID: productUID2,
+            itemUID: productUID2,
             quantity: 200,
             minimumStock: 20,
         });
 
         const stockC = await setupStock(usecaseUser1, {
-            productUID: productUID3,
+            itemUID: productUID3,
             quantity: 300,
             minimumStock: 30,
         });
 
         const stockD = await setupStock(usecaseUser1, {
-            productUID: productUID4,
+            itemUID: productUID4,
             quantity: 400,
             minimumStock: 40,
         });

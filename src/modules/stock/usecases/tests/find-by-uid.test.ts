@@ -20,7 +20,7 @@ describe("StockUsecase - findByUID", () => {
     let user2!: AuthUser;
 
     let categoryUID!: string;
-    let productUID!: string;
+    let itemUID!: string;
 
     let categoryUsecaseUser1!: CategoryUsecase;
     let productUsecaseUser1!: ProductUsecase;
@@ -42,22 +42,22 @@ describe("StockUsecase - findByUID", () => {
 
         const product = expectSuccess(await productUsecaseUser1.create(dataProduct1(categoryUID)));
 
-        productUID = product.uid;
+        itemUID = product.uid;
     });
 
     test("Should find a stock by uid", async () => {
-        const stock = await setupStock(usecaseUser1, dataStock1(productUID));
+        const stock = await setupStock(usecaseUser1, dataStock1(itemUID));
 
         const found = expectSuccess(await usecaseUser1.findByUID(stock.uid));
 
         expect(found).toMatchObject({
             uid: stock.uid,
 
-            productUID,
+            itemUID,
 
-            quantity: dataStock1(productUID).quantity,
+            quantity: dataStock1(itemUID).quantity,
 
-            minimumStock: dataStock1(productUID).minimumStock,
+            minimumStock: dataStock1(itemUID).minimumStock,
 
             platformUID: user1.platformUID,
 
@@ -72,13 +72,13 @@ describe("StockUsecase - findByUID", () => {
     });
 
     test("Should not find a stock from another platform", async () => {
-        const stock = await setupStock(usecaseUser1, dataStock1(productUID));
+        const stock = await setupStock(usecaseUser1, dataStock1(itemUID));
 
         expectFailure(await usecaseUser2.findByUID(stock.uid), StockNotFoundError);
     });
 
     test("Should return all persisted stock data", async () => {
-        const stock = await setupStock(usecaseUser1, dataStock1(productUID));
+        const stock = await setupStock(usecaseUser1, dataStock1(itemUID));
 
         const found = expectSuccess(await usecaseUser1.findByUID(stock.uid));
 
@@ -86,11 +86,11 @@ describe("StockUsecase - findByUID", () => {
             expect.objectContaining({
                 uid: stock.uid,
 
-                productUID,
+                itemUID,
 
-                quantity: dataStock1(productUID).quantity,
+                quantity: dataStock1(itemUID).quantity,
 
-                minimumStock: dataStock1(productUID).minimumStock,
+                minimumStock: dataStock1(itemUID).minimumStock,
 
                 platformUID: user1.platformUID,
 

@@ -9,7 +9,7 @@ export const StockMapper = {
     toResponseDTO: (stock: StockEntity): StockResponseDTO => ({
         uid: stock.uid,
         platformUID: stock.platformUID,
-        productUID: stock.productUID,
+        itemUID: stock.itemUID,
         quantity: stock.quantity,
         minimumStock: stock.minimumStock,
         createdAt: stock.createdAt,
@@ -24,7 +24,7 @@ export const StockMapper = {
     toListResponseDTO: ({ stock, product }: StockWithProduct): StockListResponseDTO => ({
         uid: stock.uid,
         platformUID: stock.platformUID,
-        productUID: stock.productUID,
+        itemUID: stock.itemUID,
         quantity: stock.quantity,
         minimumStock: stock.minimumStock,
         createdAt: stock.createdAt,
@@ -42,7 +42,7 @@ export const StockMapper = {
 
     toCreatedResponseDTO: (stock: StockEntity): CreateStockResponseDTO => ({
         uid: stock.uid,
-        productUID: stock.productUID,
+        itemUID: stock.itemUID,
         quantity: stock.quantity,
         minimumStock: stock.minimumStock,
         createdAt: stock.createdAt,
@@ -51,7 +51,7 @@ export const StockMapper = {
 
     toUpdatedResponseDTO: (stock: StockEntity): UpdateStockResponseDTO => ({
         uid: stock.uid,
-        productUID: stock.productUID,
+        itemUID: stock.itemUID,
         quantity: stock.quantity,
         minimumStock: stock.minimumStock,
         updatedAt: stock.updatedAt,

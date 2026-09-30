@@ -17,9 +17,9 @@ export class TestStockContext {
 
     categoryRepository = new InMemoryCategoryRepository();
 
-    productRepository = new InMemoryProductRepository();
-
     contentRepository = new InMemoryContentRepository();
+
+    productRepository = new InMemoryProductRepository(this.contentRepository);
 
     stockRepository = new InMemoryStockRepository(this.productRepository, this.contentRepository);
 

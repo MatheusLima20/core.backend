@@ -56,7 +56,7 @@ describe("StockUsecase - update", () => {
 
         expect(updated).toMatchObject({
             uid: stock.uid,
-            productUID: product1UID,
+            itemUID: product1UID,
             quantity: data.quantity,
             minimumStock: data.minimumStock,
             updatedAt: updated.updatedAt,
@@ -67,7 +67,7 @@ describe("StockUsecase - update", () => {
 
         expect(found).toMatchObject({
             uid: updated.uid,
-            productUID: product1UID,
+            itemUID: product1UID,
             quantity: updated.quantity,
             minimumStock: updated.minimumStock,
             updatedAt: updated.updatedAt,
@@ -89,7 +89,7 @@ describe("StockUsecase - update", () => {
 
         expect(updated.quantity).toBe(250);
         expect(updated.minimumStock).toBe(dataStock1(product1UID).minimumStock);
-        expect(updated.productUID).toBe(product1UID);
+        expect(updated.itemUID).toBe(product1UID);
     });
 
     test("Should update only minimum stock", async () => {
@@ -104,7 +104,7 @@ describe("StockUsecase - update", () => {
 
         expect(updated.minimumStock).toBe(40);
         expect(updated.quantity).toBe(dataStock1(product1UID).quantity);
-        expect(updated.productUID).toBe(product1UID);
+        expect(updated.itemUID).toBe(product1UID);
     });
 
     test("Should update quantity to zero", async () => {

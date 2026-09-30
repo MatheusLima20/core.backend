@@ -110,7 +110,7 @@ describe("EggProductionUsecase - find", () => {
 
         const productions = expectSuccess(
             await usecaseUser1.find({
-                productionDate: new Date("2026-07-30"),
+                productionDate: new Date("2026-07-30").toString(),
             })
         );
 

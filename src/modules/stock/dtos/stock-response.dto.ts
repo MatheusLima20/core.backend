@@ -4,7 +4,7 @@ export type StockResponseDTO = Pick<
     StockEntity,
     | "uid"
     | "platformUID"
-    | "productUID"
+    | "itemUID"
     | "quantity"
     | "minimumStock"
     | "createdBy"

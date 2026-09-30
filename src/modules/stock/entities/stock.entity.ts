@@ -15,7 +15,7 @@ export class StockEntity extends BaseEntity implements StockProps {
     platformUID!: string;
 
     @Column()
-    productUID!: string;
+    itemUID!: string;
 
     @Column({
         type: "decimal",
