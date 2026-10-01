@@ -1,3 +1,5 @@
+import { VaccinationStatus } from "../enums/vaccination.enum";
+
 export interface VaccinationProps {
     uid?: string;
 
@@ -8,6 +10,8 @@ export interface VaccinationProps {
     itemUID: string;
 
     applicationDate: Date;
+
+    status: VaccinationStatus;
 
     dose?: string;
 

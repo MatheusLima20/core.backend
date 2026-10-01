@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } fro
 
 import { BaseEntity } from "@/shared/entities/base.entity";
 
+import { VaccinationStatus } from "../enums/vaccination.enum";
 import { VaccinationProps } from "./vaccination.props";
 
 @Entity("vaccinations")
@@ -37,6 +38,12 @@ export class VaccinationEntity extends BaseEntity implements VaccinationProps {
         type: "date",
     })
     applicationDate!: Date;
+
+    @Column({
+        type: "varchar",
+        length: 50,
+    })
+    status!: VaccinationStatus;
 
     @Column({
         type: "varchar",

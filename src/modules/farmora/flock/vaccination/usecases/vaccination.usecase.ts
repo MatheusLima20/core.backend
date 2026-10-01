@@ -18,6 +18,7 @@ import { FindVaccinationsDTO } from "../dtos/find-vaccination.dto";
 import { UpdateVaccinationDTO, UpdateVaccinationResponseDTO } from "../dtos/update-vaccination.dto";
 import { ResponseVaccinationDTO } from "../dtos/vaccination-response.dto";
 import { VaccinationEntity } from "../entities/vaccination.entity";
+import { VaccinationStatus } from "../enums/vaccination.enum";
 import { VaccinationErrorCode } from "../enums/vaccination.error-code.enum";
 import { DuplicateVaccinationError } from "../errors/duplicate-vaccination.error";
 import { InvalidVaccinationError } from "../errors/invalid-vaccination.error";
@@ -46,7 +47,7 @@ export class VaccinationUsecase {
 
         const vaccination = new VaccinationEntity({
             platformUID: this.context.user.platformUID,
-
+            status: VaccinationStatus.SCHEDULED,
             createdBy: this.context.user.uid,
             updatedBy: undefined,
 

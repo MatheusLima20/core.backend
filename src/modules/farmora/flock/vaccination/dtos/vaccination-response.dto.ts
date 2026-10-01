@@ -7,6 +7,7 @@ export type ResponseVaccinationDTO = Pick<
     | "flockUID"
     | "itemUID"
     | "applicationDate"
+    | "status"
     | "dose"
     | "batch"
     | "nextDoseDate"
