@@ -1,6 +1,6 @@
 import { dataSource } from "@/services/database/database";
 
-import { NutritionController } from "../controller/nutrition.controller";
+import { NutritionController } from "../controllers/nutrition.controller";
 import { NutritionEntity } from "../entities/nutrition.entity";
 import { TypeORMNutritionRepository } from "../repositories/implementations/type-orm-nutrition.repository";
 import { NutritionUsecase } from "../usecases/nutrition.usecase";

@@ -1,12 +1,15 @@
 import { dataSource } from "@/services/database/database";
 
 import { seedNutrition } from "./nutrition.seeds";
+import { seedWeightStandard } from "./weight-standard.seeds";
 
 async function runSeeds(): Promise<void> {
     try {
         await dataSource.initialize();
 
         await seedNutrition(dataSource);
+
+        await seedWeightStandard(dataSource);
 
         console.log("Seeds executed successfully.");
     } catch (error) {
