@@ -20,4 +20,4 @@ export type UpdateFlockResponseDTO = Pick<
     | "description"
     | "updatedBy"
     | "updatedAt"
->;
+> & { weeks: number | null };

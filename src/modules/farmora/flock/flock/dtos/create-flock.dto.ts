@@ -19,4 +19,4 @@ export type CreateFlockResponseDTO = Pick<
     | "description"
     | "createdBy"
     | "createdAt"
->;
+> & { weeks: number | null };

@@ -64,6 +64,7 @@ export const FlockMapper = {
             name: flock.name,
             breedUID: flock.breedUID,
             platformUID: flock.platformUID,
+            weeks: calculateFlockWeeks(flock.birthDate ?? null),
             quantity: flock.quantity,
             birthDate: flock.birthDate,
             arrivalDate: flock.arrivalDate,
@@ -78,6 +79,7 @@ export const FlockMapper = {
         return {
             uid: flock.uid,
             breedUID: flock.breedUID,
+            weeks: calculateFlockWeeks(flock.birthDate ?? null),
             name: flock.name,
             quantity: flock.quantity,
             birthDate: flock.birthDate,
