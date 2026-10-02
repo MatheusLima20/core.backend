@@ -1,14 +1,19 @@
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
+import { isFailure } from "@/shared/result/result.guard";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
+import { IBreedRepository } from "../../../breed/repositories/breed-repository.interface";
 import { FindFlocksDTO } from "../../dtos/find-flock.dto";
 import { FlockEntity } from "../../entities/flock.entity";
+import { FlockWithBreed } from "../../types/flock-with.breed";
 import { IFlockRepository } from "../flock-repository.interface";
 
 export class InMemoryFlockRepository implements IFlockRepository {
+    constructor(private readonly breedRepository: IBreedRepository) {}
+
     private flocks: FlockEntity[] = [];
 
     async findByUID(platformUID: string, uid: string): Promise<Result<FlockEntity | null>> {
@@ -33,10 +38,14 @@ export class InMemoryFlockRepository implements IFlockRepository {
     async find(
         platformUID: string,
         filters?: FindFlocksDTO
-    ): Promise<Result<PaginationResult<FlockEntity>>> {
+    ): Promise<Result<PaginationResult<FlockWithBreed>>> {
         let flocks = this.flocks.filter((flock) =>
             StringUtil.equals(flock.platformUID!, platformUID)
         );
+
+        if (filters?.breedUID) {
+            flocks = flocks.filter((flock) => StringUtil.equals(flock.breedUID, filters.breedUID!));
+        }
 
         if (filters?.name) {
             flocks = flocks.filter((flock) => StringUtil.contains(flock.name, filters.name!));
@@ -70,7 +79,27 @@ export class InMemoryFlockRepository implements IFlockRepository {
 
         const start = (page - 1) * limit;
 
-        const data = flocks.slice(start, start + limit);
+        const paginatedFlocks = flocks.slice(start, start + limit);
+
+        const data: FlockWithBreed[] = [];
+
+        for (const flock of paginatedFlocks) {
+            const breedResult = await this.breedRepository.findByUID(flock.breedUID);
+
+            if (isFailure(breedResult)) {
+                return ResultFactory.failure(breedResult.error);
+            }
+
+            const breed = breedResult.data;
+
+            data.push({
+                flock,
+                breed: {
+                    name: breed?.name ?? "",
+                    urlImage: breed?.urlImage,
+                },
+            });
+        }
 
         return ResultFactory.success({
             data,

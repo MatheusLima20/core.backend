@@ -1,6 +1,9 @@
 import { FlockEntity } from "../entities/flock.entity";
 export interface UpdateFlockDTO extends Partial<
-    Pick<FlockEntity, "name" | "quantity" | "birthDate" | "arrivalDate" | "status" | "description">
+    Pick<
+        FlockEntity,
+        "breedUID" | "name" | "quantity" | "birthDate" | "arrivalDate" | "status" | "description"
+    >
 > {
     uid: string;
 }
@@ -8,6 +11,7 @@ export interface UpdateFlockDTO extends Partial<
 export type UpdateFlockResponseDTO = Pick<
     FlockEntity,
     | "uid"
+    | "breedUID"
     | "name"
     | "quantity"
     | "birthDate"

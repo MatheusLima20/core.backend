@@ -1,104 +1,93 @@
-import { AuthUser } from "@/shared/context/auth.user";
 import { expectSuccess } from "@/shared/tests/result.helper";
 
 import { BreedPurpose } from "../../enums/breed-origin.enum";
+import { EggColor } from "../../enums/egg-color.enum";
+import { InMemoryBreedRepository } from "../../repositories/implementations/in-memory-breed.repository";
 import { BreedUsecase } from "../breed.usecase";
-import { dataBreed1, dataBreed2 } from "./factories/breed-data.factory";
-import { scenario } from "./setup/breed.builder";
-import { setupBreed, setupBreeds } from "./setup/breed-tests.setup";
 
 describe("BreedUsecase - find", () => {
-    let usecaseUser1!: BreedUsecase;
-    let usecaseUser2!: BreedUsecase;
+    let usecase: BreedUsecase;
 
-    let user1!: AuthUser;
+    beforeEach(() => {
+        const repository = new InMemoryBreedRepository();
 
-    beforeEach(async () => {
-        ({
-            usecases: [usecaseUser1, usecaseUser2],
-            users: [user1],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        usecase = new BreedUsecase(repository);
     });
 
-    test("Should find all platform breeds", async () => {
-        await setupBreeds(usecaseUser1, dataBreed1, dataBreed2);
+    test("Should return all breeds", async () => {
+        const breeds = expectSuccess(await usecase.find());
 
-        const breeds = expectSuccess(await usecaseUser1.find());
-
-        expect(breeds.data.every((breed) => breed.platformUID === user1.platformUID)).toBe(true);
-    });
-
-    test("Should return empty list when platform has no breeds", async () => {
-        const breeds = expectSuccess(await usecaseUser2.find());
-
-        expect(breeds.data).toEqual([]);
+        expect(breeds.data.length).toBeGreaterThan(0);
     });
 
     test("Should filter breeds by name", async () => {
-        await setupBreeds(usecaseUser1, dataBreed1, dataBreed2);
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
-                name: dataBreed1.name,
+            await usecase.find({
+                name: "ISA Brown",
             })
         );
 
         expect(breeds.data).toHaveLength(1);
+        expect(breeds.data[0].name).toBe("ISA Brown");
+    });
 
-        expect(breeds.data[0].name).toBe(dataBreed1.name);
+    test("Should filter breeds by scientific name", async () => {
+        const breeds = expectSuccess(
+            await usecase.find({
+                scientificName: "Gallus gallus domesticus",
+            })
+        );
+
+        expect(
+            breeds.data.every((breed) => breed.scientificName === "Gallus gallus domesticus")
+        ).toBe(true);
     });
 
     test("Should filter breeds by egg color", async () => {
-        await setupBreeds(usecaseUser1, dataBreed1, dataBreed2);
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
-                eggColor: dataBreed2.eggColor,
+            await usecase.find({
+                eggColor: EggColor.BROWN,
             })
         );
 
-        expect(breeds.data).toHaveLength(1);
+        expect(breeds.data.length).toBeGreaterThan(0);
 
-        expect(breeds.data[0].eggColor).toBe(dataBreed2.eggColor);
+        expect(breeds.data.every((breed) => breed.eggColor === EggColor.BROWN)).toBe(true);
     });
 
     test("Should filter breeds by purpose", async () => {
-        await setupBreeds(usecaseUser1, dataBreed1, dataBreed2);
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
-                breedPurpose: dataBreed1.breedPurpose,
+            await usecase.find({
+                breedPurpose: BreedPurpose.LAYING,
             })
         );
 
-        expect(breeds.data).toHaveLength(1);
+        expect(breeds.data.length).toBeGreaterThan(0);
 
-        expect(breeds.data[0].breedPurpose).toBe(dataBreed1.breedPurpose);
+        expect(breeds.data.every((breed) => breed.breedPurpose === BreedPurpose.LAYING)).toBe(true);
     });
 
-    test("Should search breeds by name and purpose", async () => {
-        await setupBreeds(usecaseUser1, dataBreed1, dataBreed2);
-
+    test("Should filter breeds by multiple criteria", async () => {
         const breeds = expectSuccess(
-            await usecaseUser1.find({
-                name: dataBreed1.name,
-                breedPurpose: dataBreed1.breedPurpose,
+            await usecase.find({
+                eggColor: EggColor.BROWN,
+                breedPurpose: BreedPurpose.LAYING,
             })
         );
 
-        expect(breeds.data).toHaveLength(1);
+        expect(breeds.data.length).toBeGreaterThan(0);
 
-        expect(breeds.data[0]).toMatchObject({
-            name: dataBreed1.name,
-            breedPurpose: dataBreed1.breedPurpose,
-        });
+        expect(
+            breeds.data.every(
+                (breed) =>
+                    breed.eggColor === EggColor.BROWN && breed.breedPurpose === BreedPurpose.LAYING
+            )
+        ).toBe(true);
     });
 
-    test("Should return empty when filters match nothing", async () => {
-        await setupBreed(usecaseUser1, dataBreed1);
-
+    test("Should return empty list when no breed matches filters", async () => {
         const breeds = expectSuccess(
-            await usecaseUser1.find({
+            await usecase.find({
                 name: "Invalid Breed",
             })
         );
@@ -107,134 +96,46 @@ describe("BreedUsecase - find", () => {
     });
 
     test("Should order breeds by name ascending", async () => {
-        const breedB = await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "Banana",
-        });
-
-        const breedA = await setupBreed(usecaseUser1, {
-            ...dataBreed2,
-            name: "Apple",
-        });
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
+            await usecase.find({
                 orderBy: "name",
                 order: "asc",
             })
         );
 
-        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
+        const names = breeds.data.map((breed) => breed.name);
+
+        expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
     });
 
     test("Should order breeds by name descending", async () => {
-        const breedB = await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "Banana",
-        });
-
-        const breedA = await setupBreed(usecaseUser1, {
-            ...dataBreed2,
-            name: "Apple",
-        });
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
+            await usecase.find({
                 orderBy: "name",
                 order: "desc",
             })
         );
 
-        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedB.uid, breedA.uid]);
+        const names = breeds.data.map((breed) => breed.name);
+
+        expect(names).toEqual([...names].sort((a, b) => b.localeCompare(a)));
     });
 
     test("Should return first page", async () => {
-        const [breedA, breedB] = await setupBreeds(
-            usecaseUser1,
-            dataBreed1,
-            dataBreed2,
-            {
-                ...dataBreed1,
-                name: "Breed 3",
-            },
-            {
-                ...dataBreed1,
-                name: "Breed 4",
-            }
-        );
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
+            await usecase.find({
                 page: 1,
                 limit: 2,
             })
         );
 
         expect(breeds.data).toHaveLength(2);
-
-        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
-    });
-
-    test("Should return second page", async () => {
-        const [, , breedC, breedD] = await setupBreeds(
-            usecaseUser1,
-            dataBreed1,
-            dataBreed2,
-            {
-                ...dataBreed1,
-                name: "Breed 3",
-            },
-            {
-                ...dataBreed1,
-                name: "Breed 4",
-            }
-        );
-
-        const breeds = expectSuccess(
-            await usecaseUser1.find({
-                page: 2,
-                limit: 2,
-            })
-        );
-
-        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedC.uid, breedD.uid]);
-    });
-
-    test("Should return remaining breeds on last page", async () => {
-        const [, , , , breedE] = await setupBreeds(
-            usecaseUser1,
-            dataBreed1,
-            dataBreed2,
-            {
-                ...dataBreed1,
-                name: "Breed 3",
-            },
-            {
-                ...dataBreed1,
-                name: "Breed 4",
-            },
-            {
-                ...dataBreed1,
-                name: "Breed 5",
-            }
-        );
-
-        const breeds = expectSuccess(
-            await usecaseUser1.find({
-                page: 3,
-                limit: 2,
-            })
-        );
-
-        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedE.uid]);
     });
 
     test("Should return empty list when page does not exist", async () => {
-        await setupBreeds(usecaseUser1, dataBreed1, dataBreed2);
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
-                page: 10,
+            await usecase.find({
+                page: 999,
                 limit: 10,
             })
         );
@@ -242,89 +143,31 @@ describe("BreedUsecase - find", () => {
         expect(breeds.data).toEqual([]);
     });
 
-    test("Should filter and order breeds", async () => {
-        const breedB = await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "Banana",
-            breedPurpose: BreedPurpose.LAYING,
-        });
-
-        const breedA = await setupBreed(usecaseUser1, {
-            ...dataBreed2,
-            name: "Apple",
-            breedPurpose: BreedPurpose.LAYING,
-        });
-
-        await setupBreed(usecaseUser1, {
-            ...dataBreed2,
-            breedPurpose: BreedPurpose.DUAL_PURPOSE,
-        });
-
-        const breeds = expectSuccess(
-            await usecaseUser1.find({
-                breedPurpose: BreedPurpose.LAYING,
-                orderBy: "name",
-                order: "asc",
-            })
-        );
-
-        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
-    });
-
     test("Should order before paginate", async () => {
-        await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "A",
-        });
-
-        await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "B",
-        });
-
-        const breedC = await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "C",
-        });
-
-        const breedD = await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "D",
-        });
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
+            await usecase.find({
                 orderBy: "name",
                 order: "asc",
-                page: 2,
+                page: 1,
                 limit: 2,
             })
         );
 
-        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedC.uid, breedD.uid]);
+        const allBreeds = expectSuccess(
+            await usecase.find({
+                orderBy: "name",
+                order: "asc",
+            })
+        );
+
+        expect(breeds.data.map((breed) => breed.uid)).toEqual(
+            allBreeds.data.slice(0, 2).map((breed) => breed.uid)
+        );
     });
 
     test("Should filter, order and paginate breeds", async () => {
-        const breedB = await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "Banana",
-            breedPurpose: BreedPurpose.LAYING,
-        });
-
-        const breedA = await setupBreed(usecaseUser1, {
-            ...dataBreed2,
-            name: "Apple",
-            breedPurpose: BreedPurpose.LAYING,
-        });
-
-        await setupBreed(usecaseUser1, {
-            ...dataBreed1,
-            name: "Orange",
-            breedPurpose: BreedPurpose.LAYING,
-        });
-
         const breeds = expectSuccess(
-            await usecaseUser1.find({
+            await usecase.find({
                 breedPurpose: BreedPurpose.LAYING,
                 orderBy: "name",
                 order: "asc",
@@ -333,6 +176,12 @@ describe("BreedUsecase - find", () => {
             })
         );
 
-        expect(breeds.data.map((breed) => breed.uid)).toEqual([breedA.uid, breedB.uid]);
+        expect(breeds.data).toHaveLength(2);
+
+        expect(breeds.data.every((breed) => breed.breedPurpose === BreedPurpose.LAYING)).toBe(true);
+
+        const names = breeds.data.map((breed) => breed.name);
+
+        expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
     });
 });

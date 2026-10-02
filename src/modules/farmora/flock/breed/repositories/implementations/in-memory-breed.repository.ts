@@ -1,38 +1,142 @@
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
+import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FindBreedsDTO } from "../../dtos/find-breed.dto";
 import { BreedEntity } from "../../entities/breed.entity";
+import { BreedPurpose } from "../../enums/breed-origin.enum";
+import { EggColor } from "../../enums/egg-color.enum";
 import { IBreedRepository } from "../breed-repository.interface";
 
 export class InMemoryBreedRepository implements IBreedRepository {
-    private breeds: BreedEntity[] = [];
+    private breeds: BreedEntity[] = [
+        new BreedEntity({
+            uid: "brd_isa-brown",
+            name: "ISA Brown",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.BROWN,
+            breedPurpose: BreedPurpose.LAYING,
+            description: "Linhagem comercial de galinha poedeira de ovos marrons.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<BreedEntity | null>> {
-        const breed =
-            this.breeds.find((breed) => breed.platformUID === platformUID && breed.uid === uid) ??
-            null;
+        new BreedEntity({
+            uid: "brd-novogen-tinted",
+            name: "NOVOgen Tinted",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.TINTED,
+            breedPurpose: BreedPurpose.LAYING,
+            description: "Linhagem comercial de galinha poedeira de ovos de casca tinted.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
 
-        return ResultFactory.success(breed);
-    }
+        new BreedEntity({
+            uid: "brd-novogen-brown",
+            name: "NOVOgen Brown",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.BROWN,
+            breedPurpose: BreedPurpose.LAYING,
+            description: "Linhagem comercial de galinha poedeira de ovos marrons.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
 
-    async findByName(platformUID: string, name: string): Promise<Result<BreedEntity | null>> {
-        const breed =
-            this.breeds.find(
-                (breed) =>
-                    breed.platformUID === platformUID &&
-                    breed.name.trim().toLowerCase() === name.trim().toLowerCase()
-            ) ?? null;
+        new BreedEntity({
+            uid: "brd-novogen-white",
+            name: "NOVOgen White",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.WHITE,
+            breedPurpose: BreedPurpose.LAYING,
+            description: "Linhagem comercial de galinha poedeira de ovos brancos.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
 
-        return ResultFactory.success(breed);
-    }
+        new BreedEntity({
+            uid: "brd-novogen-color-green",
+            name: "NOVOgen Color Green",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.GREEN,
+            breedPurpose: BreedPurpose.DUAL_PURPOSE,
+            description:
+                "Linhagem COLOR da NOVOGEN selecionada para rusticidade e produção de ovos de casca verde.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
 
-    async find(
-        platformUID: string,
-        filters?: FindBreedsDTO
-    ): Promise<Result<PaginationResult<BreedEntity>>> {
-        let breeds = this.breeds.filter((breed) => breed.platformUID === platformUID);
+        new BreedEntity({
+            uid: "brd-novogen-color-blue",
+            name: "NOVOgen Color Blue",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.BLUE,
+            breedPurpose: BreedPurpose.DUAL_PURPOSE,
+            description:
+                "Linhagem COLOR da NOVOGEN selecionada para rusticidade e produção de ovos de casca azul.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
+
+        new BreedEntity({
+            uid: "brd-hyline-brown",
+            name: "Hy-Line Brown",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.BROWN,
+            breedPurpose: BreedPurpose.LAYING,
+            description: "Linhagem comercial de galinha poedeira de ovos marrons.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
+
+        new BreedEntity({
+            uid: "brd-dekalb-white",
+            name: "Dekalb White",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.WHITE,
+            breedPurpose: BreedPurpose.LAYING,
+            description: "Linhagem comercial de galinha poedeira de ovos brancos.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
+
+        new BreedEntity({
+            uid: "brd-lohmann-brown-classic",
+            name: "Lohmann Brown-Classic",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.BROWN,
+            breedPurpose: BreedPurpose.LAYING,
+            description: "Linhagem comercial de galinha poedeira de ovos marrons.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
+
+        new BreedEntity({
+            uid: "brd-bkb",
+            name: "BKB",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.BROWN,
+            breedPurpose: BreedPurpose.DUAL_PURPOSE,
+            description: "Linhagem avícola utilizada em sistemas de produção alternativos.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
+
+        new BreedEntity({
+            uid: "brd-glc",
+            name: "GLC",
+            scientificName: "Gallus gallus domesticus",
+            eggColor: EggColor.BROWN,
+            breedPurpose: BreedPurpose.DUAL_PURPOSE,
+            description: "Linhagem avícola utilizada em sistemas de produção alternativos.",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
+    ];
+
+    async find(filters?: FindBreedsDTO): Promise<Result<PaginationResult<BreedEntity>>> {
+        let breeds = this.breeds;
 
         if (filters?.name) {
             breeds = breeds.filter((breed) =>
@@ -90,27 +194,9 @@ export class InMemoryBreedRepository implements IBreedRepository {
         });
     }
 
-    async register(breed: BreedEntity): Promise<Result<BreedEntity>> {
-        this.breeds.push(breed);
+    async findByUID(uid: string): Promise<Result<BreedEntity | null>> {
+        const breed = this.breeds.find((breed) => StringUtil.equals(breed.uid, uid)) ?? null;
 
         return ResultFactory.success(breed);
-    }
-
-    async update(breed: BreedEntity): Promise<Result<BreedEntity>> {
-        const index = this.breeds.findIndex((b) => b.uid === breed.uid);
-
-        this.breeds[index] = breed;
-
-        return ResultFactory.success(breed);
-    }
-
-    async delete(uid: string): Promise<Result<void>> {
-        const index = this.breeds.findIndex((breed) => breed.uid === uid);
-
-        if (index !== -1) {
-            this.breeds.splice(index, 1);
-        }
-
-        return ResultFactory.success(undefined);
     }
 }

@@ -4,6 +4,7 @@ export type ResponseFlockDTO = Pick<
     FlockEntity,
     | "uid"
     | "platformUID"
+    | "breedUID"
     | "name"
     | "quantity"
     | "birthDate"
@@ -14,4 +15,4 @@ export type ResponseFlockDTO = Pick<
     | "updatedBy"
     | "createdAt"
     | "updatedAt"
-> & { weeks: number | null };
+> & { weeks: number | null } & Partial<{ breedName: string; breedUrlImage: string | undefined }>;

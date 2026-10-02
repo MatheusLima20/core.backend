@@ -4,6 +4,8 @@ import { FlockStatus } from "../enums/flock-status.enum";
 export interface FindFlocksDTO {
     name?: string;
 
+    breedUID?: string;
+
     status?: FlockStatus;
 
     minQuantity?: number;

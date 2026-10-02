@@ -4,11 +4,11 @@ import { EggColor } from "../enums/egg-color.enum";
 export interface BreedProps {
     uid?: string;
 
-    platformUID?: string;
-
     name: string;
 
     scientificName?: string;
+
+    urlImage?: string;
 
     eggColor?: EggColor;
 

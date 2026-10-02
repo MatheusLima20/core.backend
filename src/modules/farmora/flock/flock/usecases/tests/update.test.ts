@@ -55,7 +55,7 @@ describe("FlockUsecase - update", () => {
 
         expect(found).toMatchObject(updated);
 
-        expect(found.updatedBy).not.toBe(user2.uid);
+        expect(found?.updatedBy).not.toBe(user2.uid);
     });
 
     test("Should update only quantity", async () => {

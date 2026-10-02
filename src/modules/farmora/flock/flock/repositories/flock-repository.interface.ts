@@ -3,6 +3,7 @@ import { Result } from "@/shared/result";
 
 import { FindFlocksDTO } from "../dtos/find-flock.dto";
 import { FlockEntity } from "../entities/flock.entity";
+import { FlockWithBreed } from "../types/flock-with.breed";
 
 export interface IFlockRepository {
     findByUID(platformUID: string, uid: string): Promise<Result<FlockEntity | null>>;
@@ -12,7 +13,7 @@ export interface IFlockRepository {
     find(
         platformUID: string,
         filters?: FindFlocksDTO
-    ): Promise<Result<PaginationResult<FlockEntity>>>;
+    ): Promise<Result<PaginationResult<FlockWithBreed>>>;
 
     register(flock: FlockEntity): Promise<Result<FlockEntity>>;
 

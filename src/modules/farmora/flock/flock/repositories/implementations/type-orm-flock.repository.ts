@@ -4,8 +4,10 @@ import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
 
+import { BreedEntity } from "../../../breed/entities/breed.entity";
 import { FindFlocksDTO } from "../../dtos/find-flock.dto";
 import { FlockEntity } from "../../entities/flock.entity";
+import { FlockWithBreed } from "../../types/flock-with.breed";
 import { IFlockRepository } from "../flock-repository.interface";
 
 export class TypeORMFlockRepository implements IFlockRepository {
@@ -36,16 +38,23 @@ export class TypeORMFlockRepository implements IFlockRepository {
     async find(
         platformUID: string,
         filters?: FindFlocksDTO
-    ): Promise<Result<PaginationResult<FlockEntity>>> {
+    ): Promise<Result<PaginationResult<FlockWithBreed>>> {
         const page = filters?.page ?? 1;
         const limit = filters?.limit ?? 10;
 
         const query = this.flockRepository
             .createQueryBuilder("flock")
+            .leftJoin(BreedEntity, "breed", "breed.uid = flock.breedUID")
+            .addSelect(["breed.uid", "breed.name", "breed.urlImage"])
             .where("flock.platformUID = :platformUID", {
                 platformUID,
             });
 
+        if (filters?.breedUID) {
+            query.andWhere("flock.breedUID = :breedUID", {
+                breedUID: filters.breedUID,
+            });
+        }
         if (filters?.name) {
             query.andWhere("LOWER(flock.name) LIKE LOWER(:name)", {
                 name: `%${filters.name}%`,
@@ -81,7 +90,15 @@ export class TypeORMFlockRepository implements IFlockRepository {
 
         query.skip((page - 1) * limit).take(limit);
 
-        const data = await query.getMany();
+        const { entities, raw } = await query.getRawAndEntities();
+
+        const data: FlockWithBreed[] = entities.map((flock, index) => ({
+            flock,
+            breed: {
+                name: raw[index].breed_name,
+                urlImage: raw[index].breed_urlImage,
+            },
+        }));
 
         return ResultFactory.success({
             data,

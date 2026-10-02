@@ -3,10 +3,10 @@ import { BreedEntity } from "../entities/breed.entity";
 export type ResponseBreedDTO = Pick<
     BreedEntity,
     | "uid"
-    | "platformUID"
     | "name"
     | "scientificName"
     | "eggColor"
+    | "urlImage"
     | "breedPurpose"
     | "description"
     | "createdBy"

@@ -18,13 +18,6 @@ export class BreedEntity extends BaseEntity implements BreedProps {
 
     @Column({
         type: "varchar",
-        length: 40,
-        nullable: true,
-    })
-    platformUID?: string;
-
-    @Column({
-        type: "varchar",
         length: 255,
     })
     name!: string;
@@ -35,6 +28,13 @@ export class BreedEntity extends BaseEntity implements BreedProps {
         nullable: true,
     })
     scientificName?: string;
+
+    @Column({
+        type: "varchar",
+        length: 255,
+        nullable: true,
+    })
+    urlImage?: string;
 
     @Column({
         type: "varchar",

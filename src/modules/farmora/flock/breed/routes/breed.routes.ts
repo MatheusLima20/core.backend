@@ -13,34 +13,10 @@ const authMiddleware = new AuthMiddleware(tokenProvider);
 
 router.use(authMiddleware.handle.bind(authMiddleware));
 
-router.post("/create", async (request, response) => {
-    const controller = makeBreedController(request.auth);
-
-    await controller.create(request, response);
-});
-
-router.put("/update/:uid", async (request, response) => {
-    const controller = makeBreedController(request.auth);
-
-    await controller.update(request, response);
-});
-
-router.get("/find/:uid", async (request, response) => {
-    const controller = makeBreedController(request.auth);
-
-    await controller.findByUID(request, response);
-});
-
 router.get("/find", async (request, response) => {
-    const controller = makeBreedController(request.auth);
+    const controller = makeBreedController();
 
     await controller.find(request, response);
-});
-
-router.delete("/delete/:uid", async (request, response) => {
-    const controller = makeBreedController(request.auth);
-
-    await controller.delete(request, response);
 });
 
 export default {

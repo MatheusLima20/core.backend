@@ -78,11 +78,14 @@ export class FlockUsecase {
         const result = await this.flockRepository.find(this.context.user.platformUID, filters);
 
         if (isFailure(result)) {
-            return ResultFactory.failure(new PersistenceError("Failed to fetch flocks."));
+            return ResultFactory.failure(result.error);
         }
+
         return ResultMapper.map(result, (pagination) => ({
             ...pagination,
-            data: FlockMapper.toResponseDTOList(pagination.data),
+            data: pagination.data.map(({ flock, breed }) =>
+                FlockMapper.toListResponseDTO(flock, breed)
+            ),
         }));
     }
 

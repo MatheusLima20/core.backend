@@ -11,40 +11,11 @@ import { IBreedRepository } from "../breed-repository.interface";
 export class TypeORMBreedRepository implements IBreedRepository {
     constructor(private readonly breedRepository: Repository<BreedEntity>) {}
 
-    async findByUID(platformUID: string, uid: string): Promise<Result<BreedEntity | null>> {
-        const breed = await this.breedRepository.findOne({
-            where: {
-                uid,
-                platformUID,
-            },
-        });
-
-        return ResultFactory.success(breed);
-    }
-
-    async findByName(platformUID: string, name: string): Promise<Result<BreedEntity | null>> {
-        const breed = await this.breedRepository.findOne({
-            where: {
-                platformUID,
-                name,
-            },
-        });
-
-        return ResultFactory.success(breed);
-    }
-
-    async find(
-        platformUID: string,
-        filters?: FindBreedsDTO
-    ): Promise<Result<PaginationResult<BreedEntity>>> {
+    async find(filters?: FindBreedsDTO): Promise<Result<PaginationResult<BreedEntity>>> {
         const page = filters?.page ?? 1;
         const limit = filters?.limit ?? 10;
 
-        const query = this.breedRepository
-            .createQueryBuilder("breed")
-            .where("breed.platformUID = :platformUID", {
-                platformUID,
-            });
+        const query = this.breedRepository.createQueryBuilder("breed");
 
         if (filters?.name) {
             query.andWhere("LOWER(breed.name) LIKE LOWER(:name)", {
@@ -71,8 +42,16 @@ export class TypeORMBreedRepository implements IBreedRepository {
         }
 
         if (filters?.orderBy) {
+            const orderColumns = {
+                name: "breed.name",
+                eggColor: "breed.eggColor",
+                breedPurpose: "breed.breedPurpose",
+                createdAt: "breed.createdAt",
+                updatedAt: "breed.updatedAt",
+            } satisfies Record<NonNullable<FindBreedsDTO["orderBy"]>, string>;
+
             query.orderBy(
-                `breed.${filters.orderBy}`,
+                orderColumns[filters.orderBy],
                 filters.order?.toUpperCase() === "DESC" ? "DESC" : "ASC"
             );
         }
@@ -92,21 +71,13 @@ export class TypeORMBreedRepository implements IBreedRepository {
         });
     }
 
-    async register(breed: BreedEntity): Promise<Result<BreedEntity>> {
-        const savedBreed = await this.breedRepository.save(breed);
+    async findByUID(uid: string): Promise<Result<BreedEntity | null>> {
+        const breed = await this.breedRepository.findOne({
+            where: {
+                uid,
+            },
+        });
 
-        return ResultFactory.success(savedBreed);
-    }
-
-    async update(breed: BreedEntity): Promise<Result<BreedEntity>> {
-        const savedBreed = await this.breedRepository.save(breed);
-
-        return ResultFactory.success(savedBreed);
-    }
-
-    async delete(uid: string): Promise<Result<void>> {
-        await this.breedRepository.delete(uid);
-
-        return ResultFactory.ok();
+        return ResultFactory.success(breed);
     }
 }
