@@ -6,7 +6,6 @@ import { activeFlock } from "../../../flock/usecases/tests/factories/flock-data.
 import { setupFlock } from "../../../flock/usecases/tests/setup/flock-tests.setup";
 import { UpdateMortalityDTO } from "../../dtos/update-mortality.dto";
 import { MortalityCause } from "../../enums/mortality-cause.enum";
-import { InvalidMortalityError } from "../../errors/invalid-mortality.error";
 import { MortalityNotFoundError } from "../../errors/mortality-not-found.error";
 import { MortalityUsecase } from "../mortality.usecase";
 import { makeMortality } from "./factories/mortality.factory";
@@ -144,24 +143,6 @@ describe("MortalityUsecase - update", () => {
         );
 
         expect(updated.notes).toBeUndefined();
-    });
-
-    test("Should not update mortality with invalid quantity", async () => {
-        const mortality = await setupMortality(
-            usecaseUser1,
-            makeMortality({
-                flockUID: flock1.uid,
-            })
-        );
-
-        expectFailure(
-            await usecaseUser1.update({
-                uid: mortality.uid,
-                flockUID: flock1.uid,
-                quantity: flock1.quantity + 1,
-            }),
-            InvalidMortalityError
-        );
     });
 
     test("Should not update an inexistent mortality", async () => {

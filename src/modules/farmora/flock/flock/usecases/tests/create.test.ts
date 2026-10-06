@@ -27,7 +27,6 @@ describe("FlockUsecase - create", () => {
 
         expect(flock).toMatchObject({
             name: activeFlock.name,
-            quantity: activeFlock.quantity,
             birthDate: activeFlock.birthDate,
             arrivalDate: activeFlock.arrivalDate,
             status: activeFlock.status,

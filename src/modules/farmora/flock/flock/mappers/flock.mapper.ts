@@ -10,9 +10,7 @@ export const FlockMapper = {
         return {
             uid: flock.uid,
             platformUID: flock.platformUID,
-            breedUID: flock.breedUID,
             name: flock.name,
-            quantity: flock.quantity,
             birthDate: flock.birthDate,
             arrivalDate: flock.arrivalDate,
             status: flock.status,
@@ -37,11 +35,8 @@ export const FlockMapper = {
         platformUID: flock.platformUID!,
 
         name: flock.name,
-        breedUID: flock.breedUID,
         breedName: breed.name,
         breedUrlImage: breed.urlImage,
-
-        quantity: flock.quantity,
 
         birthDate: flock.birthDate,
         arrivalDate: flock.arrivalDate,
@@ -62,10 +57,8 @@ export const FlockMapper = {
         return {
             uid: flock.uid,
             name: flock.name,
-            breedUID: flock.breedUID,
             platformUID: flock.platformUID,
             weeks: calculateFlockWeeks(flock.birthDate ?? null),
-            quantity: flock.quantity,
             birthDate: flock.birthDate,
             arrivalDate: flock.arrivalDate,
             status: flock.status,
@@ -78,10 +71,8 @@ export const FlockMapper = {
     toUpdatedResponseDTO: (flock: FlockEntity): UpdateFlockResponseDTO => {
         return {
             uid: flock.uid,
-            breedUID: flock.breedUID,
             weeks: calculateFlockWeeks(flock.birthDate ?? null),
             name: flock.name,
-            quantity: flock.quantity,
             birthDate: flock.birthDate,
             arrivalDate: flock.arrivalDate,
             status: flock.status,

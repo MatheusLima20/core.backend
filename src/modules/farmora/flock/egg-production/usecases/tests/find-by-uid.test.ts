@@ -1,45 +1,47 @@
 import { AuthUser } from "@/shared/context/auth.user";
 import { expectSuccess } from "@/shared/tests/result.helper";
 
-import { FlockUsecase } from "../../../flock/usecases/flock.usecase";
-import { activeFlock } from "../../../flock/usecases/tests/factories/flock-data.factory";
-import { setupFlock } from "../../../flock/usecases/tests/setup/flock-tests.setup";
+import { EggProductionUsecase } from "../egg-production.usecase";
+import { makeEggProduction } from "./factories/egg-production-data.factory";
 import { scenario } from "./setup/egg-production.builder";
+import { setupEggProduction } from "./setup/egg-production-tests.setup";
 
-describe("FlockUsecase - findByUID", () => {
-    let usecaseUser1!: FlockUsecase;
-    let usecaseUser2!: FlockUsecase;
+describe("EggProductionUsecase - findByUID", () => {
+    let usecaseUser1!: EggProductionUsecase;
+    let usecaseUser2!: EggProductionUsecase;
 
     let user1!: AuthUser;
     let user2!: AuthUser;
 
     beforeEach(async () => {
         ({
-            flockUsecases: [usecaseUser1, usecaseUser2],
+            eggProductionUsecases: [usecaseUser1, usecaseUser2],
 
             users: [user1, user2],
         } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
-    test("Should find a flock by uid", async () => {
-        const flock = await setupFlock(usecaseUser1, activeFlock);
+    test("Should find an egg production by uid", async () => {
+        const production = await setupEggProduction(usecaseUser1, makeEggProduction());
 
-        const found = expectSuccess(await usecaseUser1.findByUID(flock.uid));
+        const found = expectSuccess(await usecaseUser1.findByUID(production.uid));
 
         expect(found).toMatchObject({
-            uid: flock.uid,
+            uid: production.uid,
 
-            name: activeFlock.name,
+            flockUID: production.flockUID,
 
-            quantity: activeFlock.quantity,
+            productionDate: production.productionDate,
 
-            birthDate: activeFlock.birthDate,
+            totalEggs: production.totalEggs,
 
-            arrivalDate: activeFlock.arrivalDate,
+            crackedEggs: production.crackedEggs,
 
-            status: activeFlock.status,
+            dirtyEggs: production.dirtyEggs,
 
-            description: activeFlock.description,
+            discardedEggs: production.discardedEggs,
+
+            notes: production.notes,
 
             platformUID: user1.platformUID,
 
@@ -52,39 +54,46 @@ describe("FlockUsecase - findByUID", () => {
     });
 
     test("Should return null when uid does not exist", async () => {
-        const find = expectSuccess(await usecaseUser1.findByUID("invalid-uid"));
+        const found = expectSuccess(await usecaseUser1.findByUID("invalid-uid"));
 
-        expect(find).toBe(null);
+        expect(found).toBeNull();
     });
 
-    test("Should not find a flock from another platform", async () => {
-        const flock = await setupFlock(usecaseUser1, activeFlock);
+    test("Should not find an egg production from another platform", async () => {
+        const production = await setupEggProduction(usecaseUser1, makeEggProduction());
 
-        const find = expectSuccess(await usecaseUser2.findByUID(flock.uid));
+        const found = expectSuccess(await usecaseUser2.findByUID(production.uid));
 
-        expect(find).toBe(null);
+        expect(found).toBeNull();
     });
 
-    test("Should return all persisted flock data", async () => {
-        const flock = await setupFlock(usecaseUser1, activeFlock);
+    test("Should return all persisted egg production data", async () => {
+        const production = await setupEggProduction(
+            usecaseUser1,
+            makeEggProduction({
+                notes: "Test production",
+            })
+        );
 
-        const found = expectSuccess(await usecaseUser1.findByUID(flock.uid));
+        const found = expectSuccess(await usecaseUser1.findByUID(production.uid));
 
         expect(found).toEqual(
             expect.objectContaining({
-                uid: flock.uid,
+                uid: production.uid,
 
-                name: activeFlock.name,
+                flockUID: production.flockUID,
 
-                quantity: activeFlock.quantity,
+                productionDate: production.productionDate,
 
-                birthDate: activeFlock.birthDate,
+                totalEggs: production.totalEggs,
 
-                arrivalDate: activeFlock.arrivalDate,
+                crackedEggs: production.crackedEggs,
 
-                status: activeFlock.status,
+                dirtyEggs: production.dirtyEggs,
 
-                description: activeFlock.description,
+                discardedEggs: production.discardedEggs,
+
+                notes: "Test production",
 
                 platformUID: user1.platformUID,
 
@@ -101,13 +110,13 @@ describe("FlockUsecase - findByUID", () => {
         expect(found?.createdBy).not.toBe(user2.uid);
     });
 
-    test("Should not return flock deleted from platform", async () => {
-        const flock = await setupFlock(usecaseUser1, activeFlock);
+    test("Should not return egg production deleted from platform", async () => {
+        const production = await setupEggProduction(usecaseUser1, makeEggProduction());
 
-        await usecaseUser1.delete(flock.uid);
+        await usecaseUser1.delete(production.uid);
 
-        const find = expectSuccess(await usecaseUser1.findByUID(flock.uid));
+        const found = expectSuccess(await usecaseUser1.findByUID(production.uid));
 
-        expect(find).toBe(null);
+        expect(found).toBeNull();
     });
 });

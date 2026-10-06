@@ -7,6 +7,9 @@ import {
     smallFlock,
 } from "../../../flock/usecases/tests/factories/flock-data.factory";
 import { setupFlock } from "../../../flock/usecases/tests/setup/flock-tests.setup";
+import { CreateFlockBreedDTO } from "../../../flock-breed/dtos/create-flock-breed.dto";
+import { FlockBreedUsecase } from "../../../flock-breed/usecases/flock-breed.usecase";
+import { setupFlockBreed } from "../../../flock-breed/usecases/tests/setup/flock-breed.setup";
 import { EggProductionUsecase } from "../egg-production.usecase";
 import { makeEggProduction } from "./factories/egg-production-data.factory";
 import { scenario } from "./setup/egg-production.builder";
@@ -17,6 +20,7 @@ describe("EggProductionUsecase - find", () => {
     let usecaseUser2!: EggProductionUsecase;
 
     let flockUsecaseUser1!: FlockUsecase;
+    let flockBreedUsecaseUser1!: FlockBreedUsecase;
 
     let user1!: AuthUser;
 
@@ -26,12 +30,37 @@ describe("EggProductionUsecase - find", () => {
 
             flockUsecases: [flockUsecaseUser1],
 
+            flockBreedUsecases: [flockBreedUsecaseUser1],
+
             users: [user1],
         } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
+    async function createFlockWithBreed(
+        flockUsecase: FlockUsecase,
+        flockBreedUsecase: FlockBreedUsecase,
+        flockData: typeof activeFlock,
+        quantity = 100
+    ) {
+        const flock = await setupFlock(flockUsecase, flockData);
+
+        const flockBreed: CreateFlockBreedDTO = {
+            flockUID: flock.uid,
+            breedUID: "brd_isa-brown",
+            quantity,
+        };
+
+        await setupFlockBreed(flockBreedUsecase, flockBreed);
+
+        return flock;
+    }
+
     test("Should find all platform productions", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            activeFlock
+        );
 
         await setupEggProductions(
             usecaseUser1,
@@ -58,9 +87,17 @@ describe("EggProductionUsecase - find", () => {
     });
 
     test("Should filter productions by flock", async () => {
-        const flockA = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flockA = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            activeFlock
+        );
 
-        const flockB = await setupFlock(flockUsecaseUser1, smallFlock);
+        const flockB = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            smallFlock
+        );
 
         await setupEggProduction(
             usecaseUser1,
@@ -90,7 +127,11 @@ describe("EggProductionUsecase - find", () => {
     });
 
     test("Should filter productions by production date", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            activeFlock
+        );
 
         await setupEggProduction(
             usecaseUser1,
@@ -110,7 +151,7 @@ describe("EggProductionUsecase - find", () => {
 
         const productions = expectSuccess(
             await usecaseUser1.find({
-                productionDate: new Date("2026-07-30").toString(),
+                productionDate: "2026-07-30",
             })
         );
 
@@ -118,7 +159,12 @@ describe("EggProductionUsecase - find", () => {
     });
 
     test("Should filter productions by minimum eggs", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            activeFlock,
+            120
+        );
 
         await setupEggProductions(
             usecaseUser1,
@@ -145,7 +191,11 @@ describe("EggProductionUsecase - find", () => {
     });
 
     test("Should order productions by date descending", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            activeFlock
+        );
 
         const oldest = await setupEggProduction(
             usecaseUser1,
@@ -177,7 +227,11 @@ describe("EggProductionUsecase - find", () => {
     });
 
     test("Should return first page", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            activeFlock
+        );
 
         const [productionA, productionB] = await setupEggProductions(
             usecaseUser1,
@@ -210,7 +264,12 @@ describe("EggProductionUsecase - find", () => {
     });
 
     test("Should filter, order and paginate productions", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            activeFlock,
+            120
+        );
 
         const productionB = await setupEggProduction(
             usecaseUser1,

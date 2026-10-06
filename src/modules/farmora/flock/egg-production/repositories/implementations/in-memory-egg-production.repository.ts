@@ -7,7 +7,8 @@ import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
 import { FlockStatus } from "../../../flock/enums/flock-status.enum";
-import { InMemoryFlockRepository } from "../../../flock/repositories/implementations/in-memory-flock.repository";
+import { IFlockRepository } from "../../../flock/repositories/flock-repository.interface";
+import { IFlockBreedRepository } from "../../../flock-breed/repositories/flock-breed-repository.interface";
 import { EggProductionSummaryResponseDTO } from "../../dtos/egg-production-summary";
 import { FindEggProductionsDTO } from "../../dtos/find-egg-production.dto";
 import { EggProductionEntity } from "../../entities/egg-production.entity";
@@ -15,7 +16,10 @@ import { EggProductionWithFlock } from "../../types/egg-production-with.flock";
 import { IEggProductionRepository } from "../egg-production-repository.interface";
 
 export class InMemoryEggProductionRepository implements IEggProductionRepository {
-    constructor(private readonly flockRepository: InMemoryFlockRepository) {}
+    constructor(
+        private readonly flockRepository: IFlockRepository,
+        private readonly flockBreedRepository: IFlockBreedRepository
+    ) {}
 
     private eggProductions: EggProductionEntity[] = [];
 
@@ -175,10 +179,24 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
             return ResultFactory.failure(flocksResult.error);
         }
 
-        const totalBirds = flocksResult.data.data.reduce(
-            (total, flock) => total + flock.quantity,
-            0
-        );
+        let totalBirds = 0;
+
+        for (const flock of flocksResult.data.data) {
+            const flockBreedsResult = await this.flockBreedRepository.find(platformUID, {
+                flockUID: flock.uid,
+                page: 1,
+                limit: 1000,
+            });
+
+            if (isFailure(flockBreedsResult)) {
+                return ResultFactory.failure(flockBreedsResult.error);
+            }
+
+            totalBirds += flockBreedsResult.data.data.reduce(
+                (total, flockBreed) => total + flockBreed.quantity,
+                0
+            );
+        }
 
         const layingRate = totalBirds > 0 ? (totalCollectedToday / totalBirds) * 100 : 0;
 

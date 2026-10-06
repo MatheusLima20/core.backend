@@ -9,7 +9,6 @@ import {
 } from "../../../flock/usecases/tests/factories/flock-data.factory";
 import { setupFlock } from "../../../flock/usecases/tests/setup/flock-tests.setup";
 import { EggProductionAlreadyRegisteredError } from "../../errors/egg-production-already-registered.error";
-import { InvalidEggProductionError } from "../../errors/invalid-egg-production.error";
 import { EggProductionUsecase } from "../egg-production.usecase";
 import { makeEggProduction, production1 } from "./factories/egg-production-data.factory";
 import { scenario } from "./setup/egg-production.builder";
@@ -118,18 +117,6 @@ describe("EggProductionUsecase - create", () => {
                 })
             ),
             FlockClosedError
-        );
-    });
-
-    test("Should not register production greater than flock quantity", async () => {
-        expectFailure(
-            await usecaseUser1.create(
-                makeEggProduction({
-                    flockUID: flock1.uid,
-                    totalEggs: flock1.quantity + 1,
-                })
-            ),
-            InvalidEggProductionError
         );
     });
 

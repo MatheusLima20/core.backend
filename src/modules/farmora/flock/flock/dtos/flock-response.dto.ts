@@ -4,9 +4,7 @@ export type ResponseFlockDTO = Pick<
     FlockEntity,
     | "uid"
     | "platformUID"
-    | "breedUID"
     | "name"
-    | "quantity"
     | "birthDate"
     | "arrivalDate"
     | "status"

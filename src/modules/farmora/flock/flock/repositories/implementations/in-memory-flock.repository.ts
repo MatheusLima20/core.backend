@@ -1,20 +1,55 @@
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
 import { ResultFactory } from "@/shared/result/result.factory";
-import { isFailure } from "@/shared/result/result.guard";
 import { SortUtil } from "@/shared/utils/sort/sort.util";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
-import { IBreedRepository } from "../../../breed/repositories/breed-repository.interface";
 import { FindFlocksDTO } from "../../dtos/find-flock.dto";
 import { FlockEntity } from "../../entities/flock.entity";
-import { FlockWithBreed } from "../../types/flock-with.breed";
+import { FlockStatus } from "../../enums/flock-status.enum";
 import { IFlockRepository } from "../flock-repository.interface";
 
 export class InMemoryFlockRepository implements IFlockRepository {
-    constructor(private readonly breedRepository: IBreedRepository) {}
+    private flocks: FlockEntity[] = [
+        new FlockEntity({
+            uid: "flk-test-1",
+            platformUID: "1",
+            name: "Flock Test 1",
+            status: FlockStatus.IN_PRODUCTION,
+            birthDate: new Date("2026-01-01"),
+            arrivalDate: new Date("2026-01-15"),
+            description: "Flock used for tests.",
+            createdBy: "user-1",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
 
-    private flocks: FlockEntity[] = [];
+        new FlockEntity({
+            uid: "flk-test-2",
+            platformUID: "1",
+            name: "Flock Test 2",
+            status: FlockStatus.IN_PRODUCTION,
+            birthDate: new Date("2026-02-01"),
+            arrivalDate: new Date("2026-02-15"),
+            description: "Flock used for tests.",
+            createdBy: "user-1",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
+
+        new FlockEntity({
+            uid: "flk-test-3",
+            platformUID: "2",
+            name: "Flock Test 3",
+            status: FlockStatus.IN_PRODUCTION,
+            birthDate: new Date("2026-03-01"),
+            arrivalDate: new Date("2026-03-15"),
+            description: "Flock used for tests.",
+            createdBy: "user-2",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
+    ];
 
     async findByUID(platformUID: string, uid: string): Promise<Result<FlockEntity | null>> {
         const flock =
@@ -38,14 +73,10 @@ export class InMemoryFlockRepository implements IFlockRepository {
     async find(
         platformUID: string,
         filters?: FindFlocksDTO
-    ): Promise<Result<PaginationResult<FlockWithBreed>>> {
+    ): Promise<Result<PaginationResult<FlockEntity>>> {
         let flocks = this.flocks.filter((flock) =>
             StringUtil.equals(flock.platformUID!, platformUID)
         );
-
-        if (filters?.breedUID) {
-            flocks = flocks.filter((flock) => StringUtil.equals(flock.breedUID, filters.breedUID!));
-        }
 
         if (filters?.name) {
             flocks = flocks.filter((flock) => StringUtil.contains(flock.name, filters.name!));
@@ -53,14 +84,6 @@ export class InMemoryFlockRepository implements IFlockRepository {
 
         if (filters?.status) {
             flocks = flocks.filter((flock) => StringUtil.equals(flock.status, filters.status!));
-        }
-
-        if (filters?.minQuantity !== undefined) {
-            flocks = flocks.filter((flock) => flock.quantity >= filters.minQuantity!);
-        }
-
-        if (filters?.maxQuantity !== undefined) {
-            flocks = flocks.filter((flock) => flock.quantity <= filters.maxQuantity!);
         }
 
         if (filters?.orderBy) {
@@ -81,28 +104,8 @@ export class InMemoryFlockRepository implements IFlockRepository {
 
         const paginatedFlocks = flocks.slice(start, start + limit);
 
-        const data: FlockWithBreed[] = [];
-
-        for (const flock of paginatedFlocks) {
-            const breedResult = await this.breedRepository.findByUID(flock.breedUID);
-
-            if (isFailure(breedResult)) {
-                return ResultFactory.failure(breedResult.error);
-            }
-
-            const breed = breedResult.data;
-
-            data.push({
-                flock,
-                breed: {
-                    name: breed?.name ?? "",
-                    urlImage: breed?.urlImage,
-                },
-            });
-        }
-
         return ResultFactory.success({
-            data,
+            data: paginatedFlocks,
             page,
             limit,
             total,

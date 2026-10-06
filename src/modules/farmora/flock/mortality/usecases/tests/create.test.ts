@@ -8,7 +8,6 @@ import {
     closedFlock,
 } from "../../../flock/usecases/tests/factories/flock-data.factory";
 import { setupFlock } from "../../../flock/usecases/tests/setup/flock-tests.setup";
-import { InvalidMortalityError } from "../../errors/invalid-mortality.error";
 import { MortalityUsecase } from "../mortality.usecase";
 import { makeMortality, mortality1 } from "./factories/mortality.factory";
 import { setupMortality } from "./setup/setup-mortality";
@@ -109,18 +108,6 @@ describe("MortalityUsecase - create", () => {
                 })
             ),
             FlockClosedError
-        );
-    });
-
-    test("Should not register mortality greater than flock quantity", async () => {
-        expectFailure(
-            await usecaseUser1.create(
-                makeMortality({
-                    flockUID: flock1.uid,
-                    quantity: flock1.quantity + 1,
-                })
-            ),
-            InvalidMortalityError
         );
     });
 

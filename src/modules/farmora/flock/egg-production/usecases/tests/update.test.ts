@@ -4,9 +4,11 @@ import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 import { FlockUsecase } from "../../../flock/usecases/flock.usecase";
 import { activeFlock } from "../../../flock/usecases/tests/factories/flock-data.factory";
 import { setupFlock } from "../../../flock/usecases/tests/setup/flock-tests.setup";
+import { CreateFlockBreedDTO } from "../../../flock-breed/dtos/create-flock-breed.dto";
+import { FlockBreedUsecase } from "../../../flock-breed/usecases/flock-breed.usecase";
+import { setupFlockBreed } from "../../../flock-breed/usecases/tests/setup/flock-breed.setup";
 import { UpdateEggProductionDTO } from "../../dtos/update-egg-production.dto";
 import { EggProductionNotFoundError } from "../../errors/egg-production-not-found.error";
-import { InvalidEggProductionError } from "../../errors/invalid-egg-production.error";
 import { EggProductionUsecase } from "../egg-production.usecase";
 import { makeEggProduction } from "./factories/egg-production-data.factory";
 import { scenario } from "./setup/egg-production.builder";
@@ -17,24 +19,30 @@ describe("EggProductionUsecase - update", () => {
     let usecaseUser2!: EggProductionUsecase;
 
     let flockUsecaseUser1!: FlockUsecase;
-    //let flockUsecaseUser2!: FlockUsecase;
+    let flockBreedUsecaseUser1!: FlockBreedUsecase;
 
     let user1!: AuthUser;
     let user2!: AuthUser;
 
     let flock1!: Awaited<ReturnType<typeof setupFlock>>;
-    //let flock2!: Awaited<ReturnType<typeof setupFlocks>>;
 
     beforeEach(async () => {
         ({
             eggProductionUsecases: [usecaseUser1, usecaseUser2],
             flockUsecases: [flockUsecaseUser1],
+            flockBreedUsecases: [flockBreedUsecaseUser1],
             users: [user1, user2],
         } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
 
         flock1 = await setupFlock(flockUsecaseUser1, activeFlock);
 
-        //flock2 = await setupFlock(flockUsecaseUser2, activeFlock);
+        const flockBreed: CreateFlockBreedDTO = {
+            flockUID: flock1.uid,
+            breedUID: "brd_isa-brown",
+            quantity: 100,
+        };
+
+        await setupFlockBreed(flockBreedUsecaseUser1, flockBreed);
     });
 
     test("Should update an egg production", async () => {
@@ -59,19 +67,12 @@ describe("EggProductionUsecase - update", () => {
 
         expect(updated).toMatchObject({
             uid: production.uid,
-
             productionDate: data.productionDate,
-
             totalEggs: data.totalEggs,
-
             crackedEggs: data.crackedEggs,
-
             dirtyEggs: data.dirtyEggs,
-
             discardedEggs: data.discardedEggs,
-
             notes: data.notes,
-
             updatedBy: user1.uid,
         });
 
@@ -189,24 +190,6 @@ describe("EggProductionUsecase - update", () => {
         );
 
         expect(updated.notes).toBeUndefined();
-    });
-
-    test("Should not update production with invalid quantity", async () => {
-        const production = await setupEggProduction(
-            usecaseUser1,
-            makeEggProduction({
-                flockUID: flock1.uid,
-            })
-        );
-
-        expectFailure(
-            await usecaseUser1.update({
-                uid: production.uid,
-                flockUID: flock1.uid,
-                totalEggs: flock1.quantity + 1,
-            }),
-            InvalidEggProductionError
-        );
     });
 
     test("Should not update an inexistent production", async () => {

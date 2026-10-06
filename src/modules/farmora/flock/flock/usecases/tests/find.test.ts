@@ -6,7 +6,6 @@ import { FlockUsecase } from "../flock.usecase";
 import {
     activeFlock,
     closedFlock,
-    largeFlock,
     mediumFlock,
     newestFlock,
     oldestFlock,
@@ -70,49 +69,6 @@ describe("FlockUsecase - find", () => {
         expect(flocks.data[0].status).toBe(FlockStatus.FINISHED);
     });
 
-    test("Should filter flocks by minimum quantity", async () => {
-        await setupFlocks(usecaseUser1, smallFlock, mediumFlock, largeFlock);
-
-        const flocks = expectSuccess(
-            await usecaseUser1.find({
-                minQuantity: 100,
-            })
-        );
-
-        expect(flocks.data).toHaveLength(1);
-
-        expect(flocks.data[0].quantity).toBe(largeFlock.quantity);
-    });
-
-    test("Should filter flocks by maximum quantity", async () => {
-        await setupFlocks(usecaseUser1, smallFlock, mediumFlock, largeFlock);
-
-        const flocks = expectSuccess(
-            await usecaseUser1.find({
-                maxQuantity: 50,
-            })
-        );
-
-        expect(flocks.data).toHaveLength(1);
-
-        expect(flocks.data[0].quantity).toBe(smallFlock.quantity);
-    });
-
-    test("Should filter flocks by quantity range", async () => {
-        await setupFlocks(usecaseUser1, smallFlock, mediumFlock, largeFlock);
-
-        const flocks = expectSuccess(
-            await usecaseUser1.find({
-                minQuantity: 50,
-                maxQuantity: 100,
-            })
-        );
-
-        expect(flocks.data).toHaveLength(1);
-
-        expect(flocks.data[0].quantity).toBe(mediumFlock.quantity);
-    });
-
     test("Should return empty when filters match nothing", async () => {
         await setupFlock(usecaseUser1, activeFlock);
 
@@ -144,21 +100,6 @@ describe("FlockUsecase - find", () => {
         );
 
         expect(flocks.data.map((flock) => flock.uid)).toEqual([flockA.uid, flockB.uid]);
-    });
-
-    test("Should order flocks by quantity descending", async () => {
-        const small = await setupFlock(usecaseUser1, smallFlock);
-
-        const large = await setupFlock(usecaseUser1, largeFlock);
-
-        const flocks = expectSuccess(
-            await usecaseUser1.find({
-                orderBy: "quantity",
-                order: "desc",
-            })
-        );
-
-        expect(flocks.data.map((flock) => flock.uid)).toEqual([large.uid, small.uid]);
     });
 
     test("Should desc order flocks by createdAt", async () => {

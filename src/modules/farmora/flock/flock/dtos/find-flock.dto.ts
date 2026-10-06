@@ -4,8 +4,6 @@ import { FlockStatus } from "../enums/flock-status.enum";
 export interface FindFlocksDTO {
     name?: string;
 
-    breedUID?: string;
-
     status?: FlockStatus;
 
     minQuantity?: number;
@@ -14,7 +12,7 @@ export interface FindFlocksDTO {
     page?: number;
     limit?: number;
 
-    orderBy?: keyof Pick<FlockEntity, "name" | "quantity" | "status" | "createdAt" | "updatedAt">;
+    orderBy?: keyof Pick<FlockEntity, "name" | "status" | "createdAt" | "updatedAt">;
 
     order?: "asc" | "desc";
 }

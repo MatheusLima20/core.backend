@@ -83,9 +83,7 @@ export class FlockUsecase {
 
         return ResultMapper.map(result, (pagination) => ({
             ...pagination,
-            data: pagination.data.map(({ flock, breed }) =>
-                FlockMapper.toListResponseDTO(flock, breed)
-            ),
+            data: FlockMapper.toResponseDTOList(pagination.data),
         }));
     }
 

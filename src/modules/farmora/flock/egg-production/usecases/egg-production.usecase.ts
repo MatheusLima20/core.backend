@@ -11,6 +11,7 @@ import { StringUtil } from "@/shared/utils/string/string.util";
 import { FlockStatus } from "../../flock/enums/flock-status.enum";
 import { FlockNotFoundError } from "../../flock/errors/flock-not-found.error";
 import { IFlockRepository } from "../../flock/repositories/flock-repository.interface";
+import { IFlockBreedRepository } from "../../flock-breed/repositories/flock-breed-repository.interface";
 import {
     CreateEggProductionDTO,
     CreateEggProductionResponseDTO,
@@ -34,7 +35,8 @@ export class EggProductionUsecase {
     constructor(
         private readonly context: RequestContext,
         private readonly eggProductionRepository: IEggProductionRepository,
-        private readonly flockRepository: IFlockRepository
+        private readonly flockRepository: IFlockRepository,
+        private readonly flockBreedRepository: IFlockBreedRepository
     ) {}
 
     async create(data: CreateEggProductionDTO): Promise<Result<CreateEggProductionResponseDTO>> {
@@ -51,15 +53,6 @@ export class EggProductionUsecase {
 
         if (isFailure(flockValidation)) {
             return flockValidation;
-        }
-
-        const productionValidation = await this.validateProductionAlreadyRegistered(
-            data.flockUID,
-            data.productionDate
-        );
-
-        if (isFailure(productionValidation)) {
-            return productionValidation;
         }
 
         const eggProduction = new EggProductionEntity({
@@ -171,12 +164,13 @@ export class EggProductionUsecase {
             return requiredEgg;
         }
 
-        if (data.flockUID) {
-            const flockValidation = await this.validateFlock(data.flockUID, data.totalEggs ?? 0);
+        const flockValidation = await this.validateFlock(
+            data.flockUID ?? requiredEgg.data.flockUID,
+            data.totalEggs ?? requiredEgg.data.totalEggs
+        );
 
-            if (isFailure(flockValidation)) {
-                return flockValidation;
-            }
+        if (isFailure(flockValidation)) {
+            return flockValidation;
         }
 
         const eggProduction = new EggProductionEntity({
@@ -210,6 +204,10 @@ export class EggProductionUsecase {
         const existing = await this.findByUID(uid);
 
         if (isFailure(existing)) {
+            return existing;
+        }
+
+        if (!existing.data) {
             return ResultFactory.failure(new EggProductionNotFoundError({ uid }));
         }
 
@@ -262,10 +260,28 @@ export class EggProductionUsecase {
             return ResultFactory.failure(new FlockClosedError());
         }
 
-        if (totalEggs > existing.data.quantity) {
+        const flockBreedsResult = await this.flockBreedRepository.find(
+            this.context.user.platformUID,
+            {
+                flockUID,
+                page: 1,
+                limit: 1000,
+            }
+        );
+
+        if (isFailure(flockBreedsResult)) {
             return ResultFactory.failure(
-                new InvalidEggProductionError(totalEggs, existing.data.quantity)
+                new PersistenceError("Failed to validate flock quantity.")
             );
+        }
+
+        const totalBirds = flockBreedsResult.data.data.reduce(
+            (total, flockBreed) => total + flockBreed.quantity,
+            0
+        );
+
+        if (totalEggs > totalBirds) {
+            return ResultFactory.failure(new InvalidEggProductionError(totalEggs, totalBirds));
         }
 
         return ResultFactory.ok();

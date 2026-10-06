@@ -5,11 +5,7 @@ export interface FlockProps {
 
     platformUID?: string;
 
-    breedUID: string;
-
     name: string;
-
-    quantity: number;
 
     status: FlockStatus;
 

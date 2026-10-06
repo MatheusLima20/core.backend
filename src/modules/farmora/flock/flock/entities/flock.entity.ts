@@ -22,19 +22,11 @@ export class FlockEntity extends BaseEntity implements FlockProps {
     })
     platformUID?: string;
 
-    @Column({ type: "varchar", length: 40, nullable: true })
-    breedUID!: string;
-
     @Column({
         type: "varchar",
         length: 255,
     })
     name!: string;
-
-    @Column({
-        type: "int",
-    })
-    quantity!: number;
 
     @Column({
         type: "varchar",

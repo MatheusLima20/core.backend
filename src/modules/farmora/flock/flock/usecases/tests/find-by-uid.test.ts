@@ -31,8 +31,6 @@ describe("FlockUsecase - findByUID", () => {
 
             name: activeFlock.name,
 
-            quantity: activeFlock.quantity,
-
             birthDate: activeFlock.birthDate,
 
             arrivalDate: activeFlock.arrivalDate,
@@ -74,8 +72,6 @@ describe("FlockUsecase - findByUID", () => {
                 uid: flock.uid,
 
                 name: activeFlock.name,
-
-                quantity: activeFlock.quantity,
 
                 birthDate: activeFlock.birthDate,
 

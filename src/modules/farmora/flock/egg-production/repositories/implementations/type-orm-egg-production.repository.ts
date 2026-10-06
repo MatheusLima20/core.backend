@@ -6,6 +6,7 @@ import { ResultFactory } from "@/shared/result/result.factory";
 
 import { FlockEntity } from "../../../flock/entities/flock.entity";
 import { FlockStatus } from "../../../flock/enums/flock-status.enum";
+import { FlockBreedEntity } from "../../../flock-breed/entities/flock-breed.entity";
 import { EggProductionSummaryResponseDTO } from "../../dtos/egg-production-summary";
 import { FindEggProductionsDTO } from "../../dtos/find-egg-production.dto";
 import { EggProductionEntity } from "../../entities/egg-production.entity";
@@ -15,7 +16,8 @@ import { IEggProductionRepository } from "../egg-production-repository.interface
 export class TypeORMEggProductionRepository implements IEggProductionRepository {
     constructor(
         private readonly eggProductionRepository: Repository<EggProductionEntity>,
-        private readonly flockRepository: Repository<FlockEntity>
+        private readonly flockRepository: Repository<FlockEntity>,
+        private readonly flockBreedRepository: Repository<FlockBreedEntity>
     ) {}
 
     async findByUID(platformUID: string, uid: string): Promise<Result<EggProductionEntity | null>> {
@@ -138,19 +140,30 @@ export class TypeORMEggProductionRepository implements IEggProductionRepository 
             .select("COALESCE(SUM(eggProduction.totalEggs), 0)", "totalCollectedToday")
             .addSelect(
                 `COALESCE(
-        SUM(
-          COALESCE(eggProduction.crackedEggs, 0) +
-          COALESCE(eggProduction.dirtyEggs, 0) +
-          COALESCE(eggProduction.discardedEggs, 0)
-        ),
-        0
-      )`,
+                        SUM(
+                            COALESCE(
+                                eggProduction.crackedEggs,
+                                0
+                            ) +
+                            COALESCE(
+                                eggProduction.dirtyEggs,
+                                0
+                            ) +
+                            COALESCE(
+                                eggProduction.discardedEggs,
+                                0
+                            )
+                        ),
+                        0
+                    )`,
                 "discardedEggs"
             )
             .where("eggProduction.platformUID = :platformUID", {
                 platformUID,
             })
-            .andWhere("DATE(eggProduction.productionDate) = DATE(:today)", { today })
+            .andWhere("DATE(eggProduction.productionDate) = DATE(:today)", {
+                today,
+            })
             .getRawOne<{
                 totalCollectedToday: string;
                 discardedEggs: string;
@@ -158,22 +171,31 @@ export class TypeORMEggProductionRepository implements IEggProductionRepository 
 
         const flockResult = await this.flockRepository
             .createQueryBuilder("flock")
-            .select("COALESCE(SUM(flock.quantity), 0)", "totalBirds")
+            .select(["flock.uid"])
             .where("flock.platformUID = :platformUID", {
                 platformUID,
             })
             .andWhere("flock.status = :status", {
                 status: FlockStatus.IN_PRODUCTION,
             })
-            .getRawOne<{
-                totalBirds: string;
-            }>();
+            .getMany();
+
+        let totalBirds = 0;
+
+        for (const flock of flockResult) {
+            const flockBreeds = await this.flockBreedRepository.find({
+                where: {
+                    platformUID,
+                    flockUID: flock.uid,
+                },
+            });
+
+            totalBirds += flockBreeds.reduce((total, flockBreed) => total + flockBreed.quantity, 0);
+        }
 
         const totalCollectedToday = Number(productionResult?.totalCollectedToday ?? 0);
 
         const discardedEggs = Number(productionResult?.discardedEggs ?? 0);
-
-        const totalBirds = Number(flockResult?.totalBirds ?? 0);
 
         const commercialEggs = Math.max(totalCollectedToday - discardedEggs, 0);
 

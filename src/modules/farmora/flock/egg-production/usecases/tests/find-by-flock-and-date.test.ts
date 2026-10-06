@@ -4,6 +4,8 @@ import { expectSuccess } from "@/shared/tests/result.helper";
 import { FlockUsecase } from "../../../flock/usecases/flock.usecase";
 import { activeFlock } from "../../../flock/usecases/tests/factories/flock-data.factory";
 import { setupFlock } from "../../../flock/usecases/tests/setup/flock-tests.setup";
+import { FlockBreedUsecase } from "../../../flock-breed/usecases/flock-breed.usecase";
+import { setupFlockBreed } from "../../../flock-breed/usecases/tests/setup/flock-breed.setup";
 import { EggProductionUsecase } from "../egg-production.usecase";
 import { makeEggProduction, production1 } from "./factories/egg-production-data.factory";
 import { scenario } from "./setup/egg-production.builder";
@@ -14,6 +16,7 @@ describe("EggProductionUsecase - findByFlockAndDate", () => {
     let usecaseUser2!: EggProductionUsecase;
 
     let flockUsecaseUser1!: FlockUsecase;
+    let flockBreedUsecaseUser1!: FlockBreedUsecase;
 
     let user1!: AuthUser;
 
@@ -21,12 +24,25 @@ describe("EggProductionUsecase - findByFlockAndDate", () => {
         ({
             eggProductionUsecases: [usecaseUser1, usecaseUser2],
             flockUsecases: [flockUsecaseUser1],
+            flockBreedUsecases: [flockBreedUsecaseUser1],
             users: [user1],
         } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
     });
 
+    async function createFlockWithBreed(flockData: typeof activeFlock, quantity = 100) {
+        const flock = await setupFlock(flockUsecaseUser1, flockData);
+
+        await setupFlockBreed(flockBreedUsecaseUser1, {
+            flockUID: flock.uid,
+            breedUID: "brd_isa-brown",
+            quantity,
+        });
+
+        return flock;
+    }
+
     test("Should find egg production by flock and date", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(activeFlock);
 
         const production = await setupEggProduction(
             usecaseUser1,
@@ -67,7 +83,7 @@ describe("EggProductionUsecase - findByFlockAndDate", () => {
     });
 
     test("Should return null when production does not exist", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(activeFlock);
 
         const result = expectSuccess(
             await usecaseUser1.findByFlockAndDate(flock.uid, new Date("2026-01-01"))
@@ -77,12 +93,15 @@ describe("EggProductionUsecase - findByFlockAndDate", () => {
     });
 
     test("Should not find production from another flock", async () => {
-        const flockA = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flockA = await createFlockWithBreed(activeFlock, 100);
 
-        const flockB = await setupFlock(flockUsecaseUser1, {
-            ...activeFlock,
-            name: "Lote B",
-        });
+        const flockB = await createFlockWithBreed(
+            {
+                ...activeFlock,
+                name: "Lote B",
+            },
+            100
+        );
 
         await setupEggProduction(
             usecaseUser1,
@@ -99,7 +118,7 @@ describe("EggProductionUsecase - findByFlockAndDate", () => {
     });
 
     test("Should not find production from another platform", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(activeFlock);
 
         await setupEggProduction(
             usecaseUser1,
@@ -116,7 +135,7 @@ describe("EggProductionUsecase - findByFlockAndDate", () => {
     });
 
     test("Should find production ignoring time when same day", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(activeFlock);
 
         const productionDate = new Date("2026-07-30T08:00:00");
 
@@ -138,7 +157,7 @@ describe("EggProductionUsecase - findByFlockAndDate", () => {
     });
 
     test("Should not find production from another day", async () => {
-        const flock = await setupFlock(flockUsecaseUser1, activeFlock);
+        const flock = await createFlockWithBreed(activeFlock);
 
         await setupEggProduction(
             usecaseUser1,

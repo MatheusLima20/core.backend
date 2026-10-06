@@ -30,7 +30,6 @@ describe("FlockUsecase - update", () => {
         const data: UpdateFlockDTO = {
             uid: flock.uid,
             name: "Lote Atualizado",
-            quantity: 180,
             birthDate: new Date("2026-02-01"),
             arrivalDate: new Date("2026-06-01"),
             status: FlockStatus.FINISHED,
@@ -42,7 +41,7 @@ describe("FlockUsecase - update", () => {
         expect(updated).toMatchObject({
             uid: flock.uid,
             name: data.name,
-            quantity: data.quantity,
+
             birthDate: data.birthDate,
             arrivalDate: data.arrivalDate,
             status: data.status,
@@ -56,19 +55,6 @@ describe("FlockUsecase - update", () => {
         expect(found).toMatchObject(updated);
 
         expect(found?.updatedBy).not.toBe(user2.uid);
-    });
-
-    test("Should update only quantity", async () => {
-        const flock = await setupFlock(usecaseUser1, activeFlock);
-
-        const updated = expectSuccess(
-            await usecaseUser1.update({
-                uid: flock.uid,
-                quantity: 250,
-            })
-        );
-
-        expect(updated.quantity).toBe(250);
     });
 
     test("Should update only status", async () => {
