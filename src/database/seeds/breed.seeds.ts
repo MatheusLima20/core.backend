@@ -1,8 +1,8 @@
 import { DataSource } from "typeorm";
 
-import { BreedEntity } from "@/modules/farmora/flock/breed/entities/breed.entity";
-import { BreedPurpose } from "@/modules/farmora/flock/breed/enums/breed-origin.enum";
-import { EggColor } from "@/modules/farmora/flock/breed/enums/egg-color.enum";
+import { BreedEntity } from "@/modules/farmora/breed/entities/breed.entity";
+import { BreedPurpose } from "@/modules/farmora/breed/enums/breed-origin.enum";
+import { EggColor } from "@/modules/farmora/breed/enums/egg-color.enum";
 
 export async function seedBreed(dataSource: DataSource): Promise<void> {
     const breedRepository = dataSource.getRepository(BreedEntity);
