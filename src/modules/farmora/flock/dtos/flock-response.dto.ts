@@ -13,4 +13,6 @@ export type ResponseFlockDTO = Pick<
     | "updatedBy"
     | "createdAt"
     | "updatedAt"
-> & { weeks: number | null } & Partial<{ breedName: string; breedUrlImage: string | undefined }>;
+> & { weeks: number | null } & Partial<{
+        quantity: number | null;
+    }>;

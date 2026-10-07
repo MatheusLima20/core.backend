@@ -7,6 +7,7 @@ import { isFailure } from "@/shared/result/result.guard";
 import { ResultMapper } from "@/shared/result/result.mapper";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
+import { IFlockBreedRepository } from "../../flock-breed/repositories/flock-breed-repository.interface";
 import { CreateFlockDTO, CreateFlockResponseDTO } from "../dtos/create-flock.dto";
 import { FindFlocksDTO } from "../dtos/find-flock.dto";
 import { ResponseFlockDTO } from "../dtos/flock-response.dto";
@@ -21,7 +22,8 @@ import { IFlockRepository } from "../repositories/flock-repository.interface";
 export class FlockUsecase {
     constructor(
         private readonly context: RequestContext,
-        private readonly flockRepository: IFlockRepository
+        private readonly flockRepository: IFlockRepository,
+        private readonly flockBreedRepository: IFlockBreedRepository
     ) {}
 
     async create(data: CreateFlockDTO): Promise<Result<CreateFlockResponseDTO>> {
@@ -81,10 +83,22 @@ export class FlockUsecase {
             return ResultFactory.failure(result.error);
         }
 
-        return ResultMapper.map(result, (pagination) => ({
-            ...pagination,
-            data: FlockMapper.toResponseDTOList(pagination.data),
-        }));
+        const data = await Promise.all(
+            result.data.data.map(async (flock) => {
+                const quantityResult = await this.getFlockQuantity(flock.uid);
+
+                if (isFailure(quantityResult)) {
+                    throw quantityResult.error;
+                }
+
+                return FlockMapper.toListResponseDTO(flock, quantityResult.data);
+            })
+        );
+
+        return ResultFactory.success({
+            ...result.data,
+            data,
+        });
     }
 
     async update(data: UpdateFlockDTO): Promise<Result<UpdateFlockResponseDTO>> {
@@ -175,5 +189,24 @@ export class FlockUsecase {
         }
 
         return ResultFactory.ok();
+    }
+
+    private async getFlockQuantity(flockUID: string): Promise<Result<number>> {
+        const result = await this.flockBreedRepository.find(this.context.user.platformUID, {
+            flockUID,
+            page: 1,
+            limit: 1000,
+        });
+
+        if (isFailure(result)) {
+            return ResultFactory.failure(result.error);
+        }
+
+        const quantity = result.data.data.reduce(
+            (total, flockBreed) => total + flockBreed.quantity,
+            0
+        );
+
+        return ResultFactory.success(quantity);
     }
 }

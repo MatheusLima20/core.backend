@@ -1,4 +1,3 @@
-import { BreedEntity } from "../../breed/entities/breed.entity";
 import { CreateFlockResponseDTO } from "../dtos/create-flock.dto";
 import { ResponseFlockDTO } from "../dtos/flock-response.dto";
 import { UpdateFlockResponseDTO } from "../dtos/update-flock.dto";
@@ -27,23 +26,18 @@ export const FlockMapper = {
         return flocks.map(FlockMapper.toResponseDTO);
     },
 
-    toListResponseDTO: (
-        flock: FlockEntity,
-        breed: Pick<BreedEntity, "name" | "urlImage">
-    ): ResponseFlockDTO => ({
+    toListResponseDTO: (flock: FlockEntity, quantity: number): ResponseFlockDTO => ({
         uid: flock.uid,
         platformUID: flock.platformUID!,
-
         name: flock.name,
-        breedName: breed.name,
-        breedUrlImage: breed.urlImage,
-
         birthDate: flock.birthDate,
         arrivalDate: flock.arrivalDate,
 
         status: flock.status,
 
         weeks: calculateFlockWeeks(flock.birthDate ?? null),
+
+        quantity,
 
         description: flock.description,
 

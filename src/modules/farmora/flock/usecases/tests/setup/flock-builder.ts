@@ -1,4 +1,5 @@
 import { makeLoggedUser } from "@/modules/auth/usecases/tests/auth.factory";
+import { InMemoryFlockBreedRepository } from "@/modules/farmora/flock-breed/repositories/implementations/in-memory-flock-breed.repository";
 import { BaseTestTransactionContext } from "@/shared/tests/base-test.interface";
 
 import { InMemoryFlockRepository } from "../../../repositories/implementations/in-memory-flock.repository";
@@ -9,6 +10,7 @@ export class TestBuilder {
     private testContext = new BaseTestTransactionContext();
     private usecases: FlockUsecase[] = [];
     private flockRepository: InMemoryFlockRepository = new InMemoryFlockRepository();
+    private flockBreedRepository: InMemoryFlockBreedRepository = new InMemoryFlockBreedRepository();
 
     async loadUsers(uids: string[]) {
         for (const uid of uids) {
@@ -26,7 +28,8 @@ export class TestBuilder {
 
     createUsecases() {
         this.usecases = this.testContext.users.map(
-            (user) => makeFlockUsecase(user, this.flockRepository).usecase
+            (user) =>
+                makeFlockUsecase(user, this.flockRepository, this.flockBreedRepository).usecase
         );
 
         return this;
