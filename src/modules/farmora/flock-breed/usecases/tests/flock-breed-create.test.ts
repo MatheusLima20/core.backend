@@ -22,10 +22,14 @@ describe("FlockBreedUsecase - create", () => {
     let user2!: AuthUser;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadFlocks();
+
         ({
             flockBreedUsecases: [usecaseUser1, usecaseUser2],
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
     });
 
     test("Should register a flock breed", async () => {

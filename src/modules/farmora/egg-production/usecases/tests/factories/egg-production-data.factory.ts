@@ -2,6 +2,7 @@ import { CreateEggProductionDTO } from "../../../dtos/create-egg-production.dto"
 
 export const production1: CreateEggProductionDTO = {
     flockUID: "flk-test-1",
+    breedUID: "brd_isa-brown",
     productionDate: new Date("2026-07-01"),
     totalEggs: 90,
 
@@ -13,6 +14,7 @@ export const production1: CreateEggProductionDTO = {
 
 export const production2: CreateEggProductionDTO = {
     flockUID: "flk-test-1",
+    breedUID: "brd-novogen-tinted",
     productionDate: new Date("2026-07-02"),
     totalEggs: 50,
 
@@ -24,6 +26,7 @@ export const production2: CreateEggProductionDTO = {
 
 export const production3: CreateEggProductionDTO = {
     flockUID: "flk-test-2",
+    breedUID: "brd_novogen-brown",
     productionDate: new Date("2026-07-01"),
     totalEggs: 70,
 
@@ -35,6 +38,7 @@ export const production3: CreateEggProductionDTO = {
 
 export const production4: CreateEggProductionDTO = {
     flockUID: "flk-test-1",
+    breedUID: "brd-novogen-brown",
     productionDate: new Date("2026-07-03"),
     totalEggs: 80,
 
@@ -46,6 +50,7 @@ export const production4: CreateEggProductionDTO = {
 
 export const production5: CreateEggProductionDTO = {
     flockUID: "flk-test-3",
+    breedUID: "brd_isa-brown",
     productionDate: new Date("2026-07-03"),
     totalEggs: 50,
 

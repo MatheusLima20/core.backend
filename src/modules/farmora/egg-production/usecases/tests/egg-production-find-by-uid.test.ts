@@ -1,3 +1,5 @@
+import { FlockUsecase } from "@/modules/farmora/flock/usecases/flock.usecase";
+import { FlockBreedUsecase } from "@/modules/farmora/flock-breed/usecases/flock-breed.usecase";
 import { AuthUser } from "@/shared/context/auth.user";
 import { expectSuccess } from "@/shared/tests/result.helper";
 
@@ -10,15 +12,25 @@ describe("EggProductionUsecase - findByUID", () => {
     let usecaseUser1!: EggProductionUsecase;
     let usecaseUser2!: EggProductionUsecase;
 
+    let _flockUsecaseUser1!: FlockUsecase;
+    let _flockBreedUsecaseUser1!: FlockBreedUsecase;
+
     let user1!: AuthUser;
+
     let user2!: AuthUser;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadFlocks();
+        await testScenario.loadFlockBreeds();
+
         ({
             eggProductionUsecases: [usecaseUser1, usecaseUser2],
-
+            flockUsecases: [_flockUsecaseUser1],
+            flockBreedUsecases: [_flockBreedUsecaseUser1],
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
     });
 
     test("Should find an egg production by uid", async () => {
@@ -30,6 +42,7 @@ describe("EggProductionUsecase - findByUID", () => {
             uid: production.uid,
 
             flockUID: production.flockUID,
+            breedUID: production.breedUID,
 
             productionDate: production.productionDate,
 
@@ -82,6 +95,7 @@ describe("EggProductionUsecase - findByUID", () => {
                 uid: production.uid,
 
                 flockUID: production.flockUID,
+                breedUID: production.breedUID,
 
                 productionDate: production.productionDate,
 

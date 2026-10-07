@@ -11,6 +11,7 @@ export const EggProductionMapper = {
         return {
             uid: eggProduction.uid,
             platformUID: eggProduction.platformUID,
+            breedUID: eggProduction.breedUID,
             flockUID: eggProduction.flockUID,
             productionDate: eggProduction.productionDate,
             totalEggs: eggProduction.totalEggs,
@@ -34,6 +35,7 @@ export const EggProductionMapper = {
             uid: eggProduction.production.uid,
             platformUID: eggProduction.production.platformUID,
             flockUID: eggProduction.production.flockUID,
+            breedUID: eggProduction.production.breedUID,
             flockName: eggProduction.flock.name,
             productionDate: eggProduction.production.productionDate,
             totalEggs: eggProduction.production.totalEggs,
@@ -52,6 +54,7 @@ export const EggProductionMapper = {
         return {
             uid: eggProduction.uid,
             platformUID: eggProduction.platformUID,
+            breedUID: eggProduction.breedUID,
             flockUID: eggProduction.flockUID,
             productionDate: eggProduction.productionDate,
             totalEggs: eggProduction.totalEggs,
@@ -68,6 +71,7 @@ export const EggProductionMapper = {
         return {
             uid: eggProduction.uid,
             flockUID: eggProduction.flockUID,
+            breedUID: eggProduction.breedUID,
             productionDate: eggProduction.productionDate,
             totalEggs: eggProduction.totalEggs,
             crackedEggs: eggProduction.crackedEggs,

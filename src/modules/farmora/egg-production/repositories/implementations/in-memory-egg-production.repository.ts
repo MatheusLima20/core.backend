@@ -34,22 +34,6 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
         return ResultFactory.success(eggProduction);
     }
 
-    async findByFlockAndDate(
-        platformUID: string,
-        flockUID: string,
-        productionDate: Date
-    ): Promise<Result<EggProductionEntity | null>> {
-        const eggProduction =
-            this.eggProductions.find(
-                (eggProduction) =>
-                    StringUtil.equals(eggProduction.platformUID, platformUID) &&
-                    StringUtil.equals(eggProduction.flockUID, flockUID) &&
-                    DateUtil.isSameDay(eggProduction.productionDate, productionDate)
-            ) ?? null;
-
-        return ResultFactory.success(eggProduction);
-    }
-
     async find(
         platformUID: string,
         filters?: FindEggProductionsDTO
@@ -61,6 +45,12 @@ export class InMemoryEggProductionRepository implements IEggProductionRepository
         if (filters?.flockUID) {
             eggProductions = eggProductions.filter((eggProduction) =>
                 StringUtil.equals(eggProduction.flockUID, filters.flockUID!)
+            );
+        }
+
+        if (filters?.breedUID) {
+            eggProductions = eggProductions.filter((eggProduction) =>
+                StringUtil.equals(eggProduction.breedUID, filters.breedUID!)
             );
         }
 

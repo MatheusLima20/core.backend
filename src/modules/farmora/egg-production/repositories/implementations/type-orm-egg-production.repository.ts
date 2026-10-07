@@ -31,27 +31,6 @@ export class TypeORMEggProductionRepository implements IEggProductionRepository 
         return ResultFactory.success(eggProduction);
     }
 
-    async findByFlockAndDate(
-        platformUID: string,
-        flockUID: string,
-        productionDate: Date
-    ): Promise<Result<EggProductionEntity | null>> {
-        const eggProduction = await this.eggProductionRepository
-            .createQueryBuilder("eggProduction")
-            .where("eggProduction.platformUID = :platformUID", {
-                platformUID,
-            })
-            .andWhere("eggProduction.flockUID = :flockUID", {
-                flockUID,
-            })
-            .andWhere("DATE(eggProduction.productionDate) = DATE(:productionDate)", {
-                productionDate,
-            })
-            .getOne();
-
-        return ResultFactory.success(eggProduction);
-    }
-
     async find(
         platformUID?: string,
         filters?: FindEggProductionsDTO
@@ -70,6 +49,12 @@ export class TypeORMEggProductionRepository implements IEggProductionRepository 
         if (filters?.flockUID) {
             query.andWhere("eggProduction.flockUID = :flockUID", {
                 flockUID: filters.flockUID,
+            });
+        }
+
+        if (filters?.breedUID) {
+            query.andWhere("eggProduction.breedUID = :breedUID", {
+                breedUID: filters.breedUID,
             });
         }
 

@@ -19,7 +19,7 @@ describe("FlockBreedUsecase - update", () => {
         ({
             flockBreedUsecases: [usecaseUser1, usecaseUser2],
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = (await (await scenario().loadUsers(["1", "2"])).loadFlocks()).createUsecases().build());
     });
 
     test("Should update a flock breed", async () => {

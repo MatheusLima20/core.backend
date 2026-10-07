@@ -25,28 +25,31 @@ describe("EggProductionUsecase - find", () => {
     let user1!: AuthUser;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadFlocks();
+        await testScenario.loadFlockBreeds();
+
         ({
             eggProductionUsecases: [usecaseUser1, usecaseUser2],
-
             flockUsecases: [flockUsecaseUser1],
-
             flockBreedUsecases: [flockBreedUsecaseUser1],
-
             users: [user1],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
     });
 
     async function createFlockWithBreed(
         flockUsecase: FlockUsecase,
         flockBreedUsecase: FlockBreedUsecase,
         flockData: typeof activeFlock,
+        breedUID = "brd_isa-brown",
         quantity = 100
     ) {
         const flock = await setupFlock(flockUsecase, flockData);
 
         const flockBreed: CreateFlockBreedDTO = {
             flockUID: flock.uid,
-            breedUID: "brd_isa-brown",
+            breedUID,
             quantity,
         };
 
@@ -122,8 +125,51 @@ describe("EggProductionUsecase - find", () => {
         );
 
         expect(productions.data).toHaveLength(1);
-
         expect(productions.data[0].flockUID).toBe(flockA.uid);
+    });
+
+    test("Should filter productions by breed", async () => {
+        const flock = await createFlockWithBreed(
+            flockUsecaseUser1,
+            flockBreedUsecaseUser1,
+            activeFlock,
+            "brd_isa-brown",
+            100
+        );
+
+        await setupFlockBreed(flockBreedUsecaseUser1, {
+            flockUID: flock.uid,
+            breedUID: "brd-novogen-tinted",
+            quantity: 80,
+        });
+
+        await setupEggProduction(
+            usecaseUser1,
+            makeEggProduction({
+                flockUID: flock.uid,
+                breedUID: "brd_isa-brown",
+                totalEggs: 90,
+            })
+        );
+
+        await setupEggProduction(
+            usecaseUser1,
+            makeEggProduction({
+                flockUID: flock.uid,
+                breedUID: "brd-novogen-tinted",
+                totalEggs: 50,
+                productionDate: new Date("2026-07-29"),
+            })
+        );
+
+        const productions = expectSuccess(
+            await usecaseUser1.find({
+                breedUID: "brd-novogen-tinted",
+            })
+        );
+
+        expect(productions.data).toHaveLength(1);
+        expect(productions.data[0].breedUID).toBe("brd-novogen-tinted");
     });
 
     test("Should filter productions by production date", async () => {
@@ -156,6 +202,7 @@ describe("EggProductionUsecase - find", () => {
         );
 
         expect(productions.data).toHaveLength(1);
+        expect(productions.data[0].productionDate).toEqual(new Date("2026-07-30"));
     });
 
     test("Should filter productions by minimum eggs", async () => {
@@ -163,6 +210,7 @@ describe("EggProductionUsecase - find", () => {
             flockUsecaseUser1,
             flockBreedUsecaseUser1,
             activeFlock,
+            "brd_isa-brown",
             120
         );
 
@@ -186,7 +234,6 @@ describe("EggProductionUsecase - find", () => {
         );
 
         expect(productions.data).toHaveLength(1);
-
         expect(productions.data[0].totalEggs).toBe(120);
     });
 
@@ -268,6 +315,7 @@ describe("EggProductionUsecase - find", () => {
             flockUsecaseUser1,
             flockBreedUsecaseUser1,
             activeFlock,
+            "brd_isa-brown",
             120
         );
 

@@ -9,12 +9,6 @@ import { EggProductionWithFlock } from "../types/egg-production-with.flock";
 export interface IEggProductionRepository {
     findByUID(platformUID: string, uid: string): Promise<Result<EggProductionEntity | null>>;
 
-    findByFlockAndDate(
-        platformUID: string,
-        flockUID: string,
-        productionDate: Date
-    ): Promise<Result<EggProductionEntity | null>>;
-
     find(
         platformUID?: string,
         filters?: FindEggProductionsDTO

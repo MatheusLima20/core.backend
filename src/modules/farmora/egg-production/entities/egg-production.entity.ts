@@ -28,6 +28,12 @@ export class EggProductionEntity extends BaseEntity implements EggProductionProp
     flockUID!: string;
 
     @Column({
+        type: "varchar",
+        length: 40,
+    })
+    breedUID!: string;
+
+    @Column({
         type: "date",
     })
     productionDate!: Date;

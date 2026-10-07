@@ -5,6 +5,8 @@ export interface EggProductionProps {
 
     flockUID: string;
 
+    breedUID: string;
+
     productionDate: Date;
 
     totalEggs: number;

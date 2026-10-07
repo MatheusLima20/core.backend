@@ -42,17 +42,22 @@ export class EggProductionUsecase {
     async create(data: CreateEggProductionDTO): Promise<Result<CreateEggProductionResponseDTO>> {
         const validation = await this.validateProductionAlreadyRegistered(
             data.flockUID,
-            data.productionDate
+            data.breedUID,
+            data.productionDate.toISOString().slice(0, 10)
         );
 
         if (isFailure(validation)) {
             return validation;
         }
 
-        const flockValidation = await this.validateFlock(data.flockUID, data.totalEggs);
+        const productionValidation = await this.validateProduction(
+            data.flockUID,
+            data.breedUID,
+            data.totalEggs
+        );
 
-        if (isFailure(flockValidation)) {
-            return flockValidation;
+        if (isFailure(productionValidation)) {
+            return productionValidation;
         }
 
         const eggProduction = new EggProductionEntity({
@@ -91,29 +96,6 @@ export class EggProductionUsecase {
         if (!egg) {
             return ResultFactory.success(null);
         }
-
-        return ResultMapper.map(ResultFactory.success(egg), EggProductionMapper.toResponseDTO);
-    }
-
-    async findByFlockAndDate(
-        flockUID: string,
-        productionDate: Date
-    ): Promise<Result<ResponseEggProductionDTO | null>> {
-        const result = await this.eggProductionRepository.findByFlockAndDate(
-            this.context.user.platformUID,
-            flockUID,
-            productionDate
-        );
-
-        if (isFailure(result)) {
-            return ResultFactory.success(null);
-        }
-
-        if (!result.data) {
-            return ResultFactory.success(null);
-        }
-
-        const egg = result.data;
 
         return ResultMapper.map(ResultFactory.success(egg), EggProductionMapper.toResponseDTO);
     }
@@ -164,15 +146,6 @@ export class EggProductionUsecase {
             return requiredEgg;
         }
 
-        const flockValidation = await this.validateFlock(
-            data.flockUID ?? requiredEgg.data.flockUID,
-            data.totalEggs ?? requiredEgg.data.totalEggs
-        );
-
-        if (isFailure(flockValidation)) {
-            return flockValidation;
-        }
-
         const eggProduction = new EggProductionEntity({
             ...requiredEgg.data,
             ...data,
@@ -183,12 +156,23 @@ export class EggProductionUsecase {
 
         const validation = await this.validateProductionAlreadyRegistered(
             eggProduction.flockUID,
-            eggProduction.productionDate,
+            eggProduction.breedUID,
+            eggProduction.productionDate.toISOString().slice(0, 10),
             eggProduction.uid
         );
 
         if (isFailure(validation)) {
             return validation;
+        }
+
+        const productionValidation = await this.validateProduction(
+            eggProduction.flockUID,
+            eggProduction.breedUID,
+            eggProduction.totalEggs
+        );
+
+        if (isFailure(productionValidation)) {
+            return productionValidation;
         }
 
         const updated = await this.eggProductionRepository.update(eggProduction);
@@ -222,14 +206,17 @@ export class EggProductionUsecase {
 
     private async validateProductionAlreadyRegistered(
         flockUID: string,
-        productionDate: Date,
+        breedUID: string,
+        productionDate: string,
         uid?: string
     ): Promise<Result<void>> {
-        const result = await this.eggProductionRepository.findByFlockAndDate(
-            this.context.user.platformUID,
+        const result = await this.eggProductionRepository.find(this.context.user.platformUID, {
             flockUID,
-            productionDate
-        );
+            breedUID,
+            productionDate,
+            page: 1,
+            limit: 1,
+        });
 
         if (isFailure(result)) {
             return ResultFactory.failure(
@@ -237,15 +224,18 @@ export class EggProductionUsecase {
             );
         }
 
-        if (result.data && StringUtil.noEquals(result.data.uid, uid ?? "")) {
+        const existing = result.data.data[0];
+
+        if (existing && StringUtil.noEquals(existing.production.uid, uid ?? "")) {
             return ResultFactory.failure(new EggProductionAlreadyRegisteredError());
         }
 
         return ResultFactory.ok();
     }
 
-    private async validateFlock(
+    private async validateProduction(
         flockUID: string,
+        breedUID: string,
         totalEggs: number
     ): Promise<Result<void, FlockNotFoundError | FlockClosedError | InvalidEggProductionError>> {
         const flock = await this.flockRepository.findByUID(this.context.user.platformUID, flockUID);
@@ -260,28 +250,24 @@ export class EggProductionUsecase {
             return ResultFactory.failure(new FlockClosedError());
         }
 
-        const flockBreedsResult = await this.flockBreedRepository.find(
+        const flockBreed = await this.flockBreedRepository.findByFlockAndBreed(
             this.context.user.platformUID,
-            {
-                flockUID,
-                page: 1,
-                limit: 1000,
-            }
+            flockUID,
+            breedUID
         );
 
-        if (isFailure(flockBreedsResult)) {
-            return ResultFactory.failure(
-                new PersistenceError("Failed to validate flock quantity.")
-            );
+        if (isFailure(flockBreed)) {
+            return ResultFactory.failure(new PersistenceError("Failed to validate flock breed."));
         }
 
-        const totalBirds = flockBreedsResult.data.data.reduce(
-            (total, flockBreed) => total + flockBreed.quantity,
-            0
-        );
+        if (!flockBreed.data) {
+            return ResultFactory.failure(new InvalidEggProductionError(totalEggs, 0));
+        }
 
-        if (totalEggs > totalBirds) {
-            return ResultFactory.failure(new InvalidEggProductionError(totalEggs, totalBirds));
+        if (totalEggs > flockBreed.data.quantity) {
+            return ResultFactory.failure(
+                new InvalidEggProductionError(totalEggs, flockBreed.data.quantity)
+            );
         }
 
         return ResultFactory.ok();

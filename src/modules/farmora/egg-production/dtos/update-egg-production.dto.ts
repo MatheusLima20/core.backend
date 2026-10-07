@@ -5,6 +5,7 @@ export type UpdateEggProductionDTO = Pick<EggProductionEntity, "uid"> &
         Pick<
             EggProductionEntity,
             | "flockUID"
+            | "breedUID"
             | "productionDate"
             | "totalEggs"
             | "crackedEggs"
@@ -18,6 +19,7 @@ export type UpdateEggProductionResponseDTO = Pick<
     EggProductionEntity,
     | "uid"
     | "flockUID"
+    | "breedUID"
     | "productionDate"
     | "totalEggs"
     | "crackedEggs"

@@ -27,12 +27,17 @@ describe("EggProductionUsecase - update", () => {
     let flock1!: Awaited<ReturnType<typeof setupFlock>>;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadFlocks();
+        await testScenario.loadFlockBreeds();
+
         ({
             eggProductionUsecases: [usecaseUser1, usecaseUser2],
             flockUsecases: [flockUsecaseUser1],
             flockBreedUsecases: [flockBreedUsecaseUser1],
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
 
         flock1 = await setupFlock(flockUsecaseUser1, activeFlock);
 

@@ -3,6 +3,7 @@ import { EggProductionEntity } from "../entities/egg-production.entity";
 export type CreateEggProductionDTO = Pick<
     EggProductionEntity,
     | "flockUID"
+    | "breedUID"
     | "productionDate"
     | "totalEggs"
     | "crackedEggs"
@@ -17,6 +18,7 @@ export type CreateEggProductionResponseDTO = Pick<
     | "uid"
     | "platformUID"
     | "flockUID"
+    | "breedUID"
     | "productionDate"
     | "totalEggs"
     | "crackedEggs"

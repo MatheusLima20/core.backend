@@ -1,7 +1,8 @@
+import { FlockUsecase } from "@/modules/farmora/flock/usecases/flock.usecase";
+import { FlockBreedUsecase } from "@/modules/farmora/flock-breed/usecases/flock-breed.usecase";
+import { AuthUser } from "@/shared/context/auth.user";
 import { expectFailure, expectSuccess } from "@/shared/tests/result.helper";
 
-import { FlockUsecase } from "../../../flock/usecases/flock.usecase";
-import { FlockBreedUsecase } from "../../../flock-breed/usecases/flock-breed.usecase";
 import { EggProductionNotFoundError } from "../../errors/egg-production-not-found.error";
 import { EggProductionUsecase } from "../egg-production.usecase";
 import {
@@ -19,12 +20,20 @@ describe("EggProductionUsecase - delete", () => {
     let _flockUsecaseUser1!: FlockUsecase;
     let _flockBreedUsecaseUser1!: FlockBreedUsecase;
 
+    let _user1!: AuthUser;
+
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadFlocks();
+        await testScenario.loadFlockBreeds();
+
         ({
             eggProductionUsecases: [usecaseUser1, usecaseUser2],
             flockUsecases: [_flockUsecaseUser1],
             flockBreedUsecases: [_flockBreedUsecaseUser1],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+            users: [_user1],
+        } = testScenario.createUsecases().build());
     });
 
     test("Should delete an egg production", async () => {

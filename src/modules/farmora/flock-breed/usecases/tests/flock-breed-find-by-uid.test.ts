@@ -17,7 +17,7 @@ describe("FlockBreedUsecase - findByUID", () => {
         ({
             flockBreedUsecases: [usecaseUser1, usecaseUser2],
             users: [user1, user2],
-        } = (await await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = (await (await scenario().loadUsers(["1", "2"])).loadFlocks()).createUsecases().build());
     });
 
     test("Should find a flock breed by uid", async () => {

@@ -29,27 +29,28 @@ describe("EggProductionUsecase - create", () => {
     let _flockUsecaseUser2!: FlockUsecase;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadFlocks();
+        await testScenario.loadFlockBreeds();
+
         ({
             flockUsecases: [flockUsecaseUser1, _flockUsecaseUser2],
             eggProductionUsecases: [usecaseUser1, usecaseUser2],
             users: [user1, user2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
     });
 
-    async function createProduction(usecase: EggProductionUsecase, flockUID: string) {
-        return setupEggProduction(
-            usecase,
-            makeEggProduction({
-                flockUID,
-            })
-        );
+    async function createProduction(usecase: EggProductionUsecase, data = production1) {
+        return setupEggProduction(usecase, data);
     }
 
     test("Should register egg production", async () => {
-        const production = await createProduction(usecaseUser1, production1.flockUID);
+        const production = await createProduction(usecaseUser1);
 
         expect(production).toMatchObject({
             flockUID: production1.flockUID,
+            breedUID: production1.breedUID,
 
             productionDate: production1.productionDate,
 
@@ -74,9 +75,9 @@ describe("EggProductionUsecase - create", () => {
     });
 
     test("Should register productions in different platforms", async () => {
-        const productionUser1 = await createProduction(usecaseUser1, production1.flockUID);
+        const productionUser1 = await createProduction(usecaseUser1, production1);
 
-        const productionUser2 = await createProduction(usecaseUser2, production5.flockUID);
+        const productionUser2 = await createProduction(usecaseUser2, production5);
 
         expect(productionUser1.platformUID).toBe(user1.platformUID);
 
@@ -84,21 +85,59 @@ describe("EggProductionUsecase - create", () => {
     });
 
     test("Should allow same production date in different platforms", async () => {
-        await createProduction(usecaseUser1, production1.flockUID);
+        await createProduction(usecaseUser1, production1);
 
-        await createProduction(usecaseUser2, production5.flockUID);
+        await createProduction(usecaseUser2, production5);
     });
 
-    test("Should not register duplicated production on same day", async () => {
-        await createProduction(usecaseUser1, production1.flockUID);
+    test("Should not register duplicated production for same flock and breed on same day", async () => {
+        await createProduction(usecaseUser1, production1);
 
         await expectCreateEggProductionFailure(
             usecaseUser1,
             makeEggProduction({
                 flockUID: production1.flockUID,
+                breedUID: production1.breedUID,
+                productionDate: production1.productionDate,
             }),
             EggProductionAlreadyRegisteredError
         );
+    });
+
+    test("Should allow different breeds in the same flock on the same day", async () => {
+        await createProduction(usecaseUser1, production1);
+
+        const production = await createProduction(
+            usecaseUser1,
+            makeEggProduction({
+                flockUID: production1.flockUID,
+                breedUID: "brd-novogen-tinted",
+                productionDate: production1.productionDate,
+                totalEggs: 30,
+            })
+        );
+
+        expect(production.flockUID).toBe(production1.flockUID);
+        expect(production.breedUID).toBe("brd-novogen-tinted");
+        expect(production.productionDate).toEqual(production1.productionDate);
+    });
+
+    test("Should allow same flock and breed on a different day", async () => {
+        await createProduction(usecaseUser1, production1);
+
+        const production = await createProduction(
+            usecaseUser1,
+            makeEggProduction({
+                flockUID: production1.flockUID,
+                breedUID: production1.breedUID,
+                productionDate: new Date("2026-07-02"),
+                totalEggs: 30,
+            })
+        );
+
+        expect(production.flockUID).toBe(production1.flockUID);
+        expect(production.breedUID).toBe(production1.breedUID);
+        expect(production.productionDate).toEqual(new Date("2026-07-02"));
     });
 
     test("Should not register production for closed flock", async () => {
@@ -115,7 +154,7 @@ describe("EggProductionUsecase - create", () => {
     });
 
     test("Should register production without notes", async () => {
-        const production = await setupEggProduction(
+        const production = await createProduction(
             usecaseUser1,
             makeEggProduction({
                 flockUID: production1.flockUID,
@@ -127,7 +166,7 @@ describe("EggProductionUsecase - create", () => {
     });
 
     test("Should register production without cracked eggs", async () => {
-        const production = await setupEggProduction(
+        const production = await createProduction(
             usecaseUser1,
             makeEggProduction({
                 flockUID: production1.flockUID,
@@ -139,7 +178,7 @@ describe("EggProductionUsecase - create", () => {
     });
 
     test("Should register production without dirty eggs", async () => {
-        const production = await setupEggProduction(
+        const production = await createProduction(
             usecaseUser1,
             makeEggProduction({
                 flockUID: production1.flockUID,
@@ -151,7 +190,7 @@ describe("EggProductionUsecase - create", () => {
     });
 
     test("Should register production without discarded eggs", async () => {
-        const production = await setupEggProduction(
+        const production = await createProduction(
             usecaseUser1,
             makeEggProduction({
                 flockUID: production1.flockUID,

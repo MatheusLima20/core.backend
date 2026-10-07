@@ -4,6 +4,7 @@ export type ResponseEggProductionDTO = Pick<
     EggProductionEntity,
     | "uid"
     | "flockUID"
+    | "breedUID"
     | "platformUID"
     | "productionDate"
     | "totalEggs"

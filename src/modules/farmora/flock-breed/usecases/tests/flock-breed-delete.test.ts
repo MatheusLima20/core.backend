@@ -16,9 +16,13 @@ describe("FlockBreedUsecase - delete", () => {
     let usecaseUser2!: FlockBreedUsecase;
 
     beforeEach(async () => {
+        const testScenario = await scenario().loadUsers(["1", "2"]);
+
+        await testScenario.loadFlocks();
+
         ({
             flockBreedUsecases: [usecaseUser1, usecaseUser2],
-        } = (await scenario().loadUsers(["1", "2"])).createUsecases().build());
+        } = testScenario.createUsecases().build());
     });
 
     test("Should delete a flock breed", async () => {
