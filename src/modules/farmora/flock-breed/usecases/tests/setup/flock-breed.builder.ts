@@ -79,7 +79,12 @@ export class TestBuilder {
 
     createUsecases() {
         this.testContext.flockUsecases = this.testContext.users.map(
-            (user) => makeFlockUsecase(user, this.testContext.flockRepository).usecase
+            (user) =>
+                makeFlockUsecase(
+                    user,
+                    this.testContext.flockRepository,
+                    this.testContext.flockBreedRepository
+                ).usecase
         );
 
         this.testContext.flockBreedUsecases = this.testContext.users.map(

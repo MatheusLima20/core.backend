@@ -43,7 +43,7 @@ export class EggProductionUsecase {
         const validation = await this.validateProductionAlreadyRegistered(
             data.flockUID,
             data.breedUID,
-            data.productionDate.toISOString().slice(0, 10)
+            data.productionDate.toString()
         );
 
         if (isFailure(validation)) {

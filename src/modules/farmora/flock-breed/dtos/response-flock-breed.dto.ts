@@ -11,4 +11,6 @@ export type ResponseFlockBreedDTO = Pick<
     | "updatedBy"
     | "createdAt"
     | "updatedAt"
->;
+> & {
+    breedName: string;
+};

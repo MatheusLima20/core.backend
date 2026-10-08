@@ -3,6 +3,10 @@ import { BreedPurpose } from "../enums/breed-origin.enum";
 import { EggColor } from "../enums/egg-color.enum";
 
 export interface FindBreedsDTO {
+    uid?: string;
+
+    uids?: string[];
+
     name?: string;
 
     scientificName?: string;

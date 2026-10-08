@@ -138,6 +138,16 @@ export class InMemoryBreedRepository implements IBreedRepository {
     async find(filters?: FindBreedsDTO): Promise<Result<PaginationResult<BreedEntity>>> {
         let breeds = this.breeds;
 
+        if (filters?.uids?.length) {
+            breeds = breeds.filter((breed) => filters.uids!.includes(breed.uid));
+        }
+
+        if (filters?.uid) {
+            breeds = breeds.filter((breed) =>
+                breed.uid.toLowerCase().includes(filters.uid!.toLowerCase())
+            );
+        }
+
         if (filters?.name) {
             breeds = breeds.filter((breed) =>
                 breed.name.toLowerCase().includes(filters.name!.toLowerCase())

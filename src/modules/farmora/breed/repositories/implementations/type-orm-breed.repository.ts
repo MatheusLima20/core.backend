@@ -17,6 +17,18 @@ export class TypeORMBreedRepository implements IBreedRepository {
 
         const query = this.breedRepository.createQueryBuilder("breed");
 
+        if (filters?.uids?.length) {
+            query.andWhere("breed.uid IN (:...uids)", {
+                uids: filters.uids,
+            });
+        }
+
+        if (filters?.uid) {
+            query.andWhere("LOWER(breed.uid) LIKE LOWER(:uid)", {
+                uid: `%${filters.uid}%`,
+            });
+        }
+
         if (filters?.name) {
             query.andWhere("LOWER(breed.name) LIKE LOWER(:name)", {
                 name: `%${filters.name}%`,

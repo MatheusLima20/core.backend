@@ -1,15 +1,17 @@
+import { BreedEntity } from "../../breed/entities/breed.entity";
 import { CreateFlockBreedResponseDTO } from "../dtos/create-flock-breed.dto";
 import { ResponseFlockBreedDTO } from "../dtos/response-flock-breed.dto";
 import { UpdateFlockBreedResponseDTO } from "../dtos/update-flock-breed.dto";
 import { FlockBreedEntity } from "../entities/flock-breed.entity";
 
 export const FlockBreedMapper = {
-    toResponseDTO: (flockBreed: FlockBreedEntity): ResponseFlockBreedDTO => {
+    toResponseDTO: (flockBreed: FlockBreedEntity, breed: BreedEntity): ResponseFlockBreedDTO => {
         return {
             uid: flockBreed.uid,
             platformUID: flockBreed.platformUID,
             flockUID: flockBreed.flockUID,
             breedUID: flockBreed.breedUID,
+            breedName: breed.name,
             quantity: flockBreed.quantity,
             createdBy: flockBreed.createdBy,
             updatedBy: flockBreed.updatedBy,
@@ -18,8 +20,21 @@ export const FlockBreedMapper = {
         };
     },
 
-    toResponseDTOList: (flockBreeds: FlockBreedEntity[]): ResponseFlockBreedDTO[] => {
-        return flockBreeds.map(FlockBreedMapper.toResponseDTO);
+    toResponseDTOList: (
+        flockBreeds: FlockBreedEntity[],
+        breeds: BreedEntity[]
+    ): ResponseFlockBreedDTO[] => {
+        const breedsByUID = new Map(breeds.map((breed) => [breed.uid, breed]));
+
+        return flockBreeds.map((flockBreed) => {
+            const breed = breedsByUID.get(flockBreed.breedUID);
+
+            if (!breed) {
+                throw new Error(`Breed not found: ${flockBreed.breedUID}`);
+            }
+
+            return FlockBreedMapper.toResponseDTO(flockBreed, breed);
+        });
     },
 
     toCreateResponseDTO: (flockBreed: FlockBreedEntity): CreateFlockBreedResponseDTO => {

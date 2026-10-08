@@ -116,7 +116,17 @@ export class FlockBreedUsecase {
             return ResultFactory.success(null);
         }
 
-        return ResultMapper.map(ResultFactory.success(result.data), FlockBreedMapper.toResponseDTO);
+        const breedResult = await this.breedRepository.findByUID(result.data.breedUID);
+
+        if (isFailure(breedResult)) {
+            return ResultFactory.failure(breedResult.error);
+        }
+
+        if (!breedResult.data) {
+            return ResultFactory.failure(new Error("Breed not found") as never);
+        }
+
+        return ResultFactory.success(FlockBreedMapper.toResponseDTO(result.data, breedResult.data));
     }
 
     async find(
@@ -128,10 +138,47 @@ export class FlockBreedUsecase {
             return ResultFactory.failure(result.error);
         }
 
-        return ResultMapper.map(result, (pagination) => ({
-            ...pagination,
-            data: FlockBreedMapper.toResponseDTOList(pagination.data),
-        }));
+        const flockBreeds = result.data.data;
+
+        if (flockBreeds.length === 0) {
+            return ResultFactory.success({
+                ...result.data,
+                data: [],
+            });
+        }
+
+        const uids = [...new Set(flockBreeds.map((item) => item.breedUID))];
+
+        const breedsResult = await this.breedRepository.find({
+            uids,
+            page: 1,
+            limit: uids.length,
+        });
+
+        if (isFailure(breedsResult)) {
+            return ResultFactory.failure(breedsResult.error);
+        }
+
+        const breedsByUID = new Map(breedsResult.data.data.map((breed) => [breed.uid, breed]));
+
+        const data: ResponseFlockBreedDTO[] = [];
+
+        for (const flockBreed of flockBreeds) {
+            const breed = breedsByUID.get(flockBreed.breedUID);
+
+            if (!breed) {
+                return ResultFactory.failure(
+                    new PersistenceError("Failed to fetch an associated breed.")
+                );
+            }
+
+            data.push(FlockBreedMapper.toResponseDTO(flockBreed, breed));
+        }
+
+        return ResultFactory.success({
+            ...result.data,
+            data,
+        });
     }
 
     async update(data: UpdateFlockBreedDTO): Promise<Result<UpdateFlockBreedResponseDTO>> {
