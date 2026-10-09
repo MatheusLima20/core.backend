@@ -1,6 +1,8 @@
 import { dataSource } from "@/services/database/database";
 import { RequestContext } from "@/shared/context/request-context";
 
+import { BreedEntity } from "../../breed/entities/breed.entity";
+import { TypeORMBreedRepository } from "../../breed/repositories/implementations/type-orm-breed.repository";
 import { FlockEntity } from "../../flock/entities/flock.entity";
 import { TypeORMFlockRepository } from "../../flock/repositories/implementations/type-orm-flock.repository";
 import { FlockBreedEntity } from "../../flock-breed/entities/flock-breed.entity";
@@ -20,13 +22,16 @@ export function makeEggProductionController(context: RequestContext) {
         dataSource.getRepository(FlockBreedEntity)
     );
 
+    const breedRepository = new TypeORMBreedRepository(dataSource.getRepository(BreedEntity));
+
     const flockRepository = new TypeORMFlockRepository(dataSource.getRepository(FlockEntity));
 
     const usecase = new EggProductionUsecase(
         context,
         eggProductionRepository,
         flockRepository,
-        flockBreedRepository
+        flockBreedRepository,
+        breedRepository
     );
 
     return new EggProductionController(usecase);

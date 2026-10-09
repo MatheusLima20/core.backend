@@ -8,6 +8,7 @@ import { isFailure } from "@/shared/result/result.guard";
 import { ResultMapper } from "@/shared/result/result.mapper";
 import { StringUtil } from "@/shared/utils/string/string.util";
 
+import { IBreedRepository } from "../../breed/repositories/breed-repository.interface";
 import { FlockStatus } from "../../flock/enums/flock-status.enum";
 import { FlockNotFoundError } from "../../flock/errors/flock-not-found.error";
 import { IFlockRepository } from "../../flock/repositories/flock-repository.interface";
@@ -36,7 +37,8 @@ export class EggProductionUsecase {
         private readonly context: RequestContext,
         private readonly eggProductionRepository: IEggProductionRepository,
         private readonly flockRepository: IFlockRepository,
-        private readonly flockBreedRepository: IFlockBreedRepository
+        private readonly flockBreedRepository: IFlockBreedRepository,
+        private readonly breedRepository: IBreedRepository
     ) {}
 
     async create(data: CreateEggProductionDTO): Promise<Result<CreateEggProductionResponseDTO>> {
@@ -112,9 +114,23 @@ export class EggProductionUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch egg productions."));
         }
 
+        const data = await Promise.all(
+            result.data.data.map(async (item) => {
+                const breedResult = await this.breedRepository.findByUID(item.production.breedUID);
+
+                const breedName =
+                    !isFailure(breedResult) && breedResult.data ? breedResult.data.name : null;
+
+                return {
+                    ...EggProductionMapper.toListResponseDTO(item),
+                    breedName,
+                };
+            })
+        );
+
         return ResultFactory.success({
             ...result.data,
-            data: result.data.data.map((item) => EggProductionMapper.toListResponseDTO(item)),
+            data,
         });
     }
 
@@ -157,7 +173,7 @@ export class EggProductionUsecase {
         const validation = await this.validateProductionAlreadyRegistered(
             eggProduction.flockUID,
             eggProduction.breedUID,
-            eggProduction.productionDate.toISOString().slice(0, 10),
+            eggProduction.productionDate.toString(),
             eggProduction.uid
         );
 

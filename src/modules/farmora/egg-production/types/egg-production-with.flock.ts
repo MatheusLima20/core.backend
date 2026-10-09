@@ -1,7 +1,7 @@
 import { FlockEntity } from "../../flock/entities/flock.entity";
-import { EggProductionEntity } from "../entities/egg-production.entity";
+import { ResponseEggProductionDTO } from "../dtos/egg-production-response.dto";
 
 export interface EggProductionWithFlock {
-    production: EggProductionEntity;
+    production: ResponseEggProductionDTO;
     flock: Pick<FlockEntity, "name">;
 }

@@ -36,6 +36,7 @@ export const EggProductionMapper = {
             platformUID: eggProduction.production.platformUID,
             flockUID: eggProduction.production.flockUID,
             breedUID: eggProduction.production.breedUID,
+            breedName: eggProduction.production.breedName,
             flockName: eggProduction.flock.name,
             productionDate: eggProduction.production.productionDate,
             totalEggs: eggProduction.production.totalEggs,

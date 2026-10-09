@@ -16,4 +16,5 @@ export type ResponseEggProductionDTO = Pick<
     | "updatedBy"
     | "createdAt"
     | "updatedAt"
->;
+> &
+    Partial<{ breedName: string | null }>;

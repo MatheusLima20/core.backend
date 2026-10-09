@@ -1,3 +1,4 @@
+import { InMemoryBreedRepository } from "@/modules/farmora/breed/repositories/implementations/in-memory-breed.repository";
 import { InMemoryFlockRepository } from "@/modules/farmora/flock/repositories/implementations/in-memory-flock.repository";
 import { InMemoryFlockBreedRepository } from "@/modules/farmora/flock-breed/repositories/implementations/in-memory-flock-breed.repository";
 import { AuthUser } from "@/shared/context/auth.user";
@@ -9,7 +10,8 @@ export function makeEggProductionUsecase(
     user: AuthUser,
     eggProductionRepository: InMemoryEggProductionRepository,
     flockRepository: InMemoryFlockRepository,
-    flockBreedRepository: InMemoryFlockBreedRepository
+    flockBreedRepository: InMemoryFlockBreedRepository,
+    breedRepository: InMemoryBreedRepository
 ) {
     const context = { user };
 
@@ -18,7 +20,8 @@ export function makeEggProductionUsecase(
             context,
             eggProductionRepository,
             flockRepository,
-            flockBreedRepository
+            flockBreedRepository,
+            breedRepository
         ),
     };
 }
