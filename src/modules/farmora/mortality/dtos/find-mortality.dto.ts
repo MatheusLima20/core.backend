@@ -4,10 +4,10 @@ import { MortalityCause } from "../enums/mortality-cause.enum";
 export interface FindMortalitiesDTO {
     flockUID?: string;
 
-    mortalityDate?: Date;
+    mortalityDate?: string;
 
-    startDate?: Date;
-    endDate?: Date;
+    startDate?: string;
+    endDate?: string;
 
     cause?: MortalityCause;
 

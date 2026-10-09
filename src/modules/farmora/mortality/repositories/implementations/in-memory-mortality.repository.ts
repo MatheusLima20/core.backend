@@ -45,13 +45,13 @@ export class InMemoryMortalityRepository implements IMortalityRepository {
 
         if (filters?.startDate) {
             mortalities = mortalities.filter(
-                (mortality) => mortality.mortalityDate >= filters.startDate!
+                (mortality) => !DateUtil.isBefore(mortality.mortalityDate, filters.startDate!)
             );
         }
 
         if (filters?.endDate) {
             mortalities = mortalities.filter(
-                (mortality) => mortality.mortalityDate <= filters.endDate!
+                (mortality) => !DateUtil.isAfter(mortality.mortalityDate, filters.endDate!)
             );
         }
 

@@ -35,14 +35,12 @@ export class MortalityController {
             flockUID: request.query.flockUID as string | undefined,
 
             mortalityDate: request.query.mortalityDate
-                ? new Date(request.query.mortalityDate as string)
+                ? (request.query.mortalityDate as string)
                 : undefined,
 
-            startDate: request.query.startDate
-                ? new Date(request.query.startDate as string)
-                : undefined,
+            startDate: request.query.startDate ? (request.query.startDate as string) : undefined,
 
-            endDate: request.query.endDate ? new Date(request.query.endDate as string) : undefined,
+            endDate: request.query.endDate ? (request.query.endDate as string) : undefined,
 
             cause: request.query.cause as FindMortalitiesDTO["cause"],
 

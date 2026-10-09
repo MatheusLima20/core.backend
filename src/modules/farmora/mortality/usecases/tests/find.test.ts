@@ -111,7 +111,7 @@ describe("MortalityUsecase - find", () => {
 
         const mortalities = expectSuccess(
             await usecaseUser1.find({
-                mortalityDate: new Date("2026-07-30"),
+                mortalityDate: "2026-07-30",
             })
         );
 
@@ -286,8 +286,8 @@ describe("MortalityUsecase - find", () => {
 
         const mortalities = expectSuccess(
             await usecaseUser1.find({
-                startDate: new Date("2026-07-10"),
-                endDate: new Date("2026-07-20"),
+                startDate: "2026-07-10",
+                endDate: "2026-07-20",
             })
         );
 
