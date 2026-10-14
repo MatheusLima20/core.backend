@@ -41,6 +41,12 @@ export class TypeORMWeightRepository implements IWeightRepository {
             });
         }
 
+        if (filters?.breedUID) {
+            query.andWhere("weight.breedUID = :breedUID", {
+                breedUID: filters.breedUID,
+            });
+        }
+
         if (filters?.weighingDate) {
             query.andWhere("DATE(weight.weighingDate) = DATE(:weighingDate)", {
                 weighingDate: filters.weighingDate,
@@ -85,6 +91,7 @@ export class TypeORMWeightRepository implements IWeightRepository {
         platformUID: string,
         data: {
             flockUID: string;
+            breedUID: string;
             weighingDate: Date;
             ignoreUID?: string;
         }
@@ -96,6 +103,9 @@ export class TypeORMWeightRepository implements IWeightRepository {
             })
             .andWhere("weight.flockUID = :flockUID", {
                 flockUID: data.flockUID,
+            })
+            .andWhere("weight.breedUID = :breedUID", {
+                breedUID: data.breedUID,
             })
             .andWhere("DATE(weight.weighingDate) = DATE(:weighingDate)", {
                 weighingDate: data.weighingDate,

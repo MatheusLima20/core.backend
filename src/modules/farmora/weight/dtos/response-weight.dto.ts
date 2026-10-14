@@ -5,6 +5,7 @@ export type ResponseWeightDTO = Pick<
     | "uid"
     | "platformUID"
     | "flockUID"
+    | "breedUID"
     | "weighingDate"
     | "averageWeight"
     | "sampleSize"

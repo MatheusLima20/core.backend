@@ -9,6 +9,7 @@ export const WeightMapper = {
             uid: weight.uid,
             platformUID: weight.platformUID,
             flockUID: weight.flockUID,
+            breedUID: weight.breedUID,
             weighingDate: weight.weighingDate,
             averageWeight: weight.averageWeight,
             sampleSize: weight.sampleSize,
@@ -29,6 +30,7 @@ export const WeightMapper = {
             uid: weight.uid,
             platformUID: weight.platformUID,
             flockUID: weight.flockUID,
+            breedUID: weight.breedUID,
             weighingDate: weight.weighingDate,
             averageWeight: weight.averageWeight,
             sampleSize: weight.sampleSize,
@@ -42,6 +44,7 @@ export const WeightMapper = {
         return {
             uid: weight.uid,
             flockUID: weight.flockUID,
+            breedUID: weight.breedUID,
             weighingDate: weight.weighingDate,
             averageWeight: weight.averageWeight,
             sampleSize: weight.sampleSize,

@@ -32,6 +32,7 @@ export class WeightUsecase {
     async create(data: CreateWeightDTO): Promise<Result<CreateWeightResponseDTO>> {
         const validation = await this.validateWeight(
             data.flockUID,
+            data.breedUID,
             data.weighingDate,
             data.averageWeight,
             data.sampleSize
@@ -111,6 +112,7 @@ export class WeightUsecase {
 
         const validation = await this.validateWeight(
             updatedWeight.flockUID,
+            updatedWeight.breedUID,
             updatedWeight.weighingDate,
             updatedWeight.averageWeight,
             updatedWeight.sampleSize,
@@ -148,6 +150,7 @@ export class WeightUsecase {
 
     private async validateWeight(
         flockUID: string,
+        breedUID: string,
         weighingDate: Date,
         averageWeight: number,
         sampleSize?: number,
@@ -189,6 +192,7 @@ export class WeightUsecase {
 
         const duplicated = await this.weightRepository.exists(this.context.user.platformUID, {
             flockUID,
+            breedUID,
             weighingDate,
             ignoreUID: uid,
         });

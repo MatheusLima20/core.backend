@@ -16,6 +16,7 @@ export interface IWeightRepository {
         platformUID: string,
         data: {
             flockUID: string;
+            breedUID: string;
             weighingDate: Date;
             ignoreUID?: string;
         }

@@ -3,6 +3,8 @@ import { WeightEntity } from "../entities/weight.entity";
 export interface FindWeightsDTO {
     flockUID?: string;
 
+    breedUID?: string;
+
     weighingDate?: Date;
 
     startDate?: Date;

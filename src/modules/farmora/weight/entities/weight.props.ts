@@ -5,6 +5,8 @@ export interface WeightProps {
 
     flockUID: string;
 
+    breedUID: string;
+
     weighingDate: Date;
 
     averageWeight: number;

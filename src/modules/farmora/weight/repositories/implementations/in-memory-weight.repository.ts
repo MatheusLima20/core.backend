@@ -37,6 +37,12 @@ export class InMemoryWeightRepository implements IWeightRepository {
             );
         }
 
+        if (filters?.breedUID) {
+            weights = weights.filter((weight) =>
+                StringUtil.equals(weight.breedUID, filters.breedUID!)
+            );
+        }
+
         if (filters?.weighingDate) {
             weights = weights.filter((weight) =>
                 DateUtil.isSameDay(weight.weighingDate, filters.weighingDate!)
@@ -82,6 +88,7 @@ export class InMemoryWeightRepository implements IWeightRepository {
         platformUID: string,
         data: {
             flockUID: string;
+            breedUID: string;
             weighingDate: Date;
             ignoreUID?: string;
         }
@@ -90,6 +97,7 @@ export class InMemoryWeightRepository implements IWeightRepository {
             (weight) =>
                 StringUtil.equals(weight.platformUID!, platformUID) &&
                 StringUtil.equals(weight.flockUID, data.flockUID) &&
+                StringUtil.equals(weight.breedUID, data.breedUID) &&
                 DateUtil.isSameDay(weight.weighingDate, data.weighingDate) &&
                 (!data.ignoreUID || !StringUtil.equals(weight.uid, data.ignoreUID))
         );

@@ -2,6 +2,7 @@ import { CreateWeightDTO } from "../../../dtos/create-weight.dto";
 
 export const weight1: CreateWeightDTO = {
     flockUID: "flock-uid-1",
+    breedUID: "brd-glc",
     weighingDate: new Date("2026-01-10"),
     averageWeight: 1850,
     sampleSize: 50,
@@ -10,6 +11,7 @@ export const weight1: CreateWeightDTO = {
 
 export const weight2: CreateWeightDTO = {
     flockUID: "flock-uid-2",
+    breedUID: "brd-isa-brown",
     weighingDate: new Date("2026-02-15"),
     averageWeight: 1920,
     sampleSize: 50,
@@ -18,6 +20,7 @@ export const weight2: CreateWeightDTO = {
 
 export const weight3: CreateWeightDTO = {
     flockUID: "flock-uid-3",
+    breedUID: "brd-isa-brown",
     weighingDate: new Date("2026-03-20"),
     averageWeight: 2100,
     sampleSize: 100,
@@ -26,6 +29,7 @@ export const weight3: CreateWeightDTO = {
 
 export const weight4: CreateWeightDTO = {
     flockUID: "flock-uid-4",
+    breedUID: "brd-isa-brown",
     weighingDate: new Date("2026-04-25"),
     averageWeight: 2250,
     sampleSize: 50,

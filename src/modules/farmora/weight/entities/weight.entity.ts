@@ -28,6 +28,12 @@ export class WeightEntity extends BaseEntity implements WeightProps {
     flockUID!: string;
 
     @Column({
+        type: "varchar",
+        length: 40,
+    })
+    breedUID!: string;
+
+    @Column({
         type: "date",
     })
     weighingDate!: Date;
