@@ -18,7 +18,7 @@ export class WeightStandardEntity extends BaseEntity implements WeightStandardPr
         type: "varchar",
         length: 100,
     })
-    breed!: string;
+    breedUID!: string;
 
     @Column({
         type: "int",

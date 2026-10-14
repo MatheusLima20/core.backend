@@ -19,9 +19,9 @@ export class TypeORMWeightStandardRepository implements IWeightStandardRepositor
 
         const query = this.weightStandardRepository.createQueryBuilder("weightStandard");
 
-        if (filters?.breed) {
-            query.andWhere("weightStandard.breed = :breed", {
-                breed: filters.breed,
+        if (filters?.breedUID) {
+            query.andWhere("weightStandard.breedUID = :breedUID", {
+                breed: filters.breedUID,
             });
         }
 

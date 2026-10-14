@@ -1,6 +1,6 @@
 export interface WeightStandardProps {
     uid: string;
-    breed: string;
+    breedUID: string;
     week: number;
     minWeight: number;
     targetWeight: number;

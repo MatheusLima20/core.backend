@@ -1,7 +1,7 @@
 import { WeightStandardEntity } from "../entities/weight-standard.entity";
 
 export interface FindWeightStandardsDTO {
-    breed?: string;
+    breedUID?: string;
 
     week?: number;
 
@@ -10,7 +10,7 @@ export interface FindWeightStandardsDTO {
 
     orderBy?: keyof Pick<
         WeightStandardEntity,
-        "breed" | "week" | "minWeight" | "targetWeight" | "maxWeight" | "createdAt" | "updatedAt"
+        "breedUID" | "week" | "minWeight" | "targetWeight" | "maxWeight" | "createdAt" | "updatedAt"
     >;
 
     order?: "asc" | "desc";

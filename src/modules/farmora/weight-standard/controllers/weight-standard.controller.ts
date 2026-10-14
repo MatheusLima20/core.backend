@@ -10,7 +10,7 @@ export class WeightStandardController {
 
     async find(request: Request, response: Response): Promise<Response> {
         const filters: FindWeightStandardsDTO = {
-            breed: request.query.breed ? String(request.query.breed) : undefined,
+            breedUID: request.query.breed ? String(request.query.breed) : undefined,
 
             week: request.query.week ? Number(request.query.week) : undefined,
 

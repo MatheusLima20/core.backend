@@ -12,7 +12,7 @@ export class InMemoryWeightStandardRepository implements IWeightStandardReposito
     private weightStandards: WeightStandardEntity[] = [
         new WeightStandardEntity({
             uid: "wst-isa-brown-001",
-            breed: "Isa Brown",
+            breedUID: "Isa Brown",
             week: 10,
             minWeight: 850,
             targetWeight: 900,
@@ -22,7 +22,7 @@ export class InMemoryWeightStandardRepository implements IWeightStandardReposito
         }),
         new WeightStandardEntity({
             uid: "wst-isa-brown-002",
-            breed: "Isa Brown",
+            breedUID: "Isa Brown",
             week: 20,
             minWeight: 1050,
             targetWeight: 1100,
@@ -32,7 +32,7 @@ export class InMemoryWeightStandardRepository implements IWeightStandardReposito
         }),
         new WeightStandardEntity({
             uid: "wst-isa-brown-003",
-            breed: "Isa Brown",
+            breedUID: "Isa Brown",
             week: 30,
             minWeight: 1150,
             targetWeight: 1200,
@@ -42,7 +42,7 @@ export class InMemoryWeightStandardRepository implements IWeightStandardReposito
         }),
         new WeightStandardEntity({
             uid: "wst-novogen-tinted-001",
-            breed: "Novogen Tinted",
+            breedUID: "Novogen Tinted",
             week: 10,
             minWeight: 800,
             targetWeight: 850,
@@ -52,7 +52,7 @@ export class InMemoryWeightStandardRepository implements IWeightStandardReposito
         }),
         new WeightStandardEntity({
             uid: "wst-novogen-tinted-002",
-            breed: "Novogen Tinted",
+            breedUID: "Novogen Tinted",
             week: 20,
             minWeight: 1000,
             targetWeight: 1050,
@@ -62,7 +62,7 @@ export class InMemoryWeightStandardRepository implements IWeightStandardReposito
         }),
         new WeightStandardEntity({
             uid: "wst-novogen-tinted-003",
-            breed: "Novogen Tinted",
+            breedUID: "Novogen Tinted",
             week: 30,
             minWeight: 1100,
             targetWeight: 1150,
@@ -77,9 +77,9 @@ export class InMemoryWeightStandardRepository implements IWeightStandardReposito
     ): Promise<Result<PaginationResult<WeightStandardEntity>>> {
         let weightStandards = [...this.weightStandards];
 
-        if (filters?.breed) {
+        if (filters?.breedUID) {
             weightStandards = weightStandards.filter((weightStandard) =>
-                StringUtil.equals(weightStandard.breed, filters.breed!)
+                StringUtil.equals(weightStandard.breedUID, filters.breedUID!)
             );
         }
 

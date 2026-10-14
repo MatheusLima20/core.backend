@@ -8,10 +8,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
     const breedRepository = dataSource.getRepository(BreedEntity);
 
     const breeds = breedRepository.create([
-        // ============================================================
-        // GLC
-        // ============================================================
-
         {
             uid: "brd-glc",
             name: "GLC",
@@ -23,10 +19,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
                 "https://http2.mlstatic.com/D_NQ_NP_913899-MLB50785107163_072022-O-ovos-galados-galinhas-glc--original.webp",
         },
 
-        // ============================================================
-        // BKB
-        // ============================================================
-
         {
             uid: "brd-bkb",
             name: "BKB",
@@ -36,10 +28,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
             description: "Linhagem avícola utilizada em sistemas de produção de ovos e carne.",
             urlImage: "https://http2.mlstatic.com/D_Q_NP_2X_644280-MLB76314965823_052024-P.webp",
         },
-
-        // ============================================================
-        // NOVOgen COLOR BLUE
-        // ============================================================
 
         {
             uid: "brd-novogen-color-blue",
@@ -52,10 +40,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
             urlImage: "https://novogen-layers.com/wp-content/uploads/2025/02/TRIO_Blue.webp",
         },
 
-        // ============================================================
-        // NOVOgen COLOR GREEN
-        // ============================================================
-
         {
             uid: "brd-novogen-color-green",
             name: "NOVOgen Color Green",
@@ -67,10 +51,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
             urlImage: "https://novogen-layers.com/wp-content/uploads/2025/02/TRIO_Green.webp",
         },
 
-        // ============================================================
-        // ISA BROWN
-        // ============================================================
-
         {
             uid: "brd-isa-brown",
             name: "ISA Brown",
@@ -81,10 +61,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
             urlImage:
                 "https://d1lg8auwtggj9x.cloudfront.net/images/ISA_Brown_010_HG_615_2901.width-610.jpg",
         },
-
-        // ============================================================
-        // NOVOgen TINTED
-        // ============================================================
 
         {
             uid: "brd-novogen-tinted",
@@ -98,10 +74,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
                 "https://novogen-layers.com/wp-content/uploads/2025/02/Duo_NovogenTinted.webp",
         },
 
-        // ============================================================
-        // NOVOgen BROWN
-        // ============================================================
-
         {
             uid: "brd-novogen-brown",
             name: "NOVOgen Brown",
@@ -113,10 +85,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
             urlImage: "https://novogen-layers.com/wp-content/uploads/2025/01/Duo_NovogenBrown.webp",
         },
 
-        // ============================================================
-        // NOVOgen WHITE
-        // ============================================================
-
         {
             uid: "brd-novogen-white",
             name: "NOVOgen White",
@@ -126,10 +94,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
             description: "Linhagem comercial de galinha poedeira de ovos de casca branca.",
             urlImage: "https://novogen-layers.com/wp-content/uploads/2025/02/Duo_NovogenWhite.webp",
         },
-
-        // ============================================================
-        // HY-LINE BROWN MAX
-        // ============================================================
 
         {
             uid: "brd-hyline-brown-max",
@@ -142,10 +106,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
             urlImage: "https://www.hyline.com/filesimages/ChickenPics/Hy-Line_Brown_min.jpg",
         },
 
-        // ============================================================
-        // DEKALB WHITE
-        // ============================================================
-
         {
             uid: "brd-dekalb-white",
             name: "Dekalb White",
@@ -156,10 +116,6 @@ export async function seedBreed(dataSource: DataSource): Promise<void> {
             urlImage:
                 "https://d1lg8auwtggj9x.cloudfront.net/images/Dekalb_White_024_HG_612_3709.width-610.jpg",
         },
-
-        // ============================================================
-        // LOHMANN BROWN-CLASSIC
-        // ============================================================
 
         {
             uid: "brd-lohmann-brown-classic",

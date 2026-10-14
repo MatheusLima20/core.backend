@@ -5,7 +5,7 @@ export const WeightStandardMapper = {
     toResponseDTO: (weightStandard: WeightStandardEntity): ResponseWeightStandardDTO => {
         return {
             uid: weightStandard.uid,
-            breed: weightStandard.breed,
+            breedUID: weightStandard.breedUID,
             week: weightStandard.week,
             minWeight: weightStandard.minWeight,
             targetWeight: weightStandard.targetWeight,

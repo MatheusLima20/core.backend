@@ -19,13 +19,13 @@ describe("WeightStandardUsecase - find", () => {
     test("Should filter by breed", async () => {
         const weightStandards = expectSuccess(
             await usecase.find({
-                breed: "Isa Brown",
+                breedUID: "Isa Brown",
             })
         );
 
         expect(weightStandards.data).toHaveLength(3);
         expect(
-            weightStandards.data.every((weightStandard) => weightStandard.breed === "Isa Brown")
+            weightStandards.data.every((weightStandard) => weightStandard.breedUID === "Isa Brown")
         ).toBe(true);
     });
 
@@ -42,20 +42,20 @@ describe("WeightStandardUsecase - find", () => {
     test("Should filter by breed and week", async () => {
         const weightStandards = expectSuccess(
             await usecase.find({
-                breed: "Isa Brown",
+                breedUID: "Isa Brown",
                 week: 20,
             })
         );
 
         expect(weightStandards.data).toHaveLength(1);
-        expect(weightStandards.data[0].breed).toBe("Isa Brown");
+        expect(weightStandards.data[0].breedUID).toBe("Isa Brown");
         expect(weightStandards.data[0].week).toBe(20);
     });
 
     test("Should return empty list when no weight standard matches filters", async () => {
         const weightStandards = expectSuccess(
             await usecase.find({
-                breed: "Inexistente",
+                breedUID: "Inexistente",
             })
         );
 
