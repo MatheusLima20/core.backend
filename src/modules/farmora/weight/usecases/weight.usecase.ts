@@ -7,6 +7,7 @@ import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
 import { ResultMapper } from "@/shared/result/result.mapper";
 
+import { IBreedRepository } from "../../breed/repositories/breed-repository.interface";
 import { FlockStatus } from "../../flock/enums/flock-status.enum";
 import { FlockNotFoundError } from "../../flock/errors/flock-not-found.error";
 import { IFlockRepository } from "../../flock/repositories/flock-repository.interface";
@@ -26,7 +27,8 @@ export class WeightUsecase {
     constructor(
         private readonly context: RequestContext,
         private readonly weightRepository: IWeightRepository,
-        private readonly flockRepository: IFlockRepository
+        private readonly flockRepository: IFlockRepository,
+        private readonly breedREpository: IBreedRepository
     ) {}
 
     async create(data: CreateWeightDTO): Promise<Result<CreateWeightResponseDTO>> {
@@ -204,7 +206,7 @@ export class WeightUsecase {
         if (duplicated.data) {
             return ResultFactory.failure(
                 new DuplicateWeightError({
-                    flockUID,
+                    flockName: existingFlock.data.name,
                     weighingDate,
                 })
             );

@@ -1,7 +1,7 @@
 import { AppError } from "@/shared/errors/app.error";
 
 interface DuplicateWeightErrorProps {
-    flockUID: string;
+    flockName: string;
     weighingDate: Date;
 }
 
@@ -12,7 +12,7 @@ export class DuplicateWeightError extends AppError {
                 ? data.weighingDate.toISOString().split("T")[0]
                 : data.weighingDate;
 
-        super(`A weight record already exists for flock '${data.flockUID}' on '${weighingDate}'.`);
+        super(`A weight record already exists for flock '${data.flockName}' on '${weighingDate}'.`);
 
         this.name = "DuplicateWeightError";
     }

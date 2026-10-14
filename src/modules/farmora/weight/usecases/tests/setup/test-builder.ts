@@ -23,7 +23,12 @@ export class TestBuilder {
 
     createUsecases() {
         this.testContext.flockUsecases = this.testContext.users.map(
-            (user) => makeFlockUsecase(user, this.testContext.flockRepository).usecase
+            (user) =>
+                makeFlockUsecase(
+                    user,
+                    this.testContext.flockRepository,
+                    this.testContext.flockBreedRepository
+                ).usecase
         );
 
         this.testContext.weightUsecases = this.testContext.users.map(
@@ -31,7 +36,8 @@ export class TestBuilder {
                 makeWeightUsecase(
                     user,
                     this.testContext.weightRepository,
-                    this.testContext.flockRepository
+                    this.testContext.flockRepository,
+                    this.testContext.breedRepository
                 ).usecase
         );
 
