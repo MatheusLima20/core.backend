@@ -6,10 +6,10 @@ export const WeightStandardMapper = {
         return {
             uid: weightStandard.uid,
             breedUID: weightStandard.breedUID,
-            week: weightStandard.week,
-            minWeight: weightStandard.minWeight,
-            targetWeight: weightStandard.targetWeight,
-            maxWeight: weightStandard.maxWeight,
+            week: Number(weightStandard.week),
+            minWeight: Number(weightStandard.minWeight),
+            targetWeight: Number(weightStandard.targetWeight),
+            maxWeight: Number(weightStandard.maxWeight),
             createdAt: weightStandard.createdAt,
             updatedAt: weightStandard.updatedAt,
         };

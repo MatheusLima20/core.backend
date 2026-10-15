@@ -8,142 +8,292 @@ export async function seedWeightStandard(dataSource: DataSource): Promise<void> 
     const weightStandards = weightStandardRepository.create([
         {
             uid: "wst-glc-01",
-
             breedUID: "brd-glc",
-
             week: 1,
-
             minWeight: 59,
-
             targetWeight: 65,
-
             maxWeight: 72,
         },
-
+        {
+            uid: "wst-glc-02",
+            breedUID: "brd-glc",
+            week: 2,
+            minWeight: 105,
+            targetWeight: 110,
+            maxWeight: 115,
+        },
+        {
+            uid: "wst-glc-03",
+            breedUID: "brd-glc",
+            week: 3,
+            minWeight: 185,
+            targetWeight: 190,
+            maxWeight: 195,
+        },
+        {
+            uid: "wst-glc-04",
+            breedUID: "brd-glc",
+            week: 4,
+            minWeight: 270,
+            targetWeight: 277.5,
+            maxWeight: 285,
+        },
+        {
+            uid: "wst-glc-05",
+            breedUID: "brd-glc",
+            week: 5,
+            minWeight: 365,
+            targetWeight: 375,
+            maxWeight: 385,
+        },
+        {
+            uid: "wst-glc-06",
+            breedUID: "brd-glc",
+            week: 6,
+            minWeight: 460,
+            targetWeight: 472.5,
+            maxWeight: 485,
+        },
         {
             uid: "wst-glc-07",
-
             breedUID: "brd-glc",
-
             week: 7,
-
             minWeight: 500,
-
             targetWeight: 555,
-
             maxWeight: 611,
         },
-
+        {
+            uid: "wst-glc-08",
+            breedUID: "brd-glc",
+            week: 8,
+            minWeight: 640,
+            targetWeight: 655,
+            maxWeight: 670,
+        },
+        {
+            uid: "wst-glc-09",
+            breedUID: "brd-glc",
+            week: 9,
+            minWeight: 725,
+            targetWeight: 745,
+            maxWeight: 765,
+        },
+        {
+            uid: "wst-glc-10",
+            breedUID: "brd-glc",
+            week: 10,
+            minWeight: 810,
+            targetWeight: 840,
+            maxWeight: 870,
+        },
+        {
+            uid: "wst-glc-11",
+            breedUID: "brd-glc",
+            week: 11,
+            minWeight: 900,
+            targetWeight: 927.5,
+            maxWeight: 955,
+        },
+        {
+            uid: "wst-glc-12",
+            breedUID: "brd-glc",
+            week: 12,
+            minWeight: 985,
+            targetWeight: 1020,
+            maxWeight: 1055,
+        },
         {
             uid: "wst-glc-13",
-
             breedUID: "brd-glc",
-
             week: 13,
-
             minWeight: 981,
-
             targetWeight: 1090,
-
             maxWeight: 1199,
         },
-
+        {
+            uid: "wst-glc-14",
+            breedUID: "brd-glc",
+            week: 14,
+            minWeight: 1150,
+            targetWeight: 1182.5,
+            maxWeight: 1215,
+        },
+        {
+            uid: "wst-glc-15",
+            breedUID: "brd-glc",
+            week: 15,
+            minWeight: 1230,
+            targetWeight: 1262.5,
+            maxWeight: 1295,
+        },
+        {
+            uid: "wst-glc-16",
+            breedUID: "brd-glc",
+            week: 16,
+            minWeight: 1305,
+            targetWeight: 1342.5,
+            maxWeight: 1380,
+        },
         {
             uid: "wst-glc-17",
-
             breedUID: "brd-glc",
-
             week: 17,
-
             minWeight: 1233,
-
             targetWeight: 1370,
-
             maxWeight: 1507,
         },
-
         {
-            uid: "wst-glc-35",
-
+            uid: "wst-glc-18",
             breedUID: "brd-glc",
-
-            week: 35,
-
-            minWeight: 1710,
-
-            targetWeight: 1900,
-
-            maxWeight: 2090,
+            week: 18,
+            minWeight: 1450,
+            targetWeight: 1490,
+            maxWeight: 1530,
         },
 
         {
             uid: "wst-bkb-01",
-
             breedUID: "brd-bkb",
-
             week: 1,
-
             minWeight: 56,
-
             targetWeight: 62,
-
             maxWeight: 68,
         },
-
+        {
+            uid: "wst-bkb-02",
+            breedUID: "brd-bkb",
+            week: 2,
+            minWeight: 125,
+            targetWeight: 128.5,
+            maxWeight: 132,
+        },
+        {
+            uid: "wst-bkb-03",
+            breedUID: "brd-bkb",
+            week: 3,
+            minWeight: 194,
+            targetWeight: 199,
+            maxWeight: 204,
+        },
+        {
+            uid: "wst-bkb-04",
+            breedUID: "brd-bkb",
+            week: 4,
+            minWeight: 266,
+            targetWeight: 273,
+            maxWeight: 280,
+        },
+        {
+            uid: "wst-bkb-05",
+            breedUID: "brd-bkb",
+            week: 5,
+            minWeight: 341,
+            targetWeight: 350,
+            maxWeight: 359,
+        },
+        {
+            uid: "wst-bkb-06",
+            breedUID: "brd-bkb",
+            week: 6,
+            minWeight: 419,
+            targetWeight: 429.5,
+            maxWeight: 440,
+        },
         {
             uid: "wst-bkb-07",
-
             breedUID: "brd-bkb",
-
             week: 7,
-
             minWeight: 444,
-
             targetWeight: 493,
-
             maxWeight: 542,
         },
-
+        {
+            uid: "wst-bkb-08",
+            breedUID: "brd-bkb",
+            week: 8,
+            minWeight: 579,
+            targetWeight: 594,
+            maxWeight: 609,
+        },
+        {
+            uid: "wst-bkb-09",
+            breedUID: "brd-bkb",
+            week: 9,
+            minWeight: 660,
+            targetWeight: 677,
+            maxWeight: 694,
+        },
+        {
+            uid: "wst-bkb-10",
+            breedUID: "brd-bkb",
+            week: 10,
+            minWeight: 735,
+            targetWeight: 752.5,
+            maxWeight: 770,
+        },
+        {
+            uid: "wst-bkb-11",
+            breedUID: "brd-bkb",
+            week: 11,
+            minWeight: 820,
+            targetWeight: 837.5,
+            maxWeight: 855,
+        },
+        {
+            uid: "wst-bkb-12",
+            breedUID: "brd-bkb",
+            week: 12,
+            minWeight: 905,
+            targetWeight: 922.5,
+            maxWeight: 940,
+        },
         {
             uid: "wst-bkb-13",
-
             breedUID: "brd-bkb",
-
             week: 13,
-
             minWeight: 871,
-
             targetWeight: 968,
-
             maxWeight: 1065,
         },
-
+        {
+            uid: "wst-bkb-14",
+            breedUID: "brd-bkb",
+            week: 14,
+            minWeight: 1060,
+            targetWeight: 1077.5,
+            maxWeight: 1095,
+        },
+        {
+            uid: "wst-bkb-15",
+            breedUID: "brd-bkb",
+            week: 15,
+            minWeight: 1130,
+            targetWeight: 1147.5,
+            maxWeight: 1165,
+        },
+        {
+            uid: "wst-bkb-16",
+            breedUID: "brd-bkb",
+            week: 16,
+            minWeight: 1190,
+            targetWeight: 1207.5,
+            maxWeight: 1225,
+        },
         {
             uid: "wst-bkb-17",
-
             breedUID: "brd-bkb",
-
             week: 17,
-
             minWeight: 1120,
-
             targetWeight: 1244,
-
             maxWeight: 1368,
         },
-
         {
-            uid: "wst-bkb-35",
-
+            uid: "wst-bkb-18",
             breedUID: "brd-bkb",
-
-            week: 35,
-
-            minWeight: 1665,
-
-            targetWeight: 1850,
-
-            maxWeight: 2035,
+            week: 18,
+            minWeight: 1243,
+            targetWeight: 1275,
+            maxWeight: 1307,
         },
 
         {
