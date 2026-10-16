@@ -4,7 +4,7 @@ import { ResponseFeedItemDTO } from "./response-feed.dto";
 
 export type CreateFeedItemDTO = Pick<FeedItemEntity, "inventoryItemUID" | "inclusionPercentage">;
 
-export type CreateFeedDTO = Pick<FeedEntity, "name" | "description"> & {
+export type CreateFeedDTO = Pick<FeedEntity, "name" | "flockUID" | "description"> & {
     items: CreateFeedItemDTO[];
 } & Partial<Pick<FeedEntity, "createdAt">>;
 

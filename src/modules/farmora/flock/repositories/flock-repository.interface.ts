@@ -7,6 +7,8 @@ import { FlockEntity } from "../entities/flock.entity";
 export interface IFlockRepository {
     findByUID(platformUID: string, uid: string): Promise<Result<FlockEntity | null>>;
 
+    findByUIDs(platformUID: string, uids: string[]): Promise<Result<FlockEntity[]>>;
+
     findByName(platformUID: string, name: string): Promise<Result<FlockEntity[]>>;
 
     find(

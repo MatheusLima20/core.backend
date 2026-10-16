@@ -17,6 +17,8 @@ describe("FeedUsecase - find", () => {
 
         await testScenario.loadInventoryItems();
 
+        await testScenario.loadFlocks();
+
         ({
             feedUsecases: [usecaseUser1, usecaseUser2],
             users: [user1],

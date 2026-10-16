@@ -10,7 +10,7 @@ export type UpdateFeedItemDTO = {
 };
 
 export type UpdateFeedDTO = Pick<FeedEntity, "uid"> &
-    Partial<Pick<FeedEntity, "name" | "description">> & {
+    Partial<Pick<FeedEntity, "name" | "flockUID" | "description">> & {
         items?: UpdateFeedItemDTO[];
     };
 

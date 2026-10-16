@@ -10,6 +10,7 @@ export type ResponseFeedDTO = Pick<
     FeedEntity,
     | "uid"
     | "platformUID"
+    | "flockUID"
     | "name"
     | "description"
     | "createdBy"
@@ -18,4 +19,4 @@ export type ResponseFeedDTO = Pick<
     | "updatedAt"
 > & {
     items: ResponseFeedItemDTO[];
-};
+} & { flockName?: string };

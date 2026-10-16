@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 
 import { PaginationResult } from "@/shared/pagination/pagination.result";
 import { Result } from "@/shared/result";
@@ -10,6 +10,21 @@ import { IFlockRepository } from "../flock-repository.interface";
 
 export class TypeORMFlockRepository implements IFlockRepository {
     constructor(private readonly flockRepository: Repository<FlockEntity>) {}
+
+    async findByUIDs(platformUID: string, uids: string[]): Promise<Result<FlockEntity[]>> {
+        if (uids.length === 0) {
+            return ResultFactory.success([]);
+        }
+
+        const flocks = await this.flockRepository.find({
+            where: {
+                platformUID,
+                uid: In(uids),
+            },
+        });
+
+        return ResultFactory.success(flocks);
+    }
 
     async findByUID(platformUID: string, uid: string): Promise<Result<FlockEntity | null>> {
         const flock = await this.flockRepository.findOne({

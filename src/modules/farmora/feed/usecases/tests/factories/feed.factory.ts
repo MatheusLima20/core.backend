@@ -2,6 +2,7 @@ import { CreateFeedDTO } from "../../../dtos/create-feed.dto";
 
 export const feed1: CreateFeedDTO = {
     name: "Posture Feed",
+    flockUID: "flk-test-1",
     description: "Feed formulation for laying hens.",
 
     items: [],
@@ -9,6 +10,7 @@ export const feed1: CreateFeedDTO = {
 
 export const feed2: CreateFeedDTO = {
     name: "Growth Feed",
+    flockUID: "flk-test-2",
     description: "Feed formulation for growing chickens.",
 
     items: [],

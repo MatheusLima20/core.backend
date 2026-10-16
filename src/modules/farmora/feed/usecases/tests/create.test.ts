@@ -13,6 +13,8 @@ describe("FeedUsecase - create", () => {
     beforeEach(async () => {
         const testScenario = await scenario().loadUsers(["1", "2"]);
 
+        await testScenario.loadFlocks();
+
         ({
             feedUsecases: [usecase],
             users: [user],

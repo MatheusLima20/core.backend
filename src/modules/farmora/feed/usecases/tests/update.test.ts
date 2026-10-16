@@ -20,6 +20,8 @@ describe("FeedUsecase - update", () => {
 
         await testScenario.loadInventoryItems();
 
+        await testScenario.loadFlocks();
+
         ({
             feedUsecases: [usecaseUser1, usecaseUser2],
             users: [user1, user2],

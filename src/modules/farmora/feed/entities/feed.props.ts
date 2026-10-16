@@ -3,6 +3,8 @@ export interface FeedProps {
 
     platformUID: string;
 
+    flockUID: string;
+
     name: string;
 
     description?: string;

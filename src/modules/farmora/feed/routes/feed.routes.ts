@@ -43,7 +43,7 @@ router.delete("/delete/:uid", async (request, response) => {
     await controller.delete(request, response);
 });
 
-router.delete("/delete/items/:uid", async (request, response) => {
+router.delete("/items/delete/:uid", async (request, response) => {
     const controller = makeFeedController(request.auth);
 
     await controller.deleteItems(request, response);

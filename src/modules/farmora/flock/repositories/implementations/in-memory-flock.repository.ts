@@ -11,6 +11,17 @@ import { IFlockRepository } from "../flock-repository.interface";
 export class InMemoryFlockRepository implements IFlockRepository {
     private flocks: FlockEntity[] = [];
 
+    async findByUIDs(platformUID: string, uids: string[]): Promise<Result<FlockEntity[]>> {
+        const flockUIDs = new Set(uids);
+
+        const flocks = this.flocks.filter(
+            (flock) =>
+                StringUtil.equals(flock.platformUID!, platformUID) && flockUIDs.has(flock.uid)
+        );
+
+        return ResultFactory.success(flocks);
+    }
+
     async findByUID(platformUID: string, uid: string): Promise<Result<FlockEntity | null>> {
         const flock =
             this.flocks.find(

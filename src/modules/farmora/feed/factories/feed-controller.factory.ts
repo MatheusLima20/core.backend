@@ -2,6 +2,8 @@ import { dataSource } from "@/services/database/database";
 import { RequestContext } from "@/shared/context/request-context";
 import { TypeORMTransactionManager } from "@/shared/database/transaction/implementations/typeorm-transaction-manager";
 
+import { FlockEntity } from "../../flock/entities/flock.entity";
+import { TypeORMFlockRepository } from "../../flock/repositories/implementations/type-orm-flock.repository";
 import { FeedController } from "../controllers/feed.controller";
 import { FeedEntity } from "../entities/feed.entity";
 import { FeedItemEntity } from "../entities/feed-item.entity";
@@ -16,7 +18,9 @@ export function makeFeedController(context: RequestContext) {
 
     const transactionManager = new TypeORMTransactionManager(dataSource);
 
-    const usecase = new FeedUsecase(context, transactionManager, feedRepository);
+    const flockRepository = new TypeORMFlockRepository(dataSource.getRepository(FlockEntity));
+
+    const usecase = new FeedUsecase(context, transactionManager, feedRepository, flockRepository);
 
     return new FeedController(usecase);
 }

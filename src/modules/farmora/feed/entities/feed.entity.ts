@@ -22,6 +22,12 @@ export class FeedEntity extends BaseEntity implements FeedProps {
 
     @Column({
         type: "varchar",
+        length: 40,
+    })
+    flockUID!: string;
+
+    @Column({
+        type: "varchar",
         length: 255,
     })
     name!: string;

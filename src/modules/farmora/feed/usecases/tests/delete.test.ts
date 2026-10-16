@@ -14,6 +14,8 @@ describe("FeedUsecase - delete", () => {
 
         await testScenario.loadInventoryItems();
 
+        await testScenario.loadFlocks();
+
         ({
             feedUsecases: [usecase],
         } = testScenario.createUsecases().build());

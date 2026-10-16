@@ -8,6 +8,7 @@ import { ResultFactory } from "@/shared/result/result.factory";
 import { isFailure } from "@/shared/result/result.guard";
 import { ResultMapper } from "@/shared/result/result.mapper";
 
+import { IFlockRepository } from "../../flock/repositories/flock-repository.interface";
 import { InventoryItemNotFoundError } from "../../inventory/errors/inventory-item-not-found.error";
 import { CreateFeedDTO, CreateFeedResponseDTO } from "../dtos/create-feed.dto";
 import { FindFeedsDTO } from "../dtos/find-feeds.dto";
@@ -26,7 +27,8 @@ export class FeedUsecase {
     constructor(
         private readonly context: RequestContext,
         private readonly transactionManager: ITransactionManager,
-        private readonly feedRepository: IFeedRepository
+        private readonly feedRepository: IFeedRepository,
+        private readonly flockRepository: IFlockRepository
     ) {}
 
     async create(data: CreateFeedDTO): Promise<Result<CreateFeedResponseDTO>> {
@@ -51,7 +53,6 @@ export class FeedUsecase {
 
             const feed = new FeedEntity({
                 platformUID: this.context.user.platformUID,
-
                 createdBy: this.context.user.uid,
                 updatedBy: undefined,
 
@@ -59,6 +60,7 @@ export class FeedUsecase {
                 updatedAt: new Date(),
 
                 name: data.name,
+                flockUID: data.flockUID,
                 description: data.description,
             });
 
@@ -180,14 +182,29 @@ export class FeedUsecase {
         const result = await this.feedRepository.findByUID(this.context.user.platformUID, uid);
 
         if (isFailure(result)) {
-            return ResultFactory.success(null);
+            return ResultFactory.failure(new PersistenceError("Failed to fetch feed."));
         }
 
         if (!result.data) {
             return ResultFactory.success(null);
         }
 
-        return ResultFactory.success(FeedMapper.toResponseDTO(result.data.feed, result.data.items));
+        const { feed, items } = result.data;
+
+        const flockResult = await this.flockRepository.findByUID(
+            this.context.user.platformUID,
+            feed.flockUID
+        );
+
+        if (isFailure(flockResult)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch flock for feed."));
+        }
+
+        if (!flockResult.data) {
+            return ResultFactory.failure(new PersistenceError("Flock not found for feed."));
+        }
+
+        return ResultFactory.success(FeedMapper.toResponseDTO(feed, items, flockResult.data.name));
     }
 
     async find(filters?: FindFeedsDTO): Promise<Result<PaginationResult<ResponseFeedDTO>>> {
@@ -197,10 +214,27 @@ export class FeedUsecase {
             return ResultFactory.failure(new PersistenceError("Failed to fetch feeds."));
         }
 
-        return ResultMapper.map(result, (pagination) => ({
+        const pagination = result.data;
+
+        const flockUIDs = [...new Set(pagination.data.map(({ feed }) => feed.flockUID))];
+
+        const flocksResult = await this.flockRepository.findByUIDs(
+            this.context.user.platformUID,
+            flockUIDs
+        );
+
+        if (isFailure(flocksResult)) {
+            return ResultFactory.failure(new PersistenceError("Failed to fetch flocks for feeds."));
+        }
+
+        const flockNames = new Map(flocksResult.data.map((flock) => [flock.uid, flock.name]));
+
+        const feeds = FeedMapper.toResponseDTOList(pagination.data, flockNames);
+
+        return ResultFactory.success({
             ...pagination,
-            data: FeedMapper.toResponseDTOList(pagination.data),
-        }));
+            data: feeds,
+        });
     }
 
     async delete(uid: string): Promise<Result<void>> {
