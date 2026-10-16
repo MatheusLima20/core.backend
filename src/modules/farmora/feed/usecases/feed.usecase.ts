@@ -191,10 +191,10 @@ export class FeedUsecase {
 
         const { feed, items } = result.data;
 
-        const flockResult = await this.flockRepository.findByUID(
-            this.context.user.platformUID,
-            feed.flockUID
-        );
+        const [flockResult, itemNamesResult] = await Promise.all([
+            this.flockRepository.findByUID(this.context.user.platformUID, feed.flockUID),
+            this.findInventoryItemNames(items.map((item) => item.inventoryItemUID)),
+        ]);
 
         if (isFailure(flockResult)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch flock for feed."));
@@ -204,7 +204,13 @@ export class FeedUsecase {
             return ResultFactory.failure(new PersistenceError("Flock not found for feed."));
         }
 
-        return ResultFactory.success(FeedMapper.toResponseDTO(feed, items, flockResult.data.name));
+        if (isFailure(itemNamesResult)) {
+            return ResultFactory.failure(itemNamesResult.error);
+        }
+
+        return ResultFactory.success(
+            FeedMapper.toResponseDTO(feed, items, flockResult.data.name, itemNamesResult.data)
+        );
     }
 
     async find(filters?: FindFeedsDTO): Promise<Result<PaginationResult<ResponseFeedDTO>>> {
@@ -218,18 +224,32 @@ export class FeedUsecase {
 
         const flockUIDs = [...new Set(pagination.data.map(({ feed }) => feed.flockUID))];
 
-        const flocksResult = await this.flockRepository.findByUIDs(
-            this.context.user.platformUID,
-            flockUIDs
-        );
+        const inventoryItemUIDs = [
+            ...new Set(
+                pagination.data.flatMap(({ items }) => items.map((item) => item.inventoryItemUID))
+            ),
+        ];
+
+        const [flocksResult, itemNamesResult] = await Promise.all([
+            this.flockRepository.findByUIDs(this.context.user.platformUID, flockUIDs),
+            this.findInventoryItemNames(inventoryItemUIDs),
+        ]);
 
         if (isFailure(flocksResult)) {
             return ResultFactory.failure(new PersistenceError("Failed to fetch flocks for feeds."));
         }
 
+        if (isFailure(itemNamesResult)) {
+            return ResultFactory.failure(itemNamesResult.error);
+        }
+
         const flockNames = new Map(flocksResult.data.map((flock) => [flock.uid, flock.name]));
 
-        const feeds = FeedMapper.toResponseDTOList(pagination.data, flockNames);
+        const feeds = FeedMapper.toResponseDTOList(
+            pagination.data,
+            flockNames,
+            itemNamesResult.data
+        );
 
         return ResultFactory.success({
             ...pagination,
@@ -388,5 +408,44 @@ export class FeedUsecase {
         }
 
         return ResultFactory.success(undefined);
+    }
+
+    private async findInventoryItemNames(
+        inventoryItemUIDs: string[]
+    ): Promise<Result<Map<string, string>>> {
+        const uniqueUIDs = [...new Set(inventoryItemUIDs)];
+
+        if (uniqueUIDs.length === 0) {
+            return ResultFactory.success(new Map<string, string>());
+        }
+
+        return this.transactionManager.execute(async (transaction) => {
+            const itemNames = new Map<string, string>();
+
+            for (const inventoryItemUID of uniqueUIDs) {
+                const result = await transaction.inventoryItemRepository.findByUID(
+                    this.context.user.platformUID,
+                    inventoryItemUID
+                );
+
+                if (isFailure(result)) {
+                    return ResultFactory.failure(
+                        new PersistenceError("Failed to fetch inventory item for feed.")
+                    );
+                }
+
+                if (!result.data) {
+                    return ResultFactory.failure(
+                        new InventoryItemNotFoundError({
+                            uid: inventoryItemUID,
+                        })
+                    );
+                }
+
+                itemNames.set(result.data.uid, result.data.name);
+            }
+
+            return ResultFactory.success(itemNames);
+        });
     }
 }

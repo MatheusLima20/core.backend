@@ -6,11 +6,12 @@ import { FeedItemEntity } from "../entities/feed-item.entity";
 import { FeedItemMapper } from "./feed-item.mapper";
 
 export const FeedMapper = {
-    toResponseDTO: (
+    toResponseDTO(
         feed: FeedEntity,
         items: FeedItemEntity[],
-        flockName: string
-    ): ResponseFeedDTO => {
+        flockName: string,
+        itemNames: Map<string, string>
+    ): ResponseFeedDTO {
         return {
             uid: feed.uid,
             platformUID: feed.platformUID,
@@ -21,7 +22,7 @@ export const FeedMapper = {
             name: feed.name,
             description: feed.description,
 
-            items: FeedItemMapper.toResponseDTOList(items),
+            items: FeedItemMapper.toResponseDTOList(items, itemNames),
 
             createdBy: feed.createdBy,
             updatedBy: feed.updatedBy,
@@ -36,7 +37,8 @@ export const FeedMapper = {
             feed: FeedEntity;
             items: FeedItemEntity[];
         }[],
-        flockNames: Map<string, string>
+        flockNames: Map<string, string>,
+        itemNames: Map<string, string>
     ): ResponseFeedDTO[] => {
         return feeds.map(({ feed, items }) => {
             const flockName = flockNames.get(feed.flockUID);
@@ -45,7 +47,7 @@ export const FeedMapper = {
                 throw new Error(`Flock name not found for UID: ${feed.flockUID}`);
             }
 
-            return FeedMapper.toResponseDTO(feed, items, flockName);
+            return FeedMapper.toResponseDTO(feed, items, flockName, itemNames);
         });
     },
 

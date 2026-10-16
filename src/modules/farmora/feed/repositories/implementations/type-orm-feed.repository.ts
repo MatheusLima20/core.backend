@@ -53,8 +53,8 @@ export class TypeORMFeedRepository implements IFeedRepository {
             }>
         >
     > {
-        const page = filters?.page ?? 1;
-        const limit = filters?.limit ?? 10;
+        const page = Math.max(1, Math.floor(filters?.page ?? 1));
+        const limit = Math.min(100, Math.max(1, Math.floor(filters?.limit ?? 10)));
 
         const query = this.feedRepository
             .createQueryBuilder("feed")
@@ -62,39 +62,57 @@ export class TypeORMFeedRepository implements IFeedRepository {
                 platformUID,
             });
 
-        if (filters?.name) {
-            query.andWhere("LOWER(feed.name) = LOWER(:name)", {
-                name: filters.name,
+        const name = filters?.name?.trim();
+
+        if (name) {
+            query.andWhere("LOWER(feed.name) LIKE LOWER(:name)", {
+                name: `%${name}%`,
             });
         }
 
-        if (filters?.orderBy) {
-            query.orderBy(
-                `feed.${filters.orderBy}`,
-                filters.order?.toUpperCase() === "DESC" ? "DESC" : "ASC"
-            );
-        }
+        const allowedOrderFields = ["name", "createdAt", "updatedAt"] as const;
+
+        const orderBy =
+            filters?.orderBy &&
+            allowedOrderFields.includes(filters.orderBy as (typeof allowedOrderFields)[number])
+                ? filters.orderBy
+                : "createdAt";
+
+        const order = filters?.order?.toUpperCase() === "ASC" ? "ASC" : "DESC";
+
+        query.orderBy(`feed.${orderBy}`, order);
 
         const total = await query.getCount();
 
-        query.skip((page - 1) * limit).take(limit);
+        const feeds = await query
+            .skip((page - 1) * limit)
+            .take(limit)
+            .getMany();
 
-        const feeds = await query.getMany();
+        const feedUIDs = feeds.map((feed) => feed.uid);
 
-        const data = await Promise.all(
-            feeds.map(async (feed) => {
-                const items = await this.feedItemRepository.find({
-                    where: {
-                        feedUID: feed.uid,
-                    },
-                });
+        const items = feedUIDs.length
+            ? await this.feedItemRepository
+                  .createQueryBuilder("item")
+                  .where("item.feedUID IN (:...feedUIDs)", {
+                      feedUIDs,
+                  })
+                  .getMany()
+            : [];
 
-                return {
-                    feed,
-                    items,
-                };
-            })
-        );
+        const itemsByFeedUID = new Map<string, FeedItemEntity[]>();
+
+        for (const item of items) {
+            const feedItems = itemsByFeedUID.get(item.feedUID) ?? [];
+
+            feedItems.push(item);
+            itemsByFeedUID.set(item.feedUID, feedItems);
+        }
+
+        const data = feeds.map((feed) => ({
+            feed,
+            items: itemsByFeedUID.get(feed.uid) ?? [],
+        }));
 
         return ResultFactory.success({
             data,

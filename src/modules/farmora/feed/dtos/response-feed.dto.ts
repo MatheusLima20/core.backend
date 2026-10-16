@@ -4,7 +4,7 @@ import { FeedItemEntity } from "../entities/feed-item.entity";
 export type ResponseFeedItemDTO = Pick<
     FeedItemEntity,
     "uid" | "inventoryItemUID" | "inclusionPercentage"
->;
+> & { itemName?: string };
 
 export type ResponseFeedDTO = Pick<
     FeedEntity,
